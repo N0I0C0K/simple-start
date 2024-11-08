@@ -1,16 +1,29 @@
-import { createRoot } from 'react-dom/client';
-import '@src/index.css';
-import '@extension/ui/lib/global.css';
-import NewTab from '@src/NewTab';
+import { createRoot } from 'react-dom/client'
+import '@src/index.css'
+//import '@extension/ui/lib/global.css'
+import { exampleThemeStorage } from '@extension/storage'
+import { useStorage } from '@extension/shared'
+import { useEffect } from 'react'
+import { Button } from '@/components/ui/button'
 
-function init() {
-  const appContainer = document.querySelector('#app-container');
-  if (!appContainer) {
-    throw new Error('Can not find #app-container');
-  }
-  const root = createRoot(appContainer);
+function App() {
+  const theme = useStorage(exampleThemeStorage)
 
-  root.render(<NewTab />);
+  return (
+    <div>
+      <Button className="size-100">12121</Button>
+    </div>
+  )
 }
 
-init();
+function init() {
+  const appContainer = document.querySelector('#app-container')
+  if (!appContainer) {
+    throw new Error('Can not find #app-container')
+  }
+  const root = createRoot(appContainer)
+
+  root.render(<App />)
+}
+
+init()
