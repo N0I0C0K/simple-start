@@ -3,15 +3,14 @@ import '@src/index.css'
 //import '@extension/ui/lib/global.css'
 import { exampleThemeStorage } from '@extension/storage'
 import { useStorage } from '@extension/shared'
-import { useEffect } from 'react'
-import { Button } from '@/components/ui/button'
-
+import { TooltipProvider, ThemeProvider } from '@extension/ui'
+import NewTab from './NewTab'
 function App() {
   const theme = useStorage(exampleThemeStorage)
 
   return (
     <div>
-      <Button className="size-100">12121</Button>
+      <NewTab />
     </div>
   )
 }
@@ -23,7 +22,13 @@ function init() {
   }
   const root = createRoot(appContainer)
 
-  root.render(<App />)
+  root.render(
+    <ThemeProvider>
+      <TooltipProvider>
+        <App />
+      </TooltipProvider>
+    </ThemeProvider>,
+  )
 }
 
 init()

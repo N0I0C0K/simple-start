@@ -29,6 +29,7 @@
     "update-version": "bash update_version.sh"
   },
   "dependencies": {
+    "@stitches/react": "^1.2.8",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "eslint-plugin-tailwindcss": "^3.17.4",
@@ -59,6 +60,7 @@
     "lint-staged": "^15.2.7",
     "postcss": "^8.4.47",
     "prettier": "^3.3.3",
+    "prettier-plugin-tailwindcss": "^0.6.8",
     "rimraf": "^6.0.1",
     "tailwindcss": "^3.4.11",
     "tslib": "^2.6.3",
