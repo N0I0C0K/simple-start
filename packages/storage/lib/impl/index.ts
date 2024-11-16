@@ -1,1 +1,2 @@
-export * from './exampleThemeStorage';
+export * from './exampleThemeStorage'
+export * from './quickUrlStorage'

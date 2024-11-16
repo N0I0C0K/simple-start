@@ -24,9 +24,7 @@ function init() {
 
   root.render(
     <ThemeProvider>
-      <TooltipProvider>
-        <App />
-      </TooltipProvider>
+      <App />
     </ThemeProvider>,
   )
 }
