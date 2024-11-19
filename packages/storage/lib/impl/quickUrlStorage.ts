@@ -3,7 +3,7 @@ import { createStorage } from '../base/base'
 import type { BaseStorage } from '../base/types'
 
 type QuickUrlItem = {
-  id: number
+  id: string
   title: string
   url: string
 }
@@ -11,10 +11,10 @@ type QuickUrlItem = {
 type QuickUrlItemsStorage = BaseStorage<QuickUrlItem[]> & {
   add: (item: QuickUrlItem) => Promise<void>
   removeAt: (index: number) => Promise<void>
-  removeById: (id: number) => Promise<void>
+  removeById: (id: string) => Promise<void>
 }
 
-const storage = createStorage<QuickUrlItem[]>('theme-storage-key', [], {
+const storage = createStorage<QuickUrlItem[]>('quick-url-item-storage-key', [], {
   storageEnum: StorageEnum.Local,
   liveUpdate: true,
 })
@@ -28,7 +28,7 @@ export const quickUrlItemsStorage: QuickUrlItemsStorage = {
   removeAt: async (index: number) => {
     storage.set(value => value.splice(index, 1))
   },
-  removeById: async (id: number) => {
+  removeById: async (id: string) => {
     storage.set(value => value.filter(val => val.id != id))
   },
 }
