@@ -100,9 +100,10 @@ const NewTab = () => {
         </Stack>
         <span className="flex-1" />
       </div>
-      <div
-        className="h-screen w-screen fixed top-0 left-0 -z-10 blur-sm brightness-90 scale-105 duration-300 dark:brightness-75"
-        style={{ background: "url('https://w.wallhaven.cc/full/2y/wallhaven-2yxp16.jpg') center" }}
+      <img
+        className="h-screen w-screen fixed top-0 left-0 -z-10 blur-sm brightness-90 scale-105 duration-300 dark:brightness-75 object-cover"
+        src="https://w.wallhaven.cc/full/2y/wallhaven-2yxp16.jpg"
+        alt=""
       />
     </>
   )

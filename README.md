@@ -8,7 +8,10 @@
 ![](https://badges.aleen42.com/src/vitejs.svg)
 </div>
 
-## developing 🚧
+## In Process 🚧
+
+### Screen Shot
+![shot1](doc/images/shot1.png)
 
 This project is powered by [chrome-extension-boilerplate-react-vite](https://github.com/Jonghakseo/chrome-extension-boilerplate-react-vite)
 
