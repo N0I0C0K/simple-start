@@ -13,6 +13,7 @@ type QuickUrlItemsStorage = BaseStorage<QuickUrlItem[]> & {
   removeAt: (index: number) => Promise<void>
   removeById: (id: string) => Promise<void>
   sortItemsByIds: (ids: string[]) => Promise<void>
+  putById: (id: string, val: QuickUrlItem) => Promise<void>
 }
 
 const storage = createStorage<QuickUrlItem[]>('quick-url-item-storage-key', [], {
@@ -37,5 +38,8 @@ export const quickUrlItemsStorage: QuickUrlItemsStorage = {
     storage.set(values =>
       values.sort((lv, rv) => (idAndPriorityMapping.get(lv.id) ?? 10000) - (idAndPriorityMapping.get(rv.id) ?? 10000)),
     )
+  },
+  putById: async (id, val) => {
+    storage.set(items => items.map(it => (it.id === id ? val : it)))
   },
 }

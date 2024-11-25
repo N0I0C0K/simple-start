@@ -60,27 +60,21 @@ export const LinkCardGroup: FC = () => {
     return Math.ceil(quickUrlItems.length / currentCols)
   }, [quickUrlItems, currentCols])
 
-  useEffect(() => {
-    console.log(layouts)
-    console.log(currentCols)
-    console.log(maxRows)
-  }, [layouts, currentCols, maxRows])
   return (
-    <>
+    <div
+      ref={ref}
+      className="relative backdrop-blur-lg rounded-xl shadow-sm dark:backdrop-brightness-75 duration-300 min-w-[20rem] w-[50%]">
       <ReactGridLayout
-        className="relative backdrop-blur-lg rounded-xl shadow-sm dark:backdrop-brightness-75 duration-300 min-w-[20rem] w-[50%]"
+        className="w-full"
         layouts={layouts}
-        innerRef={ref}
         breakpoints={breakpoints}
         cols={cols}
         compactType={'horizontal'}
         draggableHandle="#drag-area"
         onBreakpointChange={(nb, nc) => {
-          console.log('break change', nb, nc)
           setCols(nc)
         }}
         onLayoutChange={layout => {
-          console.log('layout change', layout)
           sortItemByLayouts(layout, currentCols)
         }}
         rowHeight={120}
@@ -91,15 +85,14 @@ export const LinkCardGroup: FC = () => {
             <LinkCard title={val.title} url={val.url} key={val.id} id={val.id} />
           </div>
         ))}
-        <AddButton className="absolute right-4 bottom-4" />
       </ReactGridLayout>
-
+      <AddButton className="absolute right-1 bottom-1 size-8" />
       {/* <div className="grid lg:grid-cols-8 md:grid-cols-6 sm:grid-cols-3 backdrop-blur-lg gap-3 p-2 rounded-xl shadow-sm dark:backdrop-brightness-75 duration-300">
       {quickUrlItems.map(val => (
         <LinkCard title={val.title} url={val.url} key={val.id} id={val.id} />
       ))}
       <AddButton />
     </div> */}
-    </>
+    </div>
   )
 }

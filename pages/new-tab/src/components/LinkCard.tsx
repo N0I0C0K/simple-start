@@ -1,17 +1,17 @@
 import { cn } from '@/lib/utils'
-import { quickUrlItemsStorage } from '@extension/storage'
-import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent, Stack, Button, Text } from '@extension/ui'
+import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent, Stack, Text } from '@extension/ui'
 import {
   ContextMenu,
   ContextMenuContent,
-  ContextMenuItem,
   ContextMenuTrigger,
-  ContextMenuShortcut,
   ContextMenuItemWitchIcon,
 } from '@extension/ui/lib/components/ui/context-menu'
+import { useGlobalDialog } from '@src/provider'
 import { Trash, Pencil } from 'lucide-react'
 import type { FC } from 'react'
 import { useMemo, useState } from 'react'
+import { QuickItemEditForm } from './QuickItemEditForm'
+import { quickUrlItemsStorage } from '@extension/storage'
 
 interface LinkCardProps {
   url: string
@@ -24,6 +24,7 @@ export const LinkCard: FC<LinkCardProps> = ({ url, title, id }) => {
     return new URL(url)
   }, [url])
   const [dragAreaVisable, setDragAreaVisible] = useState(false)
+  const globalDialog = useGlobalDialog()
   return (
     <TooltipProvider>
       <ContextMenu>
@@ -31,8 +32,8 @@ export const LinkCard: FC<LinkCardProps> = ({ url, title, id }) => {
           onOpenChange={opened => {
             setDragAreaVisible(opened)
           }}>
-          <ContextMenuTrigger asChild>
-            <TooltipTrigger asChild>
+          <TooltipTrigger asChild>
+            <ContextMenuTrigger asChild>
               <div
                 className="relative group flex flex-col items-center justify-center overflow-hidden p-2 gap-1 cursor-pointer rounded-md duration-200"
                 key={id}>
@@ -59,34 +60,48 @@ export const LinkCard: FC<LinkCardProps> = ({ url, title, id }) => {
                   )}
                 />
               </div>
-            </TooltipTrigger>
-          </ContextMenuTrigger>
+            </ContextMenuTrigger>
+          </TooltipTrigger>
           <TooltipContent>
             <Stack direction={'column'}>
               <Text>{title}</Text>
               <Text level="s" gray>
                 {url}
               </Text>
-              {/* <Stack direction={'rowr'} className="mt-2">
-                <Button
-                  variant={'link'}
-                  className="text-red-600/80 h-4 w-0"
-                  onClick={() => {
-                    quickUrlItemsStorage.removeById(id)
-                  }}>
-                  del
-                </Button>
-                <Button variant={'link'} className="h-4 w-0" onClick={() => {}}>
-                  edit
-                </Button>
-              </Stack> */}
             </Stack>
           </TooltipContent>
           <ContextMenuContent className="w-44">
-            <ContextMenuItemWitchIcon IconType={Pencil} shortCut="Ctrl+E">
+            <ContextMenuItemWitchIcon
+              IconType={Pencil}
+              shortCut="Ctrl+E"
+              onClick={() => {
+                globalDialog.show(
+                  <QuickItemEditForm
+                    defaultValue={{ title, url }}
+                    onSubmit={item => {
+                      quickUrlItemsStorage.putById(id, {
+                        id: id,
+                        title: item.title,
+                        url: item.url,
+                      })
+                    }}
+                    submitButtonTitle="Save"
+                  />,
+                  'Edit',
+                )
+              }}>
               Edit
             </ContextMenuItemWitchIcon>
-            <ContextMenuItemWitchIcon className="text-red-800" IconType={Trash} shortCut="Ctrl+D">
+            <ContextMenuItemWitchIcon
+              className="text-red-800"
+              IconType={Trash}
+              shortCut="Ctrl+D"
+              onClick={() => {
+                globalDialog.confirm(`Continue delete ${title}?`, 'Delete can not recover', () => {
+                  quickUrlItemsStorage.removeById(id)
+                  globalDialog.close()
+                })
+              }}>
               Delete
             </ContextMenuItemWitchIcon>
           </ContextMenuContent>

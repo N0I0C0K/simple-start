@@ -5,12 +5,15 @@ import { exampleThemeStorage } from '@extension/storage'
 import { useStorage } from '@extension/shared'
 import { TooltipProvider, ThemeProvider } from '@extension/ui'
 import NewTab from './NewTab'
+import { GlobalDialog } from '@src/components/GlobalDialog'
 function App() {
   const theme = useStorage(exampleThemeStorage)
 
   return (
     <div>
-      <NewTab />
+      <GlobalDialog>
+        <NewTab />
+      </GlobalDialog>
     </div>
   )
 }

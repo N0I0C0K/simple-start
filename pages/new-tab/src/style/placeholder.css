@@ -1,0 +1,13 @@
+.react-grid-item.react-grid-placeholder {
+  background: gray;
+  opacity: 0.2;
+  transition-duration: 100ms;
+  z-index: 2;
+  border-radius: 5px;
+  height: 10px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+}
