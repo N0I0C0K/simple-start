@@ -1,11 +1,13 @@
 import { StorageEnum } from '../base/enums'
 import { createStorage } from '../base/base'
 import type { BaseStorage } from '../base/types'
+import { getIconUrlFromWebsit } from '../utils'
 
-type QuickUrlItem = {
+export type QuickUrlItem = {
   id: string
   title: string
   url: string
+  iconUrl?: string
 }
 
 type QuickUrlItemsStorage = BaseStorage<QuickUrlItem[]> & {
@@ -21,10 +23,18 @@ const storage = createStorage<QuickUrlItem[]>('quick-url-item-storage-key', [], 
   liveUpdate: true,
 })
 
+async function maybeFillIconUrl(val: QuickUrlItem) {
+  console.log(val)
+  if (!val.iconUrl) {
+    val.iconUrl = await getIconUrlFromWebsit(val.url)
+  }
+}
+
 // You can extend it with your own methods
 export const quickUrlItemsStorage: QuickUrlItemsStorage = {
   ...storage,
   add: async (item: QuickUrlItem) => {
+    await maybeFillIconUrl(item)
     storage.set(value => [...value, item])
   },
   removeAt: async (index: number) => {
@@ -40,6 +50,7 @@ export const quickUrlItemsStorage: QuickUrlItemsStorage = {
     )
   },
   putById: async (id, val) => {
+    await maybeFillIconUrl(val)
     storage.set(items => items.map(it => (it.id === id ? val : it)))
   },
 }

@@ -1,11 +1,11 @@
 {
-  "name": "chrome-extension-boilerplate-react-vite",
+  "name": "sstart",
   "version": "0.3.3",
-  "description": "chrome extension boilerplate",
+  "description": "Simple and modern start interface",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Jonghakseo/chrome-extension-boilerplate-react-vite.git"
+    "url": "https://github.com/N0I0C0K/simple-start"
   },
   "type": "module",
   "scripts": {

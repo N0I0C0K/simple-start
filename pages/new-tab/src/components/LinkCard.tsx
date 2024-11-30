@@ -11,15 +11,12 @@ import { Trash, Pencil } from 'lucide-react'
 import type { FC } from 'react'
 import { useMemo, useState } from 'react'
 import { QuickItemEditForm } from './QuickItemEditForm'
+import type { QuickUrlItem } from '@extension/storage'
 import { quickUrlItemsStorage } from '@extension/storage'
 
-interface LinkCardProps {
-  url: string
-  title: string
-  id: string
-}
+interface LinkCardProps extends QuickUrlItem {}
 
-export const LinkCard: FC<LinkCardProps> = ({ url, title, id }) => {
+export const LinkCard: FC<LinkCardProps> = ({ url, title, id, iconUrl }) => {
   const urlParsed = useMemo(() => {
     return new URL(url)
   }, [url])
@@ -38,7 +35,11 @@ export const LinkCard: FC<LinkCardProps> = ({ url, title, id }) => {
                 className="relative group flex flex-col items-center justify-center overflow-hidden p-2 gap-1 cursor-pointer rounded-md duration-200"
                 key={id}>
                 <div
-                  className="relative flex flex-row items-center justify-center rounded-md size-[4.5rem] text-primary bg-zinc-200/20 group-hover:bg-zinc-100/40 active:bg-zinc-100/70 duration-200"
+                  className={cn(
+                    'relative flex flex-row items-center justify-center rounded-md size-[4.5rem] text-primary  active:bg-zinc-100/70 duration-200',
+                    'bg-zinc-200/20 group-hover:bg-zinc-200/40',
+                    'dark:group-hover:bg-zinc-100/40',
+                  )}
                   onClick={ev => {
                     if (ev.ctrlKey) {
                       chrome.tabs.create({ url: url })
@@ -47,7 +48,7 @@ export const LinkCard: FC<LinkCardProps> = ({ url, title, id }) => {
                     }
                   }}
                   aria-hidden="true">
-                  <img src={`${urlParsed.origin}/favicon.ico`} alt="img" className="size-8" />
+                  <img src={iconUrl ?? `${urlParsed.origin}/favicon.ico`} alt="img" className="size-8" />
                 </div>
                 <Text level="s" className="select-none">
                   {title}
@@ -84,6 +85,7 @@ export const LinkCard: FC<LinkCardProps> = ({ url, title, id }) => {
                         title: item.title,
                         url: item.url,
                       })
+                      globalDialog.close()
                     }}
                     submitButtonTitle="Save"
                   />,

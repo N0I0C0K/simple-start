@@ -10,13 +10,14 @@ export interface GlobalDialogProps {
 
 const RenderDefaultConfirmDialog: FC<{
   onConfirm: () => void
-}> = ({ onConfirm }) => {
+  onCancel: () => void
+}> = ({ onConfirm, onCancel }) => {
   return (
     <div className="flex w-full flex-row-reverse gap-3">
       <Button variant={'secondary'} onClick={onConfirm}>
         Yes
       </Button>
-      <Button>No</Button>
+      <Button onClick={onCancel}>No</Button>
     </div>
   )
 }
@@ -44,10 +45,10 @@ export function useGlobalDialog(): GlobalDialogProps {
         open: true,
         title,
         description,
-        showElement: <RenderDefaultConfirmDialog onConfirm={onConfirm} />,
+        showElement: <RenderDefaultConfirmDialog onConfirm={onConfirm} onCancel={close} />,
       })
     },
-    [setInnerProps],
+    [close, setInnerProps],
   )
   return { show, close, confirm }
 }

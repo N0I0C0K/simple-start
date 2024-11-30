@@ -1,7 +1,7 @@
 import '@src/NewTab.css'
 import { Center, Input, Text, Heading, Stack } from '@extension/ui'
 import { Search, ArrowRight } from 'lucide-react'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { LinkCardGroup } from './components'
 
 function SearchGroup() {
@@ -9,10 +9,19 @@ function SearchGroup() {
   const searchFunc = useCallback(async (text: string) => {
     await chrome.search.query({ text: text, disposition: 'NEW_TAB' })
   }, [])
+  const inputRef = useRef<HTMLInputElement>(null)
+  useEffect(() => {
+    window.addEventListener('keydown', ev => {
+      if (ev.altKey && ev.code == 'KeyK') {
+        inputRef.current?.focus()
+      }
+    })
+  }, [])
   return (
     <div className=" w-[40%] min-w-[20rem] max-w-[40rem]">
       <div className="relative">
         <Input
+          ref={inputRef}
           id="input-26"
           className="peer pe-9 ps-10 rounded-full h-12 font-medium"
           placeholder="Search..."
@@ -86,7 +95,7 @@ const TimeDisplay = () => {
 const NewTab = () => {
   return (
     <>
-      <div className={'flex h-screen w-screen flex-col justify-center gap-4 relative'}>
+      <div className={'flex h-screen w-screen max-w-full flex-col justify-center gap-4 relative'}>
         <Center column className="flex-1">
           <TimeDisplay />
         </Center>
@@ -101,9 +110,12 @@ const NewTab = () => {
         <span className="flex-1" />
       </div>
       <img
-        className="h-screen w-screen fixed top-0 left-0 -z-10 blur-sm brightness-90 scale-105 duration-300 dark:brightness-75 object-cover"
+        className="x-bg-img h-screen w-screen fixed top-0 left-0 -z-10 blur-sm brightness-90 scale-105 dark:brightness-75 object-cover"
         src="https://w.wallhaven.cc/full/2y/wallhaven-2yxp16.jpg"
         alt=""
+        onError={e => {
+          console.log('back ground err')
+        }}
       />
     </>
   )

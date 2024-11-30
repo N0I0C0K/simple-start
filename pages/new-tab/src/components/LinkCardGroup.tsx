@@ -63,7 +63,7 @@ export const LinkCardGroup: FC = () => {
   return (
     <div
       ref={ref}
-      className="relative backdrop-blur-lg rounded-xl shadow-sm dark:backdrop-brightness-75 duration-300 min-w-[20rem] w-[50%]">
+      className="relative backdrop-blur-xl rounded-xl shadow-sm dark:backdrop-brightness-75 duration-300 min-w-[20rem] w-[50%]">
       <ReactGridLayout
         className="w-full"
         layouts={layouts}
@@ -82,7 +82,7 @@ export const LinkCardGroup: FC = () => {
         maxRows={maxRows}>
         {quickUrlItems.map(val => (
           <div key={val.id}>
-            <LinkCard title={val.title} url={val.url} key={val.id} id={val.id} />
+            <LinkCard {...val} key={val.id} />
           </div>
         ))}
       </ReactGridLayout>

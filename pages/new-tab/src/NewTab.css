@@ -10,3 +10,7 @@
       var(--dot-space),
     var(--dot-color);
 }
+
+.x-bg-img {
+  transition: filter 1s ease;
+}
