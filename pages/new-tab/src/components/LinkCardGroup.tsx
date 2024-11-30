@@ -36,6 +36,7 @@ async function sortItemByLayouts(layouts: Layout[], cols: number) {
 
 export const LinkCardGroup: FC = () => {
   const quickUrlItems = useStorage(quickUrlItemsStorage)
+  // NOTE: MUST BE ORDERED BY SIZE DESC
   const breakpoints = useMemo(() => ({ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }), [])
   const cols = useMemo(() => ({ lg: 14, md: 12, sm: 8, xs: 6, xxs: 3 }), [])
   const ref = useRef(null)
@@ -60,10 +61,18 @@ export const LinkCardGroup: FC = () => {
     return Math.ceil(quickUrlItems.length / currentCols)
   }, [quickUrlItems, currentCols])
 
+  useEffect(() => {
+    // use to calculate the current cols for the initial layout
+    const [, width] = size
+    const curBp = Object.entries(breakpoints).find(([, bpSize]) => bpSize <= width)
+    setCols(cols[(curBp?.[0] ?? 'md') as keyof typeof cols])
+    console.log(curBp, size)
+  }, [])
+
   return (
     <div
       ref={ref}
-      className="relative backdrop-blur-xl rounded-xl shadow-sm dark:backdrop-brightness-75 duration-300 min-w-[20rem] w-[50%]">
+      className="relative backdrop-blur-xl rounded-xl shadow-md dark:backdrop-brightness-75 duration-300 min-w-[20rem] w-[50%]">
       <ReactGridLayout
         className="w-full"
         layouts={layouts}
