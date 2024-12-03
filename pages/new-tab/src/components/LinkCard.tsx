@@ -32,11 +32,11 @@ export const LinkCard: FC<LinkCardProps> = ({ url, title, id, iconUrl }) => {
           <TooltipTrigger asChild>
             <ContextMenuTrigger asChild>
               <div
-                className="relative group flex flex-col items-center justify-center overflow-hidden p-2 gap-1 cursor-pointer rounded-md duration-200"
+                className="relative min-w-[4.5rem] group flex flex-col items-center justify-center overflow-hidden p-2 gap-1 cursor-pointer rounded-md duration-200"
                 key={id}>
                 <div
                   className={cn(
-                    'relative flex flex-row items-center justify-center rounded-md size-[4.5rem] text-primary  active:bg-zinc-100/70 duration-200',
+                    'relative flex flex-row items-center justify-center rounded-md size-[4.5rem] text-primary active:bg-zinc-100/70 duration-200',
                     'bg-zinc-200/20 group-hover:bg-zinc-200/40',
                     'dark:group-hover:bg-zinc-100/40',
                   )}
@@ -50,7 +50,7 @@ export const LinkCard: FC<LinkCardProps> = ({ url, title, id, iconUrl }) => {
                   aria-hidden="true">
                   <img src={iconUrl ?? `${urlParsed.origin}/favicon.ico`} alt="img" className="size-8" />
                 </div>
-                <Text level="s" className="select-none">
+                <Text level="s" className="select-none max-w-[4.5rem] line-clamp-1">
                   {title}
                 </Text>
                 <div

@@ -23,7 +23,7 @@ function SearchGroup() {
         <Input
           ref={inputRef}
           id="input-26"
-          className="peer pe-9 ps-10 rounded-full h-12 font-medium"
+          className="peer pe-9 ps-10 rounded-full h-12 font-medium shadow-md"
           placeholder="Search..."
           type="search"
           value={searchText}
