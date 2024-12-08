@@ -65,7 +65,7 @@ function useSplitQuickUrlItems(historyItemsNum: number): {
 export const LinkCardGroup: FC = () => {
   // NOTE: MUST BE ORDERED BY SIZE DESC
   const breakpoints = useMemo(() => ({ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }), [])
-  const cols = useMemo(() => ({ lg: 14, md: 12, sm: 8, xs: 6, xxs: 3 }), [])
+  const cols = useMemo(() => ({ lg: 12, md: 10, sm: 8, xs: 6, xxs: 3 }), [])
   const ref = useRef(null)
   const size = useSize(ref)
   const [currentCols, setCols] = useState<number>(12)

@@ -2,7 +2,7 @@ import '@src/NewTab.css'
 import { Center, Input, Text, Heading, Stack } from '@extension/ui'
 import { Search, ArrowRight } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { LinkCardGroup } from './components'
+import { LinkCardGroup, SettingPanel } from './components'
 
 function SearchGroup() {
   const [searchText, setSearchText] = useState('')
@@ -117,6 +117,7 @@ const NewTab = () => {
           console.log('back ground err')
         }}
       />
+      <SettingPanel className="fixed top-2 right-2" />
     </>
   )
 }

@@ -42,7 +42,7 @@ export const LinkCard: FC<LinkCardProps> = ({ url, title, id, iconUrl }) => {
                   )}
                   onClick={ev => {
                     if (ev.ctrlKey) {
-                      chrome.tabs.create({ url: url })
+                      chrome.tabs.create({ url: url, active: true })
                     } else {
                       chrome.tabs.update({ url: url })
                     }
