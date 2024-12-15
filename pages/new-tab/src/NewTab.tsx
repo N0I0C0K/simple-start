@@ -3,6 +3,9 @@ import { Center, Input, Text, Heading, Stack } from '@extension/ui'
 import { Search, ArrowRight } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { LinkCardGroup, SettingPanel } from './components'
+import { HistorySuggestionList } from './components/HistorySuggestionList'
+import { useStorage } from '@extension/shared'
+import { settingStorage } from '@extension/storage'
 
 function SearchGroup() {
   const [searchText, setSearchText] = useState('')
@@ -93,6 +96,7 @@ const TimeDisplay = () => {
 }
 
 const NewTab = () => {
+  const settings = useStorage(settingStorage)
   return (
     <>
       <div className={'flex h-screen w-screen max-w-full flex-col justify-center gap-4 relative'}>
@@ -104,14 +108,24 @@ const NewTab = () => {
             <SearchGroup />
           </Center>
           <Center>
-            <LinkCardGroup />
+            <div className="relative min-w-[20rem] w-[50%]">
+              <LinkCardGroup />
+            </div>
           </Center>
         </Stack>
-        <span className="flex-1" />
+        <Stack direction={'column'} className="flex-1 flex flex-col justify-end">
+          {settings.useHistorySuggestion && (
+            <Center>
+              <div className="relative min-w-[20rem] w-[50%]">
+                <HistorySuggestionList />
+              </div>
+            </Center>
+          )}
+        </Stack>
       </div>
       <img
-        className="x-bg-img h-screen w-screen fixed top-0 left-0 -z-10 blur-sm brightness-90 scale-105 dark:brightness-75 object-cover"
-        src="https://w.wallhaven.cc/full/2y/wallhaven-2yxp16.jpg"
+        className="x-bg-img h-screen w-screen fixed top-0 left-0 -z-10 blur-sm brightness-90 scale-105 dark:brightness-75 object-cover select-none"
+        src="https://w.wallhaven.cc/full/nk/wallhaven-nkyog1.jpg"
         alt=""
         onError={e => {
           console.log('back ground err')

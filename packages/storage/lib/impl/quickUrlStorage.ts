@@ -4,12 +4,13 @@ import type { BaseStorage, QuickUrlItem } from '../base/types'
 import { getIconUrlFromWebsit } from '../utils'
 
 export type QuickUrlItemsStorage = BaseStorage<QuickUrlItem[]>
-export type BasicUrlItemsStorageFunc = {
-  add: (item: QuickUrlItem) => Promise<void>
+
+export interface BasicUrlItemsStorageFunc<T extends QuickUrlItem> {
+  add: (item: T) => Promise<void>
   removeAt: (index: number) => Promise<void>
   removeById: (id: string) => Promise<void>
   sortItemsByIds: (ids: string[]) => Promise<void>
-  putById: (id: string, val: QuickUrlItem) => Promise<void>
+  putById: (id: string, val: T) => Promise<void>
 }
 
 const storage = createStorage<QuickUrlItem[]>('quick-url-item-storage-key', [], {
@@ -23,10 +24,12 @@ async function maybeFillIconUrl(val: QuickUrlItem) {
   }
 }
 
-export function generateBasicUrlItemStorage(targetStorage: BaseStorage<QuickUrlItem[]>): BasicUrlItemsStorageFunc {
+export function generateBasicUrlItemStorage<T extends QuickUrlItem>(
+  targetStorage: BaseStorage<T[]>,
+): BasicUrlItemsStorageFunc<T> {
   return {
-    add: async (item: QuickUrlItem) => {
-      await maybeFillIconUrl(item)
+    add: async (item: T) => {
+      //await maybeFillIconUrl(item)
       targetStorage.set(value => [...value, item])
     },
     removeAt: async (index: number) => {
@@ -50,7 +53,7 @@ export function generateBasicUrlItemStorage(targetStorage: BaseStorage<QuickUrlI
   }
 }
 
-export const quickUrlItemsStorage: QuickUrlItemsStorage & BasicUrlItemsStorageFunc = {
+export const quickUrlItemsStorage: QuickUrlItemsStorage & BasicUrlItemsStorageFunc<QuickUrlItem> = {
   ...storage,
   ...generateBasicUrlItemStorage(storage),
 }

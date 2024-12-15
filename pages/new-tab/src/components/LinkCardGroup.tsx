@@ -1,14 +1,15 @@
 import { useStorage } from '@extension/shared'
 import { AddButton } from './AddButton'
 import { LinkCard } from './LinkCard'
-import { quickUrlItemsStorage, historySuggestStorage, QuickUrlItem } from '@extension/storage'
+import { quickUrlItemsStorage, historySuggestStorage, QuickUrlItem, settingStorage } from '@extension/storage'
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type FC } from 'react'
 import type { Layouts, Layout } from 'react-grid-layout'
 import { Responsive } from 'react-grid-layout'
 import 'react-grid-layout/css/styles.css'
 import 'react-resizable/css/styles.css'
 import '@/src/style/placeholder.css'
-import { Stack } from '@extension/ui'
+import { cn, Stack } from '@extension/ui'
+import { motion } from 'framer-motion'
 
 const ReactGridLayout = Responsive
 
@@ -69,7 +70,7 @@ export const LinkCardGroup: FC = () => {
   const ref = useRef(null)
   const size = useSize(ref)
   const [currentCols, setCols] = useState<number>(12)
-  const { userStorage: userStorageItems, historySuggest } = useSplitQuickUrlItems(currentCols)
+  const userStorageItems = useStorage(quickUrlItemsStorage)
   const layouts = useMemo<Layouts>(() => {
     return Object.fromEntries(
       Object.entries(cols).map(([bk, col]) => [
@@ -88,21 +89,25 @@ export const LinkCardGroup: FC = () => {
   const maxRows = useMemo(() => {
     return Math.ceil(userStorageItems.length / currentCols)
   }, [userStorageItems, currentCols])
-
+  const [mounted, setMounted] = useState(false)
   useEffect(() => {
     // use to calculate the current cols for the initial layout
     const [, width] = size
     const curBp = Object.entries(breakpoints).find(([, bpSize]) => bpSize <= width)
     setCols(cols[(curBp?.[0] ?? 'md') as keyof typeof cols])
+    setMounted(true)
   }, [])
 
+  useEffect(() => {
+    console.log(size)
+  }, [size])
   return (
-    <div className="relative min-w-[20rem] w-[50%]">
-      <div
-        ref={ref}
-        className="relative backdrop-blur-xl rounded-xl shadow-md dark:backdrop-brightness-75 duration-300 w-full">
+    <div
+      ref={ref}
+      className="relative backdrop-blur-2xl rounded-xl shadow-md dark:backdrop-brightness-75 duration-300 w-full overflow-hidden">
+      <motion.div className="w-full" drag="x" dragConstraints={{ left: 0, right: 0 }}>
         <ReactGridLayout
-          className="w-full"
+          className={cn('w-full', mounted ? 'transition-transform' : 'transition-none')}
           layouts={layouts}
           breakpoints={breakpoints}
           cols={cols}
@@ -116,6 +121,7 @@ export const LinkCardGroup: FC = () => {
           }}
           rowHeight={120}
           width={size[1]}
+          useCSSTransforms={false}
           maxRows={maxRows}>
           {userStorageItems.map(val => (
             <div key={val.id}>
@@ -123,21 +129,8 @@ export const LinkCardGroup: FC = () => {
             </div>
           ))}
         </ReactGridLayout>
-        <AddButton className="absolute right-1 bottom-1 size-8" />
-        {/* <div className="grid lg:grid-cols-8 md:grid-cols-6 sm:grid-cols-3 backdrop-blur-lg gap-3 p-2 rounded-xl shadow-sm dark:backdrop-brightness-75 duration-300">
-        {quickUrlItems.map(val => (
-          <LinkCard title={val.title} url={val.url} key={val.id} id={val.id} />
-        ))}
-        <AddButton />
-      </div> */}
-      </div>
-      <div className="mt-4 relative backdrop-blur-xl rounded-xl shadow-md dark:backdrop-brightness-75 duration-300 w-full">
-        <Stack direction={'row'} className="gap-6">
-          {historySuggest.map(val => (
-            <LinkCard {...val} key={val.id} />
-          ))}
-        </Stack>
-      </div>
+      </motion.div>
+      <AddButton className="absolute right-1 bottom-1 size-8" />
     </div>
   )
 }

@@ -8,5 +8,6 @@ export * from './dialog'
 export * from './select'
 import * as form from './form'
 export * from './switch'
+export * from './drawer'
 
 export { form }

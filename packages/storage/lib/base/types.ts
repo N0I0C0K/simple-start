@@ -44,7 +44,7 @@ export type StorageConfig<D = string> = {
   }
 }
 
-export type QuickUrlItem = {
+export interface QuickUrlItem {
   id: string
   title: string
   url: string

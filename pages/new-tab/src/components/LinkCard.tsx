@@ -13,13 +13,11 @@ import { useMemo, useState } from 'react'
 import { QuickItemEditForm } from './QuickItemEditForm'
 import type { QuickUrlItem } from '@extension/storage'
 import { quickUrlItemsStorage } from '@extension/storage'
+import { getDefaultIconUrl } from '@/lib/url'
 
 interface LinkCardProps extends QuickUrlItem {}
 
 export const LinkCard: FC<LinkCardProps> = ({ url, title, id, iconUrl }) => {
-  const urlParsed = useMemo(() => {
-    return new URL(url)
-  }, [url])
   const [dragAreaVisable, setDragAreaVisible] = useState(false)
   const globalDialog = useGlobalDialog()
   return (
@@ -48,7 +46,7 @@ export const LinkCard: FC<LinkCardProps> = ({ url, title, id, iconUrl }) => {
                     }
                   }}
                   aria-hidden="true">
-                  <img src={iconUrl ?? `${urlParsed.origin}/favicon.ico`} alt="img" className="size-8" />
+                  <img src={iconUrl ?? getDefaultIconUrl(url)} alt="img" className="size-8 rounded-md" />
                 </div>
                 <Text level="s" className="select-none max-w-[4.5rem] line-clamp-1">
                   {title}

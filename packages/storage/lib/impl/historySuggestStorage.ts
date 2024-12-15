@@ -1,21 +1,26 @@
 import { StorageEnum } from '../base/enums'
 import { createStorage } from '../base/base'
-import type { QuickUrlItem } from '../base/types'
+import type { BaseStorage, QuickUrlItem } from '../base/types'
 import type { QuickUrlItemsStorage, BasicUrlItemsStorageFunc } from './quickUrlStorage'
 import { generateBasicUrlItemStorage, quickUrlItemsStorage } from './quickUrlStorage'
 import moment from 'moment'
 
-type HistorySuggestStorage = QuickUrlItemsStorage &
-  BasicUrlItemsStorageFunc & {
+type HistoryItem = QuickUrlItem & {
+  lastVisitTime?: number
+  visitCount?: number
+}
+
+type HistorySuggestStorage = BaseStorage<HistoryItem[]> &
+  BasicUrlItemsStorageFunc<HistoryItem> & {
     refresh(): Promise<void>
   }
 
-const storage = createStorage<QuickUrlItem[]>('history-suggest-url-item-storage-key', [], {
+const storage = createStorage<HistoryItem[]>('history-suggest-url-item-storage-key', [], {
   storageEnum: StorageEnum.Local,
   liveUpdate: true,
 })
 
-const basicStorage: QuickUrlItemsStorage & BasicUrlItemsStorageFunc = {
+const basicStorage: QuickUrlItemsStorage & BasicUrlItemsStorageFunc<HistoryItem> = {
   ...storage,
   ...generateBasicUrlItemStorage(storage),
 }
@@ -40,7 +45,6 @@ export const historySuggestStorage: HistorySuggestStorage = {
       if (!knownHost.has(url.host)) {
         knownHost.add(url.host)
         returnHistoryItems.push(element)
-
         if (returnHistoryItems.length >= 50) {
           break
         }
@@ -51,10 +55,12 @@ export const historySuggestStorage: HistorySuggestStorage = {
   },
 }
 
-function convertHistoyItemToUrlItem(histortyItem: chrome.history.HistoryItem): QuickUrlItem {
+function convertHistoyItemToUrlItem(histortyItem: chrome.history.HistoryItem): HistoryItem {
   return {
     id: histortyItem.id,
     title: histortyItem.title ?? 'missing',
     url: histortyItem.url ?? 'missing',
+    lastVisitTime: histortyItem.lastVisitTime,
+    visitCount: histortyItem.visitCount,
   }
 }
