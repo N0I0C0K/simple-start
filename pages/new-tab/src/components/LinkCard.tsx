@@ -17,20 +17,23 @@ import { getDefaultIconUrl } from '@/lib/url'
 
 interface LinkCardProps extends QuickUrlItem {}
 
-export const LinkCard: FC<LinkCardProps> = ({ url, title, id, iconUrl }) => {
+export const LinkCard: FC<LinkCardProps & { className?: string }> = ({ url, title, id, iconUrl, className }) => {
   const [dragAreaVisable, setDragAreaVisible] = useState(false)
   const globalDialog = useGlobalDialog()
   return (
     <TooltipProvider>
-      <ContextMenu>
-        <Tooltip
-          onOpenChange={opened => {
-            setDragAreaVisible(opened)
-          }}>
+      <Tooltip
+        onOpenChange={opened => {
+          setDragAreaVisible(opened)
+        }}>
+        <ContextMenu>
           <TooltipTrigger asChild>
             <ContextMenuTrigger asChild>
               <div
-                className="relative min-w-[4.5rem] group flex flex-col items-center justify-center overflow-hidden p-2 gap-1 cursor-pointer rounded-md duration-200"
+                className={cn(
+                  'relative min-w-[4.5rem] group flex flex-col items-center justify-center overflow-hidden p-2 gap-1 cursor-pointer rounded-md duration-200',
+                  className,
+                )}
                 key={id}>
                 <div
                   className={cn(
@@ -46,7 +49,7 @@ export const LinkCard: FC<LinkCardProps> = ({ url, title, id, iconUrl }) => {
                     }
                   }}
                   aria-hidden="true">
-                  <img src={iconUrl ?? getDefaultIconUrl(url)} alt="img" className="size-8 rounded-md" />
+                  <img src={getDefaultIconUrl(url)} alt="img" className="size-8 rounded-md" />
                 </div>
                 <Text level="s" className="select-none max-w-[4.5rem] line-clamp-1">
                   {title}
@@ -105,8 +108,8 @@ export const LinkCard: FC<LinkCardProps> = ({ url, title, id, iconUrl }) => {
               Delete
             </ContextMenuItemWitchIcon>
           </ContextMenuContent>
-        </Tooltip>
-      </ContextMenu>
+        </ContextMenu>
+      </Tooltip>
     </TooltipProvider>
   )
 }

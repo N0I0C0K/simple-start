@@ -6,6 +6,7 @@ import { LinkCardGroup, SettingPanel } from './components'
 import { HistorySuggestionList } from './components/HistorySuggestionList'
 import { useStorage } from '@extension/shared'
 import { settingStorage } from '@extension/storage'
+import { motion, AnimatePresence } from 'framer-motion'
 
 function SearchGroup() {
   const [searchText, setSearchText] = useState('')
@@ -42,6 +43,7 @@ function SearchGroup() {
         <div className="pointer-events-none absolute inset-y-0 start-1 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
           <Search size={16} strokeWidth={3} />
         </div>
+
         <button
           className="absolute inset-y-0 end-1 flex h-full w-9 items-center justify-center rounded-e-lg text-muted-foreground/80 ring-offset-background transition-shadow hover:text-foreground focus-visible:border focus-visible:border-ring focus-visible:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
           aria-label="Submit search"
@@ -95,11 +97,25 @@ const TimeDisplay = () => {
   )
 }
 
-const NewTab = () => {
+const HistoryArea = () => {
   const settings = useStorage(settingStorage)
   return (
+    <Center>
+      <AnimatePresence>
+        {settings.useHistorySuggestion ? (
+          <motion.div exit={{ y: 400 }} className="relative min-w-[20rem] w-[50%]">
+            <HistorySuggestionList />
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
+    </Center>
+  )
+}
+
+const NewTab = () => {
+  return (
     <>
-      <div className={'flex h-screen w-screen max-w-full flex-col justify-center gap-4 relative'}>
+      <div className={'flex h-screen w-screen max-w-full flex-col justify-center gap-4 relative overflow-hidden'}>
         <Center column className="flex-1">
           <TimeDisplay />
         </Center>
@@ -114,13 +130,7 @@ const NewTab = () => {
           </Center>
         </Stack>
         <Stack direction={'column'} className="flex-1 flex flex-col justify-end">
-          {settings.useHistorySuggestion && (
-            <Center>
-              <div className="relative min-w-[20rem] w-[50%]">
-                <HistorySuggestionList />
-              </div>
-            </Center>
-          )}
+          <HistoryArea />
         </Stack>
       </div>
       <img

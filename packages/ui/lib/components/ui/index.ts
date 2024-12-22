@@ -6,8 +6,9 @@ export * from './label'
 export * from './context-menu'
 export * from './dialog'
 export * from './select'
-import * as form from './form'
 export * from './switch'
 export * from './drawer'
 
-export { form }
+export * as form from './form'
+export * as carousel from './carousel'
+export * as command from './command'

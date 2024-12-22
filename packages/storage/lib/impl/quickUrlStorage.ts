@@ -11,6 +11,7 @@ export interface BasicUrlItemsStorageFunc<T extends QuickUrlItem> {
   removeById: (id: string) => Promise<void>
   sortItemsByIds: (ids: string[]) => Promise<void>
   putById: (id: string, val: T) => Promise<void>
+  updatePart: (startIndex: number, vals: T[]) => Promise<void>
 }
 
 const storage = createStorage<QuickUrlItem[]>('quick-url-item-storage-key', [], {
@@ -33,10 +34,10 @@ export function generateBasicUrlItemStorage<T extends QuickUrlItem>(
       targetStorage.set(value => [...value, item])
     },
     removeAt: async (index: number) => {
-      targetStorage.set(value => value.splice(index, 1))
+      targetStorage.set(value => value.filter((val, idx) => idx !== index))
     },
     removeById: async (id: string) => {
-      targetStorage.set(value => value.filter(val => val.id != id))
+      targetStorage.set(value => value.filter(val => val.id !== id))
     },
     sortItemsByIds: async (ids: string[]) => {
       const idAndPriorityMapping = new Map(ids.map((val, idx) => [val, idx]))
@@ -47,8 +48,13 @@ export function generateBasicUrlItemStorage<T extends QuickUrlItem>(
       )
     },
     putById: async (id, val) => {
-      await maybeFillIconUrl(val)
+      //await maybeFillIconUrl(val)
       targetStorage.set(items => items.map(it => (it.id === id ? val : it)))
+    },
+    updatePart: async (startIndex, vals) => {
+      const items = await targetStorage.get()
+      items.splice(startIndex, vals.length, ...vals)
+      targetStorage.set(items)
     },
   }
 }

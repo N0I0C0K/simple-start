@@ -49,6 +49,7 @@ const ListItem: FC<{
           IconType={Plus}
           shortCut="Ctrl+A"
           onClick={() => {
+            console.log(title)
             quickUrlItemsStorage.add({
               id,
               title,
@@ -76,7 +77,7 @@ export const HistorySuggestionList: FC = () => {
   const historySuggestItems = useStorage(historySuggestStorage)
   return (
     <div className="border border-slate-200/20 backdrop-blur-2xl rounded-t-xl shadow-md dark:backdrop-brightness-75 duration-300 w-full overflow-hidden">
-      <Stack direction={'row'} className="p-1 gap-2">
+      {/* <Stack direction={'row'} className="p-1 gap-2">
         <Button variant={'ghost'} className="rounded-xl p-1 border border-slate-200/20">
           History
         </Button>
@@ -88,7 +89,7 @@ export const HistorySuggestionList: FC = () => {
           }}>
           Refresh
         </Button>
-      </Stack>
+      </Stack> */}
       <Stack direction={'column'} className={cn('divide-y divide-slate-200/20', 'text-zinc-900 dark:text-zinc-300')}>
         {historySuggestItems.slice(0, 6).map(val => {
           return <ListItem {...val} key={val.id} className="first:rounded-t-xl" />

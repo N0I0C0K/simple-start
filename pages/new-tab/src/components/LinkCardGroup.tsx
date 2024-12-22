@@ -1,81 +1,69 @@
-import { useStorage } from '@extension/shared'
+import { useDebounce, useStorage } from '@extension/shared'
 import { AddButton } from './AddButton'
 import { LinkCard } from './LinkCard'
-import { quickUrlItemsStorage, historySuggestStorage, QuickUrlItem, settingStorage } from '@extension/storage'
-import { useEffect, useLayoutEffect, useMemo, useRef, useState, type FC } from 'react'
+import type { QuickUrlItem } from '@extension/storage'
+import { quickUrlItemsStorage, historySuggestStorage, settingStorage } from '@extension/storage'
+import { useEffect, useMemo, useRef, useState, type FC } from 'react'
 import type { Layouts, Layout } from 'react-grid-layout'
 import { Responsive } from 'react-grid-layout'
 import 'react-grid-layout/css/styles.css'
 import 'react-resizable/css/styles.css'
 import '@/src/style/placeholder.css'
-import { cn, Stack } from '@extension/ui'
+import { cn, Stack, TooltipProvider } from '@extension/ui'
 import { motion } from 'framer-motion'
+import type { Size } from '@/lib/utils'
+import { useSize } from '@/lib/utils'
+import { Carousel, CarouselContent, CarouselItem } from '@extension/ui/lib/components/ui/carousel'
+
+import { chunk } from 'lodash'
 
 const ReactGridLayout = Responsive
 
-type Size = [x: number, y: number]
-
-function useSize(ref: React.RefObject<Element>): Size {
-  const [size, setSize] = useState<Size>([150, window.innerWidth / 2])
-  useLayoutEffect(() => {
-    if (!ref.current) return
-    const obser = new ResizeObserver(ent => {
-      const first = ent[0]
-      setSize([first.contentRect.height, first.contentRect.width])
-    })
-    obser.observe(ref.current)
-    return () => {
-      obser.disconnect()
-    }
-  }, [ref])
-  return size
-}
-
-async function sortItemByLayouts(layouts: Layout[], cols: number) {
+function sortItemByLayouts(layouts: Layout[], urlItems: QuickUrlItem[]) {
   layouts.sort((lv, rv) => lv.x + lv.y * 1000 - (rv.x + rv.y * 1000))
-  quickUrlItemsStorage.sortItemsByIds(layouts.map(val => val.i))
+  const ids = layouts.map(val => val.i)
+  const idAndPriorityMapping = new Map(ids.map((val, idx) => [val, idx]))
+  return urlItems.sort(
+    (lv, rv) => (idAndPriorityMapping.get(lv.id) ?? 10000) - (idAndPriorityMapping.get(rv.id) ?? 10000),
+  )
 }
 
-function useMixQuickUrlItems(): QuickUrlItem[] {
-  const quickUrlItems = useStorage(quickUrlItemsStorage)
-  const historySuggestItems = useStorage(historySuggestStorage)
-  const historyNum = useMemo(() => {
-    return Math.min(Math.max(0, 20 - quickUrlItems.length), historySuggestItems.length)
-  }, [quickUrlItems, historySuggestItems])
-  const items = useMemo(() => {
-    return [...quickUrlItems, ...historySuggestItems.slice(0, historyNum)]
-  }, [quickUrlItems, historySuggestItems, historyNum])
-  return items
+type commonLayoutLike = {
+  lg: number
+  md: number
+  sm: number
+  xs: number
+  xxs: number
 }
 
-function useSplitQuickUrlItems(historyItemsNum: number): {
-  userStorage: QuickUrlItem[]
-  historySuggest: QuickUrlItem[]
-} {
-  const quickUrlItems = useStorage(quickUrlItemsStorage)
-  const historySuggestItems = useStorage(historySuggestStorage)
-  const returnHistoryItems = useMemo(() => {
-    return historySuggestItems.slice(0, historyItemsNum)
-  }, [historyItemsNum, historySuggestItems])
-  return {
-    userStorage: quickUrlItems,
-    historySuggest: returnHistoryItems,
-  }
+type PageProps = {
+  urlItems: QuickUrlItem[]
+  firstItemIndexOfRoot: number
+  pageIndex: number
 }
 
-export const LinkCardGroup: FC = () => {
-  // NOTE: MUST BE ORDERED BY SIZE DESC
-  const breakpoints = useMemo(() => ({ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }), [])
-  const cols = useMemo(() => ({ lg: 12, md: 10, sm: 8, xs: 6, xxs: 3 }), [])
-  const ref = useRef(null)
-  const size = useSize(ref)
+// NOTE: MUST BE ORDERED BY SIZE DESC
+const commonBreakpoints: commonLayoutLike = { lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }
+const commonCols: commonLayoutLike = { lg: 12, md: 10, sm: 8, xs: 6, xxs: 3 }
+const commonMaxRows: commonLayoutLike = { lg: 2, md: 2, sm: 2, xs: 3, xxs: 4 }
+const commonMaxRowsForEachPage = 10
+
+const LinkCardPage: FC<{
+  boxSize: Size
+  urlItems: QuickUrlItem[]
+  onUrlItemDragStart?: () => void
+  onUrlItemDragEnd?: () => void
+  onUrlItemOrderChange?: (urlItems: QuickUrlItem[]) => void
+}> = ({ boxSize, urlItems, onUrlItemDragEnd, onUrlItemDragStart, onUrlItemOrderChange }) => {
   const [currentCols, setCols] = useState<number>(12)
-  const userStorageItems = useStorage(quickUrlItemsStorage)
+  const [mounted, setMounted] = useState(false)
+  const [urlItemsState, setUrlItems] = useState(urlItems)
+
   const layouts = useMemo<Layouts>(() => {
     return Object.fromEntries(
-      Object.entries(cols).map(([bk, col]) => [
+      Object.entries(commonCols).map(([bk, col]) => [
         bk,
-        userStorageItems.map((val, idx) => ({
+        urlItemsState.map((val, idx) => ({
           i: val.id,
           x: idx % col,
           y: Math.floor(idx / col),
@@ -85,51 +73,109 @@ export const LinkCardGroup: FC = () => {
         })),
       ]),
     )
-  }, [cols, userStorageItems])
+  }, [urlItemsState])
   const maxRows = useMemo(() => {
-    return Math.ceil(userStorageItems.length / currentCols)
-  }, [userStorageItems, currentCols])
-  const [mounted, setMounted] = useState(false)
+    return Math.min(Math.ceil(urlItemsState.length / currentCols), commonMaxRowsForEachPage)
+  }, [currentCols, urlItemsState])
+
   useEffect(() => {
     // use to calculate the current cols for the initial layout
-    const [, width] = size
-    const curBp = Object.entries(breakpoints).find(([, bpSize]) => bpSize <= width)
-    setCols(cols[(curBp?.[0] ?? 'md') as keyof typeof cols])
+    const [, width] = boxSize
+    const curBp = Object.entries(commonBreakpoints).find(([, bpSize]) => bpSize <= width)
+    setCols(commonCols[(curBp?.[0] ?? 'md') as keyof typeof commonCols])
     setMounted(true)
   }, [])
 
   useEffect(() => {
-    console.log(size)
-  }, [size])
+    setUrlItems(urlItems)
+  }, [urlItems])
+
+  return (
+    <ReactGridLayout
+      className={cn('w-full', mounted ? 'transition-transform' : 'transition-none')}
+      layouts={layouts}
+      breakpoints={commonBreakpoints}
+      cols={commonCols}
+      compactType={'horizontal'}
+      draggableHandle="#drag-area"
+      onBreakpointChange={(nb, nc) => {
+        setCols(nc)
+      }}
+      onLayoutChange={layout => {
+        setUrlItems(val => sortItemByLayouts(layout, val))
+        onUrlItemOrderChange?.(urlItemsState)
+      }}
+      rowHeight={120}
+      width={boxSize[1]}
+      useCSSTransforms={false}
+      maxRows={maxRows}
+      onDragStart={onUrlItemDragStart}
+      onDragStop={() => {
+        onUrlItemDragEnd?.()
+      }}>
+      {urlItemsState.map(val => (
+        <div key={val.id}>
+          <LinkCard {...val} key={val.id} />
+        </div>
+      ))}
+    </ReactGridLayout>
+  )
+}
+
+export const LinkCardGroup: FC = () => {
+  const ref = useRef(null)
+  const size = useSize(ref)
+  const [hasItemDragging, setHasItemDragging] = useState(false)
+  const [currentLayout, setCurrentLayout] = useState<keyof commonLayoutLike>('md')
+  const userStorageItems = useStorage(quickUrlItemsStorage)
+  const pageMaxItems = useMemo(() => {
+    return commonCols[currentLayout] * commonMaxRows[currentLayout]
+  }, [currentLayout])
+  const pages: PageProps[] = useMemo(() => {
+    return chunk(userStorageItems, pageMaxItems).map<PageProps>((val, idx) => {
+      return {
+        urlItems: val,
+        firstItemIndexOfRoot: pageMaxItems * idx,
+        pageIndex: idx,
+      }
+    })
+  }, [userStorageItems, pageMaxItems])
+
+  const delaySize = useDebounce(size, 50)
+
+  useEffect(() => {
+    const [, width] = delaySize
+    const curBp = Object.entries(commonBreakpoints).find(([, bpSize]) => bpSize <= width)
+    setCurrentLayout((curBp?.[0] ?? 'md') as keyof commonLayoutLike)
+  }, [delaySize])
+
   return (
     <div
       ref={ref}
       className="relative backdrop-blur-2xl rounded-xl shadow-md dark:backdrop-brightness-75 duration-300 w-full overflow-hidden">
-      <motion.div className="w-full" drag="x" dragConstraints={{ left: 0, right: 0 }}>
-        <ReactGridLayout
-          className={cn('w-full', mounted ? 'transition-transform' : 'transition-none')}
-          layouts={layouts}
-          breakpoints={breakpoints}
-          cols={cols}
-          compactType={'horizontal'}
-          draggableHandle="#drag-area"
-          onBreakpointChange={(nb, nc) => {
-            setCols(nc)
-          }}
-          onLayoutChange={layout => {
-            sortItemByLayouts(layout, currentCols)
-          }}
-          rowHeight={120}
-          width={size[1]}
-          useCSSTransforms={false}
-          maxRows={maxRows}>
-          {userStorageItems.map(val => (
-            <div key={val.id}>
-              <LinkCard {...val} key={val.id} />
-            </div>
-          ))}
-        </ReactGridLayout>
-      </motion.div>
+      <Carousel className="w-full" opts={{ duration: 50, watchDrag: !hasItemDragging }}>
+        <CarouselContent>
+          {pages.map(page => {
+            return (
+              <CarouselItem key={page.pageIndex}>
+                <LinkCardPage
+                  boxSize={size}
+                  urlItems={page.urlItems}
+                  onUrlItemDragStart={() => {
+                    setHasItemDragging(true)
+                  }}
+                  onUrlItemDragEnd={() => {
+                    setHasItemDragging(false)
+                  }}
+                  onUrlItemOrderChange={pageUrlItems => {
+                    quickUrlItemsStorage.updatePart(page.firstItemIndexOfRoot, pageUrlItems)
+                  }}
+                />
+              </CarouselItem>
+            )
+          })}
+        </CarouselContent>
+      </Carousel>
       <AddButton className="absolute right-1 bottom-1 size-8" />
     </div>
   )
