@@ -18,13 +18,28 @@ function App() {
   )
 }
 
-function init() {
+async function init() {
   const appContainer = document.querySelector('#app-container')
   if (!appContainer) {
     throw new Error('Can not find #app-container')
   }
   const root = createRoot(appContainer)
+  const rootElement = window.document.documentElement
+  //rootElement.classList.add('dark')
 
+  const theme = await exampleThemeStorage.get()
+  rootElement.classList.remove('light', 'dark')
+  if (theme === 'system') {
+    const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+
+    rootElement.classList.add(systemTheme)
+    return
+  }
+
+  rootElement.classList.add(theme)
+  // .then(theme => {
+
+  // })
   root.render(
     <ThemeProvider>
       <App />

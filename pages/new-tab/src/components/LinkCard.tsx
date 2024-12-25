@@ -28,18 +28,18 @@ export const LinkCard: FC<LinkCardProps & { className?: string }> = ({ url, titl
         }}>
         <ContextMenu>
           <TooltipTrigger asChild>
-            <ContextMenuTrigger asChild>
-              <div
-                className={cn(
-                  'relative min-w-[4.5rem] group flex flex-col items-center justify-center overflow-hidden p-2 gap-1 cursor-pointer rounded-md duration-200',
-                  className,
-                )}
-                key={id}>
+            <div
+              className={cn(
+                'relative min-w-[4.5rem] group flex flex-col items-center justify-center overflow-hidden p-2 gap-1 rounded-md duration-200',
+                className,
+              )}
+              key={id}>
+              <ContextMenuTrigger asChild>
                 <div
                   className={cn(
-                    'relative flex flex-row items-center justify-center rounded-md size-[4.5rem] text-primary active:bg-zinc-100/70 duration-200',
-                    'bg-zinc-200/20 group-hover:bg-zinc-200/40',
-                    'dark:group-hover:bg-zinc-100/40',
+                    'relative flex flex-row items-center justify-center rounded-md size-[4.5rem] text-primary active:bg-zinc-100/70 duration-200 cursor-pointer',
+                    'bg-zinc-200/20 hover:bg-zinc-200/40',
+                    'dark:hover:bg-zinc-100/40',
                   )}
                   onClick={ev => {
                     if (ev.ctrlKey) {
@@ -51,18 +51,18 @@ export const LinkCard: FC<LinkCardProps & { className?: string }> = ({ url, titl
                   aria-hidden="true">
                   <img src={getDefaultIconUrl(url)} alt="img" className="size-8 rounded-md" />
                 </div>
-                <Text level="s" className="select-none max-w-[4.5rem] line-clamp-1">
-                  {title}
-                </Text>
-                <div
-                  id={dragAreaVisable ? 'drag-area' : 'non-drag-area'}
-                  className={cn(
-                    'opacity-0 mt-1 duration-300 h-2 w-12 bg-slate-100/40 rounded-xl hover:bg-slate-100/80',
-                    dragAreaVisable ? 'opacity-100' : '',
-                  )}
-                />
-              </div>
-            </ContextMenuTrigger>
+              </ContextMenuTrigger>
+              <Text level="s" className="select-none max-w-[4.5rem] line-clamp-1">
+                {title}
+              </Text>
+              <div
+                id={dragAreaVisable ? 'drag-area' : 'non-drag-area'}
+                className={cn(
+                  'opacity-0 mt-1 duration-300 h-2 w-12 bg-slate-100/40 rounded-xl hover:bg-slate-100/80',
+                  dragAreaVisable ? 'opacity-100' : '',
+                )}
+              />
+            </div>
           </TooltipTrigger>
           <TooltipContent>
             <Stack direction={'column'}>

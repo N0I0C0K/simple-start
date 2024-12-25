@@ -1,12 +1,12 @@
 import '@src/NewTab.css'
 import { Center, Input, Text, Heading, Stack } from '@extension/ui'
 import { Search, ArrowRight } from 'lucide-react'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { LinkCardGroup, SettingPanel } from './components'
 import { HistorySuggestionList } from './components/HistorySuggestionList'
 import { useStorage } from '@extension/shared'
 import { settingStorage } from '@extension/storage'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, Variants } from 'framer-motion'
 
 function SearchGroup() {
   const [searchText, setSearchText] = useState('')
@@ -99,15 +99,29 @@ const TimeDisplay = () => {
 
 const HistoryArea = () => {
   const settings = useStorage(settingStorage)
+  const [initialVariant] = useState(() => {
+    return settings.useHistorySuggestion ? 'show' : 'hide'
+  })
+  const variants = useMemo<Variants>(() => {
+    return {
+      show: {
+        y: 0,
+      },
+      hide: {
+        y: 400,
+      },
+    }
+  }, [])
+
   return (
     <Center>
-      <AnimatePresence>
-        {settings.useHistorySuggestion ? (
-          <motion.div exit={{ y: 400 }} className="relative min-w-[20rem] w-[50%]">
-            <HistorySuggestionList />
-          </motion.div>
-        ) : null}
-      </AnimatePresence>
+      <motion.div
+        variants={variants}
+        initial={initialVariant}
+        animate={settings.useHistorySuggestion ? 'show' : 'hide'}
+        className="relative min-w-[20rem] w-[50%]">
+        <HistorySuggestionList />
+      </motion.div>
     </Center>
   )
 }

@@ -27,7 +27,7 @@ const ListItem: FC<{
         <Stack
           direction={'row'}
           className={cn(
-            'w-full items-center p-2 cursor-pointer group',
+            'w-full items-center py-1.5 cursor-pointer group',
             'hover:bg-slate-200/10 duration-200',
             className,
           )}
@@ -38,10 +38,11 @@ const ListItem: FC<{
               chrome.tabs.update({ url: url })
             }
           }}>
-          <img src={iconUrl ?? getDefaultIconUrl(url)} className="size-5 rounded-md mr-2" alt="list-icon" />
+          <img src={iconUrl ?? getDefaultIconUrl(url)} className="size-5 rounded-md mx-3" alt="list-icon" />
           <Text className="cursor-pointer">{title}</Text>
           <span className="flex-1" />
           <Text className="hidden group-hover:block text-slate-600/60">{lastVisitDate.toLocaleDateString()}</Text>
+          <span className="w-2" />
         </Stack>
       </ContextMenuTrigger>
       <ContextMenuContent className="w-[16rem]">
@@ -76,7 +77,7 @@ const ListItem: FC<{
 export const HistorySuggestionList: FC = () => {
   const historySuggestItems = useStorage(historySuggestStorage)
   return (
-    <div className="border border-slate-200/20 backdrop-blur-2xl rounded-t-xl shadow-md dark:backdrop-brightness-75 duration-300 w-full overflow-hidden">
+    <div className="backdrop-blur-2xl rounded-t-xl shadow-md dark:backdrop-brightness-75 duration-300 w-full overflow-hidden">
       {/* <Stack direction={'row'} className="p-1 gap-2">
         <Button variant={'ghost'} className="rounded-xl p-1 border border-slate-200/20">
           History
@@ -90,7 +91,7 @@ export const HistorySuggestionList: FC = () => {
           Refresh
         </Button>
       </Stack> */}
-      <Stack direction={'column'} className={cn('divide-y divide-slate-200/20', 'text-zinc-900 dark:text-zinc-300')}>
+      <Stack direction={'column'} className={cn('text-zinc-900 dark:text-zinc-300')}>
         {historySuggestItems.slice(0, 6).map(val => {
           return <ListItem {...val} key={val.id} className="first:rounded-t-xl" />
         })}

@@ -3,7 +3,7 @@ import { AddButton } from './AddButton'
 import { LinkCard } from './LinkCard'
 import type { QuickUrlItem } from '@extension/storage'
 import { quickUrlItemsStorage, historySuggestStorage, settingStorage } from '@extension/storage'
-import { useEffect, useMemo, useRef, useState, type FC } from 'react'
+import React, { useEffect, useMemo, useRef, useState, type FC } from 'react'
 import type { Layouts, Layout } from 'react-grid-layout'
 import { Responsive } from 'react-grid-layout'
 import 'react-grid-layout/css/styles.css'
@@ -123,10 +123,14 @@ const LinkCardPage: FC<{
 }
 
 export const LinkCardGroup: FC = () => {
-  const ref = useRef(null)
+  const ref = useRef<HTMLDivElement>(null)
   const size = useSize(ref)
   const [hasItemDragging, setHasItemDragging] = useState(false)
-  const [currentLayout, setCurrentLayout] = useState<keyof commonLayoutLike>('md')
+  const [currentLayout, setCurrentLayout] = useState<keyof commonLayoutLike>(() => {
+    const [, width] = size
+    const curBp = Object.entries(commonBreakpoints).find(([, bpSize]) => bpSize <= width)
+    return (curBp?.[0] ?? 'md') as keyof commonLayoutLike
+  })
   const userStorageItems = useStorage(quickUrlItemsStorage)
   const pageMaxItems = useMemo(() => {
     return commonCols[currentLayout] * commonMaxRows[currentLayout]
