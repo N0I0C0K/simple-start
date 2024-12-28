@@ -217,4 +217,23 @@ const CarouselNext = React.forwardRef<HTMLButtonElement, React.ComponentProps<ty
 )
 CarouselNext.displayName = 'CarouselNext'
 
-export { type CarouselApi, Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext }
+type CarsouseState = {
+  currentIndex: number
+}
+
+function useCarsouselState(api?: CarouselApi): CarsouseState {
+  const [currentIndex, setCurrentIndex] = React.useState(0)
+
+  React.useEffect(() => {
+    if (!api) return
+    api.on('select', api => {
+      setCurrentIndex(api.selectedScrollSnap())
+    })
+  }, [api, setCurrentIndex])
+
+  return {
+    currentIndex,
+  }
+}
+
+export { type CarouselApi, Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext, useCarsouselState }

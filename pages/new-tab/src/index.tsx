@@ -1,7 +1,7 @@
 import { createRoot } from 'react-dom/client'
 import '@src/index.css'
 //import '@extension/ui/lib/global.css'
-import { exampleThemeStorage } from '@extension/storage'
+import { exampleThemeStorage, getThemeFromLocal } from '@extension/storage'
 import { useStorage } from '@extension/shared'
 import { TooltipProvider, ThemeProvider } from '@extension/ui'
 import NewTab from './NewTab'
@@ -18,16 +18,25 @@ function App() {
   )
 }
 
-async function init() {
+exampleThemeStorage.subscribe(() => {
+  exampleThemeStorage.get().then(val => {
+    localStorage.setItem('theme-storage-key-local', val)
+  })
+})
+
+function getThemeFromLocal() {
+  return localStorage.getItem('theme-storage-key-local') ?? 'system'
+}
+
+function init() {
   const appContainer = document.querySelector('#app-container')
   if (!appContainer) {
     throw new Error('Can not find #app-container')
   }
   const root = createRoot(appContainer)
   const rootElement = window.document.documentElement
-  //rootElement.classList.add('dark')
 
-  const theme = await exampleThemeStorage.get()
+  const theme = getThemeFromLocal()
   rootElement.classList.remove('light', 'dark')
   if (theme === 'system') {
     const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
@@ -37,9 +46,7 @@ async function init() {
   }
 
   rootElement.classList.add(theme)
-  // .then(theme => {
 
-  // })
   root.render(
     <ThemeProvider>
       <App />

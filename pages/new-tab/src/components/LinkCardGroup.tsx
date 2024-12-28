@@ -9,11 +9,13 @@ import { Responsive } from 'react-grid-layout'
 import 'react-grid-layout/css/styles.css'
 import 'react-resizable/css/styles.css'
 import '@/src/style/placeholder.css'
-import { cn, Stack, TooltipProvider } from '@extension/ui'
+import { INITIAL_QUICK_URL_ITEMS } from '@/lib/consts'
+import { cn, Stack, TooltipProvider, Text, Button } from '@extension/ui'
 import { motion } from 'framer-motion'
 import type { Size } from '@/lib/utils'
 import { useSize } from '@/lib/utils'
-import { Carousel, CarouselContent, CarouselItem } from '@extension/ui/lib/components/ui/carousel'
+import type { CarouselApi } from '@extension/ui/lib/components/ui/carousel'
+import { Carousel, CarouselContent, CarouselItem, useCarsouselState } from '@extension/ui/lib/components/ui/carousel'
 
 import { chunk } from 'lodash'
 
@@ -122,6 +124,31 @@ const LinkCardPage: FC<{
   )
 }
 
+const LinkCardFooter: FC<{
+  className?: string
+  pageNum: number
+  currentPage: number
+  onSelectClick?: (page: number) => void
+}> = ({ className, pageNum, currentPage, onSelectClick }) => {
+  return (
+    <Stack direction={'row'} className={cn('items-center justify-center gap-2', className)}>
+      {Array.from({ length: pageNum }, (_, idx) => {
+        return (
+          <Button
+            key={idx}
+            className={cn('rounded-full size-2', idx === currentPage ? 'bg-zinc-100 w-6' : 'bg-zinc-500/60')}
+            variant={'ghost'}
+            size={'icon'}
+            onClick={() => {
+              onSelectClick?.(idx)
+            }}
+          />
+        )
+      })}
+    </Stack>
+  )
+}
+
 export const LinkCardGroup: FC = () => {
   const ref = useRef<HTMLDivElement>(null)
   const size = useSize(ref)
@@ -132,11 +159,16 @@ export const LinkCardGroup: FC = () => {
     return (curBp?.[0] ?? 'md') as keyof commonLayoutLike
   })
   const userStorageItems = useStorage(quickUrlItemsStorage)
+  const [carouselApi, setCarouselApi] = useState<CarouselApi>()
+
+  const carouselState = useCarsouselState(carouselApi)
+
   const pageMaxItems = useMemo(() => {
     return commonCols[currentLayout] * commonMaxRows[currentLayout]
   }, [currentLayout])
-  const pages: PageProps[] = useMemo(() => {
-    return chunk(userStorageItems, pageMaxItems).map<PageProps>((val, idx) => {
+  const pages: PageProps[] = useMemo<PageProps[]>(() => {
+    const targetItems = userStorageItems.length > 0 ? userStorageItems : INITIAL_QUICK_URL_ITEMS
+    return chunk(targetItems, pageMaxItems).map<PageProps>((val, idx) => {
       return {
         urlItems: val,
         firstItemIndexOfRoot: pageMaxItems * idx,
@@ -157,7 +189,7 @@ export const LinkCardGroup: FC = () => {
     <div
       ref={ref}
       className="relative backdrop-blur-2xl rounded-xl shadow-md dark:backdrop-brightness-75 duration-300 w-full overflow-hidden">
-      <Carousel className="w-full" opts={{ duration: 50, watchDrag: !hasItemDragging }}>
+      <Carousel className="w-full" opts={{ duration: 50, watchDrag: !hasItemDragging }} setApi={setCarouselApi}>
         <CarouselContent>
           {pages.map(page => {
             return (
@@ -180,6 +212,14 @@ export const LinkCardGroup: FC = () => {
           })}
         </CarouselContent>
       </Carousel>
+      <LinkCardFooter
+        currentPage={carouselState.currentIndex}
+        pageNum={pages.length}
+        className="mb-2 z-10"
+        onSelectClick={page => {
+          carouselApi?.scrollTo(page)
+        }}
+      />
       <AddButton className="absolute right-1 bottom-1 size-8" />
     </div>
   )
