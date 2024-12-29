@@ -1,14 +1,11 @@
 import { createRoot } from 'react-dom/client'
 import '@src/index.css'
 //import '@extension/ui/lib/global.css'
-import { exampleThemeStorage, getThemeFromLocal } from '@extension/storage'
-import { useStorage } from '@extension/shared'
-import { TooltipProvider, ThemeProvider } from '@extension/ui'
+import { exampleThemeStorage } from '@extension/storage'
+import { ThemeProvider } from '@extension/ui'
 import NewTab from './NewTab'
-import { GlobalDialog } from '@src/components/GlobalDialog'
+import { GlobalDialog } from '@src/components/global-dialog'
 function App() {
-  const theme = useStorage(exampleThemeStorage)
-
   return (
     <div>
       <GlobalDialog>

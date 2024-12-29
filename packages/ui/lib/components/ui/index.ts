@@ -9,6 +9,7 @@ export * from './select'
 export * from './switch'
 export * from './drawer'
 export * from './separator'
+export * from './scroll-area'
 
 export * as tabs from './tabs'
 export * as form from './form'

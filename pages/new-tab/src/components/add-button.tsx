@@ -4,8 +4,8 @@ import { quickUrlItemsStorage } from '@extension/storage'
 import { nanoid } from 'nanoid'
 import type { FC } from 'react'
 import { cn } from '@/lib/utils'
-import type { IAddQuickUrlItemShema } from './QuickItemEditForm'
-import { QuickItemEditForm } from './QuickItemEditForm'
+import type { IAddQuickUrlItemShema } from './quick-item-edit-form'
+import { QuickItemEditForm } from './quick-item-edit-form'
 
 function onSubmit(value: IAddQuickUrlItemShema) {
   quickUrlItemsStorage.add({

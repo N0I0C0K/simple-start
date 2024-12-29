@@ -22,3 +22,30 @@ export function useSize(ref: React.RefObject<Element>): Size {
   return size
 }
 export type Size = [height: number, width: number]
+
+interface booleanFunc {
+  setFalse: () => void
+  setTrue: () => void
+  set: (val: boolean) => void
+}
+
+export function useBoolean(initVal: boolean): [boolean, booleanFunc] {
+  const [val, setVal] = useState(initVal)
+
+  return [
+    val,
+    {
+      setFalse: () => {
+        setVal(false)
+      },
+      setTrue: () => {
+        setVal(true)
+      },
+      set: (val: boolean) => {
+        setVal(val)
+      },
+    },
+  ]
+}
+
+export function useCrontab(func: () => unknown) {}

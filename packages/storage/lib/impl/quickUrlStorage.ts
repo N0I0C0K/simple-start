@@ -5,7 +5,7 @@ import { getIconUrlFromWebsit } from '../utils'
 
 export type QuickUrlItemsStorage = BaseStorage<QuickUrlItem[]>
 
-export interface BasicUrlItemsStorageFunc<T extends QuickUrlItem> {
+export interface BasicUrlItemsStorageFunc<T extends { id: string }> {
   add: (item: T) => Promise<void>
   removeAt: (index: number) => Promise<void>
   removeById: (id: string) => Promise<void>

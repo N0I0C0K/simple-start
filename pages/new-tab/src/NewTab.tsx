@@ -2,8 +2,8 @@ import '@src/NewTab.css'
 import { Center, Input, Text, Heading, Stack } from '@extension/ui'
 import { Search, ArrowRight } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { LinkCardGroup, SettingPanel } from './components'
-import { HistorySuggestionList } from './components/HistorySuggestionList'
+import { CommandModule, LinkCardGroup, SettingPanel } from './components'
+import { HistorySuggestionList } from './components/history-suggestion-list'
 import { useStorage } from '@extension/shared'
 import { settingStorage } from '@extension/storage'
 import { motion, AnimatePresence, Variants } from 'framer-motion'
@@ -134,8 +134,8 @@ const NewTab = () => {
           <TimeDisplay />
         </Center>
         <Stack direction={'column'} className="flex-1">
-          <Center className="mb-8">
-            <SearchGroup />
+          <Center className="mb-8 h-10">
+            <CommandModule className="w-[40%] min-w-[20rem] max-w-[40rem] h-auto absolute z-10" />
           </Center>
           <Center>
             <div className="relative min-w-[20rem] w-[50%]">

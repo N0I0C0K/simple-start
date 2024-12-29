@@ -1,6 +1,6 @@
 import { useDebounce, useStorage } from '@extension/shared'
-import { AddButton } from './AddButton'
-import { LinkCard } from './LinkCard'
+import { AddButton } from './add-button'
+import { LinkCard } from './link-card'
 import type { QuickUrlItem } from '@extension/storage'
 import { quickUrlItemsStorage, historySuggestStorage, settingStorage } from '@extension/storage'
 import React, { useEffect, useMemo, useRef, useState, type FC } from 'react'
@@ -134,11 +134,15 @@ const LinkCardFooter: FC<{
     <Stack direction={'row'} className={cn('items-center justify-center gap-2', className)}>
       {Array.from({ length: pageNum }, (_, idx) => {
         return (
-          <Button
+          <motion.div
             key={idx}
-            className={cn('rounded-full size-2', idx === currentPage ? 'bg-zinc-100 w-6' : 'bg-zinc-500/60')}
-            variant={'ghost'}
-            size={'icon'}
+            className={cn('rounded-full cursor-pointer', idx === currentPage ? 'bg-zinc-100' : 'bg-zinc-500/60')}
+            style={{
+              height: 8,
+            }}
+            animate={{
+              width: idx === currentPage ? 18 : 8,
+            }}
             onClick={() => {
               onSelectClick?.(idx)
             }}

@@ -10,7 +10,7 @@ import { useGlobalDialog } from '@src/provider'
 import { Trash, Pencil } from 'lucide-react'
 import type { FC } from 'react'
 import { useMemo, useState } from 'react'
-import { QuickItemEditForm } from './QuickItemEditForm'
+import { QuickItemEditForm } from './quick-item-edit-form'
 import type { QuickUrlItem } from '@extension/storage'
 import { quickUrlItemsStorage } from '@extension/storage'
 import { getDefaultIconUrl } from '@/lib/url'
@@ -52,7 +52,7 @@ export const LinkCard: FC<LinkCardProps & { className?: string }> = ({ url, titl
                   <img src={getDefaultIconUrl(url)} alt="img" className="size-8 rounded-md" />
                 </div>
               </ContextMenuTrigger>
-              <Text level="s" className="select-none max-w-[4.5rem] line-clamp-1">
+              <Text level="s" className="select-none max-w-[6rem] line-clamp-1">
                 {title}
               </Text>
               <div
