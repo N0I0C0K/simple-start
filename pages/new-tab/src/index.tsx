@@ -1,15 +1,16 @@
-import { createRoot } from 'react-dom/client'
 import '@src/index.css'
+import { createRoot } from 'react-dom/client'
 //import '@extension/ui/lib/global.css'
 import { exampleThemeStorage } from '@extension/storage'
-import { ThemeProvider } from '@extension/ui'
-import NewTab from './NewTab'
+import { ThemeProvider, Toaster } from '@extension/ui'
 import { GlobalDialog } from '@src/components/global-dialog'
+import NewTab from './NewTab'
 function App() {
   return (
     <div>
       <GlobalDialog>
         <NewTab />
+        <Toaster />
       </GlobalDialog>
     </div>
   )

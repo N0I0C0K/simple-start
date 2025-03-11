@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils'
-import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent, Stack, Text } from '@extension/ui'
+import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent, Stack, Text, toast } from '@extension/ui'
 import {
   ContextMenu,
   ContextMenuContent,
@@ -9,15 +9,15 @@ import {
 import { useGlobalDialog } from '@src/provider'
 import { Trash, Pencil } from 'lucide-react'
 import type { FC } from 'react'
-import { useMemo, useState } from 'react'
-import { QuickItemEditForm } from './quick-item-edit-form'
+import { useState } from 'react'
+import { QuickItemEditForm } from '@/src/components/quick-item-edit-form'
 import type { QuickUrlItem } from '@extension/storage'
 import { quickUrlItemsStorage } from '@extension/storage'
 import { getDefaultIconUrl } from '@/lib/url'
 
 interface LinkCardProps extends QuickUrlItem {}
 
-export const LinkCard: FC<LinkCardProps & { className?: string }> = ({ url, title, id, iconUrl, className }) => {
+export const LinkCardItem: FC<LinkCardProps & { className?: string }> = ({ url, title, id, iconUrl, className }) => {
   const [dragAreaVisable, setDragAreaVisible] = useState(false)
   const globalDialog = useGlobalDialog()
   return (
@@ -67,7 +67,13 @@ export const LinkCard: FC<LinkCardProps & { className?: string }> = ({ url, titl
           <TooltipContent>
             <Stack direction={'column'}>
               <Text>{title}</Text>
-              <Text level="s" gray>
+              <Text
+                level="s"
+                gray
+                className="cursor-pointer"
+                onClick={() => {
+                  toast.success('Copy success', { description: url })
+                }}>
                 {url}
               </Text>
             </Stack>

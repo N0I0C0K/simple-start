@@ -1,27 +1,23 @@
-import { useDebounce, useStorage } from '@extension/shared'
-import { AddButton } from './add-button'
-import { LinkCard } from './link-card'
-import type { QuickUrlItem } from '@extension/storage'
-import { quickUrlItemsStorage, historySuggestStorage, settingStorage } from '@extension/storage'
-import React, { useEffect, useMemo, useRef, useState, type FC } from 'react'
-import type { Layouts, Layout } from 'react-grid-layout'
-import { Responsive } from 'react-grid-layout'
-import 'react-grid-layout/css/styles.css'
-import 'react-resizable/css/styles.css'
-import '@/src/style/placeholder.css'
 import { INITIAL_QUICK_URL_ITEMS } from '@/lib/consts'
-import { cn, Stack, TooltipProvider, Text, Button } from '@extension/ui'
-import { motion } from 'framer-motion'
-import type { Size } from '@/lib/utils'
 import { useSize } from '@/lib/utils'
+import { useDebounce, useStorage } from '@extension/shared'
+import type { QuickUrlItem } from '@extension/storage'
+import { quickUrlItemsStorage } from '@extension/storage'
+import { cn, Stack } from '@extension/ui'
 import type { CarouselApi } from '@extension/ui/lib/components/ui/carousel'
 import { Carousel, CarouselContent, CarouselItem, useCarsouselState } from '@extension/ui/lib/components/ui/carousel'
+import { motion } from 'framer-motion'
+import { useEffect, useMemo, useRef, useState, type FC } from 'react'
+import type { Layout } from 'react-grid-layout'
+import { Responsive } from 'react-grid-layout'
+import { AddButton } from '../add-button'
 
 import { chunk } from 'lodash'
+import { LinkCardPage } from './link-card-page'
 
-const ReactGridLayout = Responsive
+export const ReactGridLayout = Responsive
 
-function sortItemByLayouts(layouts: Layout[], urlItems: QuickUrlItem[]) {
+export function sortItemByLayouts(layouts: Layout[], urlItems: QuickUrlItem[]) {
   layouts.sort((lv, rv) => lv.x + lv.y * 1000 - (rv.x + rv.y * 1000))
   const ids = layouts.map(val => val.i)
   const idAndPriorityMapping = new Map(ids.map((val, idx) => [val, idx]))
@@ -45,84 +41,10 @@ type PageProps = {
 }
 
 // NOTE: MUST BE ORDERED BY SIZE DESC
-const commonBreakpoints: commonLayoutLike = { lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }
-const commonCols: commonLayoutLike = { lg: 12, md: 10, sm: 8, xs: 6, xxs: 3 }
+export const commonBreakpoints: commonLayoutLike = { lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }
+export const commonCols: commonLayoutLike = { lg: 12, md: 10, sm: 8, xs: 6, xxs: 3 }
 const commonMaxRows: commonLayoutLike = { lg: 2, md: 2, sm: 2, xs: 3, xxs: 4 }
-const commonMaxRowsForEachPage = 10
-
-const LinkCardPage: FC<{
-  boxSize: Size
-  urlItems: QuickUrlItem[]
-  onUrlItemDragStart?: () => void
-  onUrlItemDragEnd?: () => void
-  onUrlItemOrderChange?: (urlItems: QuickUrlItem[]) => void
-}> = ({ boxSize, urlItems, onUrlItemDragEnd, onUrlItemDragStart, onUrlItemOrderChange }) => {
-  const [currentCols, setCols] = useState<number>(12)
-  const [mounted, setMounted] = useState(false)
-  const [urlItemsState, setUrlItems] = useState(urlItems)
-
-  const layouts = useMemo<Layouts>(() => {
-    return Object.fromEntries(
-      Object.entries(commonCols).map(([bk, col]) => [
-        bk,
-        urlItemsState.map((val, idx) => ({
-          i: val.id,
-          x: idx % col,
-          y: Math.floor(idx / col),
-          w: 1,
-          h: 1,
-          isResizable: false,
-        })),
-      ]),
-    )
-  }, [urlItemsState])
-  const maxRows = useMemo(() => {
-    return Math.min(Math.ceil(urlItemsState.length / currentCols), commonMaxRowsForEachPage)
-  }, [currentCols, urlItemsState])
-
-  useEffect(() => {
-    // use to calculate the current cols for the initial layout
-    const [, width] = boxSize
-    const curBp = Object.entries(commonBreakpoints).find(([, bpSize]) => bpSize <= width)
-    setCols(commonCols[(curBp?.[0] ?? 'md') as keyof typeof commonCols])
-    setMounted(true)
-  }, [])
-
-  useEffect(() => {
-    setUrlItems(urlItems)
-  }, [urlItems])
-
-  return (
-    <ReactGridLayout
-      className={cn('w-full', mounted ? 'transition-transform' : 'transition-none')}
-      layouts={layouts}
-      breakpoints={commonBreakpoints}
-      cols={commonCols}
-      compactType={'horizontal'}
-      draggableHandle="#drag-area"
-      onBreakpointChange={(nb, nc) => {
-        setCols(nc)
-      }}
-      onLayoutChange={layout => {
-        setUrlItems(val => sortItemByLayouts(layout, val))
-        onUrlItemOrderChange?.(urlItemsState)
-      }}
-      rowHeight={120}
-      width={boxSize[1]}
-      useCSSTransforms={false}
-      maxRows={maxRows}
-      onDragStart={onUrlItemDragStart}
-      onDragStop={() => {
-        onUrlItemDragEnd?.()
-      }}>
-      {urlItemsState.map(val => (
-        <div key={val.id}>
-          <LinkCard {...val} key={val.id} />
-        </div>
-      ))}
-    </ReactGridLayout>
-  )
-}
+export const commonMaxRowsForEachPage = 10
 
 const LinkCardFooter: FC<{
   className?: string

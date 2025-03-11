@@ -2,11 +2,14 @@ import '@src/NewTab.css'
 import { Center, Input, Text, Heading, Stack } from '@extension/ui'
 import { Search, ArrowRight } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { CommandModule, LinkCardGroup, SettingPanel } from './components'
+import { CommandModule, LinkCardGroup, SettingPanel, ScrollLinkCardPage } from './components'
 import { HistorySuggestionList } from './components/history-suggestion-list'
 import { useStorage } from '@extension/shared'
 import { settingStorage } from '@extension/storage'
-import { motion, AnimatePresence, Variants } from 'framer-motion'
+import type { Variants } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
+
+import '@/src/style/placeholder.css'
 
 function SearchGroup() {
   const [searchText, setSearchText] = useState('')
@@ -139,7 +142,7 @@ const NewTab = () => {
           </Center>
           <Center>
             <div className="relative min-w-[20rem] w-[50%]">
-              <LinkCardGroup />
+              <ScrollLinkCardPage className="relative backdrop-blur-2xl rounded-xl shadow-md dark:backdrop-brightness-75 w-full overflow-hidden" />
             </div>
           </Center>
         </Stack>

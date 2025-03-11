@@ -39,9 +39,9 @@ const ListItem: FC<{
             }
           }}>
           <img src={iconUrl ?? getDefaultIconUrl(url)} className="size-5 rounded-md mx-3" alt="list-icon" />
-          <Text className="cursor-pointer">{title}</Text>
+          <Text className="cursor-pointer line-clamp-1">{title}</Text>
           <span className="flex-1" />
-          <Text className="hidden group-hover:block font-thin text-sm">{lastVisitDate.toLocaleDateString()}</Text>
+          <Text className="invisible group-hover:visible font-thin text-sm">{lastVisitDate.toLocaleDateString()}</Text>
           <span className="w-2" />
         </Stack>
       </ContextMenuTrigger>

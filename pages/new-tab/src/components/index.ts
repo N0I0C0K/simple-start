@@ -1,5 +1,4 @@
 export { AddButton } from './add-button'
-export { LinkCard } from './link-card'
-export { LinkCardGroup } from './link-card-group'
+export * from './link-card'
 export { SettingPanel } from './setting-pannel'
 export { CommandModule } from './command'

@@ -9,6 +9,7 @@ export const CommandModule: FC<{
   className?: string
 }> = ({ className }) => {
   const history = useStorage(historySuggestStorage)
+
   const [focus, focusFunc] = useBoolean(false)
   const [inputVal, setInputVal] = useState('')
 
