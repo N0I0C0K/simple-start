@@ -3,13 +3,8 @@ import type { QuickUrlItem } from '@extension/storage'
 import { cn } from '@extension/ui'
 import React, { type FC, useEffect, useMemo, useState } from 'react'
 import type { Layouts } from 'react-grid-layout'
-import {
-  commonBreakpoints,
-  commonCols,
-  commonMaxRowsForEachPage,
-  ReactGridLayout,
-  sortItemByLayouts,
-} from './link-card-group'
+import { commonCols, commonBreakpoints, commonMaxRowsForEachPage, sortItemByLayouts } from './link-card-group'
+import { ReactGridLayout } from './ReactGridLayout'
 import { LinkCardItem } from './link-card-item'
 import 'react-grid-layout/css/styles.css'
 import 'react-resizable/css/styles.css'
@@ -80,9 +75,7 @@ export const LinkCardPage: FC<{
         onUrlItemDragEnd?.()
       }}>
       {urlItemsState.map(val => (
-        <div key={val.id}>
-          <LinkCardItem {...val} key={val.id} />
-        </div>
+        <LinkCardItem {...val} key={val.id} />
       ))}
     </ReactGridLayout>
   )

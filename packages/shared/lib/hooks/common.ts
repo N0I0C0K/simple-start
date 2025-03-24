@@ -1,5 +1,5 @@
 import type { DependencyList } from 'react'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 export function useDebounce<T>(val: T, delay: number = 200): T {
   const [delayVal, setDelayVal] = useState(val)
@@ -21,4 +21,48 @@ export function useEffectMemo<T>(func: () => T, defaultVal: T, deps?: Dependency
   }, deps)
 
   return val
+}
+
+export function useMouseDownTime(ref?: HTMLElement | null, intervalTimeout: number = 100): number {
+  const [downing, setDowning] = useState(false)
+  const [downTime, setDownTime] = useState<number | undefined>()
+  const [downingCountInterval, setDowningCountInterval] = useState<number | undefined>()
+  const [time, setTime] = useState(0)
+  useEffect(() => {
+    if (downingCountInterval) {
+      clearInterval(downingCountInterval)
+      setDowningCountInterval(undefined)
+    }
+
+    if (downing) {
+      const t = setInterval(() => {
+        setTime(Date.now() - downTime!)
+      }, intervalTimeout)
+      setDowningCountInterval(t)
+    } else {
+      setTime(0)
+    }
+  }, [downing, intervalTimeout])
+
+  const mouseDownCallback = useCallback(() => {
+    setDowning(true)
+    setDownTime(Date.now())
+  }, [])
+
+  const mouseUpCallback = useCallback(() => {
+    setDowning(false)
+  }, [])
+
+  useEffect(() => {
+    ref?.addEventListener('mousedown', mouseDownCallback)
+    ref?.addEventListener('mouseup', mouseUpCallback)
+    ref?.addEventListener('mouseleave', mouseUpCallback)
+
+    return () => {
+      ref?.removeEventListener('mousedown', mouseDownCallback)
+      ref?.removeEventListener('mouseup', mouseUpCallback)
+      ref?.removeEventListener('mouseleave', mouseUpCallback)
+    }
+  }, [mouseDownCallback, mouseUpCallback, ref])
+  return time
 }

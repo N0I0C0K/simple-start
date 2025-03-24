@@ -11,8 +11,8 @@ export const ScrollLinkCardPage: FC<{ className?: string; maxRow?: number }> = (
   const userStorageItems = useStorage(quickUrlItemsStorage)
 
   return (
-    <div ref={rootDivRef} className={cn(className, 'duration-300')}>
-      <ScrollArea className="w-full" style={{ height: 240 }} scrollHideDelay={200}>
+    <div ref={rootDivRef} className={cn(className, 'duration-300 p-1')}>
+      <ScrollArea className="w-full" style={{ height: 260 }} scrollHideDelay={200}>
         <LinkCardPage
           boxSize={size}
           urlItems={userStorageItems}

@@ -9,13 +9,10 @@ import { Carousel, CarouselContent, CarouselItem, useCarsouselState } from '@ext
 import { motion } from 'framer-motion'
 import { useEffect, useMemo, useRef, useState, type FC } from 'react'
 import type { Layout } from 'react-grid-layout'
-import { Responsive } from 'react-grid-layout'
 import { AddButton } from '../add-button'
 
 import { chunk } from 'lodash'
 import { LinkCardPage } from './link-card-page'
-
-export const ReactGridLayout = Responsive
 
 export function sortItemByLayouts(layouts: Layout[], urlItems: QuickUrlItem[]) {
   layouts.sort((lv, rv) => lv.x + lv.y * 1000 - (rv.x + rv.y * 1000))
