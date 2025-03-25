@@ -1,4 +1,5 @@
 import { Center } from '@extension/ui'
+import type { FC } from 'react'
 import { useMemo, useState } from 'react'
 import { HistorySuggestionList } from './history-list'
 import { useStorage } from '@extension/shared'
@@ -6,7 +7,9 @@ import { settingStorage } from '@extension/storage'
 import type { Variants } from 'framer-motion'
 import { motion } from 'framer-motion'
 
-export const HistoryArea = () => {
+export const HistoryArea: FC<{
+  className?: string
+}> = ({ className }) => {
   const settings = useStorage(settingStorage)
   const [initialVariant] = useState(() => {
     return settings.useHistorySuggestion ? 'show' : 'hide'
@@ -29,7 +32,7 @@ export const HistoryArea = () => {
         initial={initialVariant}
         animate={settings.useHistorySuggestion ? 'show' : 'hide'}
         className="relative min-w-[20rem] w-[50%]">
-        <HistorySuggestionList />
+        <HistorySuggestionList className={className} />
       </motion.div>
     </Center>
   )

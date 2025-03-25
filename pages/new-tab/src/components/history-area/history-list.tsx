@@ -20,7 +20,7 @@ export function refreshHistorySuggest(ts: number) {
   )
 }
 
-export const HistorySuggestionList: FC = () => {
+export const HistorySuggestionList: FC<{ className?: string }> = ({ className }) => {
   const historySuggestItems = useStorage(historySuggestStorage)
 
   const [refreshTrigger, setRefreshTrigger] = useState<number>(0)
@@ -41,11 +41,8 @@ export const HistorySuggestionList: FC = () => {
       clearTimeout(timerId)
     }
   }, [refreshTrigger])
-
   return (
-    <ScrollArea
-      className="backdrop-blur-2xl rounded-t-xl shadow-md dark:backdrop-brightness-75 duration-300 w-full overflow-hidden h-56 max-xl:h-72"
-      scrollHideDelay={200}>
+    <ScrollArea className={cn('duration-300 w-full overflow-hidden h-56 max-xl:h-72', className)} scrollHideDelay={200}>
       {/* <Stack direction={'row'} className="p-1 gap-2">
               <Button variant={'ghost'} className="rounded-xl p-1 border border-slate-200/20">
                 History

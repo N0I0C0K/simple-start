@@ -58,12 +58,12 @@ export const LinkCardItem = forwardRef<HTMLDivElement, LinkCardProps & CustomGri
                 <ContextMenuTrigger asChild>
                   <div
                     className={cn(
-                      'relative flex flex-row items-center justify-center rounded-lg size-[4.5rem] text-primary active:bg-zinc-100/70 duration-200 cursor-pointer',
-                      'bg-zinc-200/20 hover:bg-zinc-200/40',
+                      'relative flex flex-row items-center justify-center rounded-lg size-[4.5rem] text-primary active:bg-zinc-100/70 duration-200 cursor-pointer select-none',
+                      'hover:bg-zinc-200/40',
                       'dark:hover:bg-zinc-100/40',
                     )}
                     onClick={ev => {
-                      if (downingTime > 100) return
+                      if (downingTime > 400) return
                       if (ev.ctrlKey) {
                         chrome.tabs.create({ url: url, active: true })
                       } else {
@@ -72,7 +72,7 @@ export const LinkCardItem = forwardRef<HTMLDivElement, LinkCardProps & CustomGri
                     }}
                     aria-hidden="true"
                     ref={innerRef}>
-                    <img src={getDefaultIconUrl(url)} alt="img" className="size-8 rounded-md" />
+                    <img src={getDefaultIconUrl(url)} alt="img" className="size-8 rounded-md select-none" />
                   </div>
                 </ContextMenuTrigger>
                 <Text level="s" className="select-none line-clamp-1">

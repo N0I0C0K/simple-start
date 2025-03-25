@@ -109,17 +109,17 @@ const NewTab = () => {
           </Center>
           <Center>
             <div className="relative min-w-[20rem] w-[50%]">
-              <ScrollLinkCardPage className="relative backdrop-blur-2xl rounded-xl shadow-md dark:backdrop-brightness-75 w-full overflow-hidden" />
+              <ScrollLinkCardPage className="relative backdrop-blur-2xl rounded-2xl shadow-md dark:backdrop-brightness-75 w-full overflow-hidden bg-slate-50/20 dark:bg-slate-700/20" />
             </div>
           </Center>
         </Stack>
         <Stack direction={'column'} className="flex-1 flex flex-col justify-end">
-          <HistoryArea />
+          <HistoryArea className="backdrop-blur-2xl rounded-t-xl shadow-md dark:backdrop-brightness-75 bg-slate-50/20 dark:bg-slate-700/20" />
         </Stack>
       </div>
       <img
-        className="x-bg-img h-screen w-screen fixed top-0 left-0 -z-10 blur-sm brightness-90 scale-105 dark:brightness-75 object-cover select-none"
-        src="https://w.wallhaven.cc/full/nk/wallhaven-nkyog1.jpg"
+        className="x-bg-img h-screen w-screen fixed top-0 left-0 -z-10 blur-sm scale-105 brightness-90 dark:brightness-75 object-cover select-none"
+        src="https://w.wallhaven.cc/full/vq/wallhaven-vq7e68.png"
         alt=""
         onError={e => {
           console.log('back ground err')
