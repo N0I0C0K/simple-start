@@ -1,25 +1,19 @@
-import { cn, useSize } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import { useStorage } from '@extension/shared'
 import { quickUrlItemsStorage } from '@extension/storage'
 import { useRef, type FC } from 'react'
-import { LinkCardPage } from './link-card-page'
+import { DndLinkCardPage } from './dnd-link-card-page'
 import { ScrollArea } from '@extension/ui'
 
+import './scroll-link-card-page.css'
+
 export const ScrollLinkCardPage: FC<{ className?: string; maxRow?: number }> = ({ className, maxRow = 2 }) => {
-  const rootDivRef = useRef<HTMLDivElement>(null)
-  const size = useSize(rootDivRef)
   const userStorageItems = useStorage(quickUrlItemsStorage)
 
   return (
-    <div ref={rootDivRef} className={cn(className, 'duration-300 p-1')}>
-      <ScrollArea className="w-full" style={{ height: 260 }} scrollHideDelay={200}>
-        <LinkCardPage
-          boxSize={size}
-          urlItems={userStorageItems}
-          onUrlItemOrderChange={pageUrlItems => {
-            quickUrlItemsStorage.updatePart(0, pageUrlItems)
-          }}
-        />
+    <div className={cn(className, 'duration-300', 'inner-shadow')}>
+      <ScrollArea className="w-full" style={{ height: 130 * maxRow }} scrollHideDelay={200}>
+        <DndLinkCardPage />
       </ScrollArea>
     </div>
   )

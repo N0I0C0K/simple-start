@@ -14,8 +14,10 @@ import {
 } from '@extension/ui/lib/components/ui/context-menu'
 import { useGlobalDialog } from '@src/provider'
 import { Pencil, Trash } from 'lucide-react'
-import type { CSSProperties, FC, MouseEventHandler, Ref } from 'react'
+import type { CSSProperties, FC, MouseEventHandler, Ref, TouchEventHandler } from 'react'
 import { useEffect, useRef, useState, useImperativeHandle, forwardRef } from 'react'
+
+import { MakeSortableItem } from '@/src/components/sortable-area'
 
 interface LinkCardProps extends QuickUrlItem {
   ref?: Ref<HTMLDivElement>
@@ -58,9 +60,9 @@ export const LinkCardItem = forwardRef<HTMLDivElement, LinkCardProps & CustomGri
                 <ContextMenuTrigger asChild>
                   <div
                     className={cn(
-                      'relative flex flex-row items-center justify-center rounded-lg size-[4.5rem] text-primary active:bg-zinc-100/70 duration-200 cursor-pointer select-none',
-                      'hover:bg-zinc-200/40',
-                      'dark:hover:bg-zinc-100/40',
+                      'relative flex flex-row items-center justify-center rounded-lg size-[4.5rem] text-primary duration-200 cursor-pointer select-none',
+                      'hover:bg-slate-200/40 active:bg-slate-100/70',
+                      'dark:hover:bg-slate-100/20 dark:active:bg-slate-200/70',
                     )}
                     onClick={ev => {
                       if (downingTime > 400) return
@@ -78,13 +80,13 @@ export const LinkCardItem = forwardRef<HTMLDivElement, LinkCardProps & CustomGri
                 <Text level="s" className="select-none line-clamp-1">
                   {title}
                 </Text>
-                <div
+                {/* <div
                   id={dragAreaVisable ? 'drag-area' : 'non-drag-area'}
                   className={cn(
                     'opacity-0 mt-1 duration-300 h-2 w-12 bg-slate-100/40 rounded-xl hover:bg-slate-100/80',
                     dragAreaVisable ? 'opacity-100' : '',
                   )}
-                />
+                /> */}
               </div>
             </TooltipTrigger>
             <TooltipContent asChild>
@@ -145,3 +147,5 @@ export const LinkCardItem = forwardRef<HTMLDivElement, LinkCardProps & CustomGri
 )
 
 LinkCardItem.displayName = 'LinkCardItem'
+
+export const SortabelLinkCardItem = MakeSortableItem(LinkCardItem)

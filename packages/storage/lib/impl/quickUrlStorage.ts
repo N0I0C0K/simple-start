@@ -12,18 +12,14 @@ export interface BasicUrlItemsStorageFunc<T extends { id: string }> {
   sortItemsByIds: (ids: string[]) => Promise<void>
   putById: (id: string, val: T) => Promise<void>
   updatePart: (startIndex: number, vals: T[]) => Promise<void>
+  moveItem: (oldIndex: number, newIndex: never) => Promise<void>
+  moveItemById: (id: string, overId: string) => Promise<void>
 }
 
 const storage = createStorage<QuickUrlItem[]>('quick-url-item-storage-key', [], {
   storageEnum: StorageEnum.Local,
   liveUpdate: true,
 })
-
-async function maybeFillIconUrl(val: QuickUrlItem) {
-  if (!val.iconUrl) {
-    val.iconUrl = await getIconUrlFromWebsit(val.url)
-  }
-}
 
 export function generateBasicUrlItemStorage<T extends QuickUrlItem>(
   targetStorage: BaseStorage<T[]>,
@@ -54,6 +50,32 @@ export function generateBasicUrlItemStorage<T extends QuickUrlItem>(
     updatePart: async (startIndex, vals) => {
       const items = await targetStorage.get()
       items.splice(startIndex, vals.length, ...vals)
+      targetStorage.set(items)
+    },
+    moveItem: async (oldIdx: number, newIdx: never) => {
+      if (oldIdx === newIdx) {
+        return
+      }
+      const items = await targetStorage.get()
+      const moveItems = items.splice(oldIdx, 1)
+      if (oldIdx < newIdx) {
+        items.splice(newIdx + 1, 0, ...moveItems)
+      } else {
+        items.splice(newIdx, 0, ...moveItems)
+      }
+      targetStorage.set(items)
+    },
+    moveItemById: async (id: string, overId: string) => {
+      const items = await targetStorage.get()
+      const oldIdx = items.findIndex(val => val.id === id)
+      const newIdx = items.findIndex(val => val.id === overId)
+
+      const moveItems = items.splice(oldIdx, 1)
+      if (oldIdx < newIdx) {
+        items.splice(newIdx + 1, 0, ...moveItems)
+      } else {
+        items.splice(newIdx, 0, ...moveItems)
+      }
       targetStorage.set(items)
     },
   }

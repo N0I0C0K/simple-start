@@ -2,7 +2,7 @@ import '@src/NewTab.css'
 import { Center, Input, Text, Heading, Stack } from '@extension/ui'
 import { Search, ArrowRight } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { CommandModule, SettingPanel, ScrollLinkCardPage } from './components'
+import { CommandModule, SettingPanel, ScrollLinkCardPage, DndLinkCardPage } from './components'
 
 import '@/src/style/placeholder.css'
 import { HistoryArea } from './components/history-area'
@@ -110,6 +110,7 @@ const NewTab = () => {
           <Center>
             <div className="relative min-w-[20rem] w-[50%]">
               <ScrollLinkCardPage className="relative backdrop-blur-2xl rounded-2xl shadow-md dark:backdrop-brightness-75 w-full overflow-hidden bg-slate-50/20 dark:bg-slate-700/20" />
+              {/* <DndLinkCardPage className="relative backdrop-blur-2xl rounded-2xl shadow-md dark:backdrop-brightness-75 w-full overflow-hidden bg-slate-50/20 dark:bg-slate-700/20" /> */}
             </div>
           </Center>
         </Stack>
