@@ -119,8 +119,8 @@ const NewTab = () => {
         </Stack>
       </div>
       <img
-        className="x-bg-img h-screen w-screen fixed top-0 left-0 -z-10 blur-sm scale-105 brightness-90 dark:brightness-75 object-cover select-none"
-        src="https://w.wallhaven.cc/full/vq/wallhaven-vq7e68.png"
+        className="x-bg-img h-screen w-screen fixed top-0 left-0 -z-10 scale-105 brightness-90 dark:brightness-75 object-cover select-none"
+        src="https://w.wallhaven.cc/full/ml/wallhaven-mlpll9.jpg"
         alt=""
         onError={e => {
           console.log('back ground err')

@@ -36,7 +36,7 @@ export const LinkCardItem = forwardRef<HTMLDivElement, LinkCardProps & CustomGri
     const [dragAreaVisable, setDragAreaVisible] = useState(false)
     const globalDialog = useGlobalDialog()
     const innerRef = useRef<HTMLDivElement>(null)
-    const downingTime = useMouseDownTime(innerRef.current)
+    //const downingTime = useMouseDownTime(innerRef.current)
 
     return (
       <TooltipProvider>
@@ -65,7 +65,6 @@ export const LinkCardItem = forwardRef<HTMLDivElement, LinkCardProps & CustomGri
                       'dark:hover:bg-slate-100/20 dark:active:bg-slate-200/70',
                     )}
                     onClick={ev => {
-                      if (downingTime > 400) return
                       if (ev.ctrlKey) {
                         chrome.tabs.create({ url: url, active: true })
                       } else {
