@@ -11,7 +11,7 @@ import {
 } from '@extension/ui/lib/components/ui/context-menu'
 import { Plus, Trash } from 'lucide-react'
 
-export const ListItem: FC<{
+export const HistoryListItem: FC<{
   className?: string
   title: string
   url: string
@@ -37,7 +37,7 @@ export const ListItem: FC<{
               chrome.tabs.update({ url: url })
             }
           }}>
-          <img src={iconUrl ?? getDefaultIconUrl(url)} className="size-5 rounded-md mx-3" alt="list-icon" />
+          <img src={iconUrl ?? getDefaultIconUrl(url)} className="size-5 rounded-md mx-2" alt="list-icon" />
           <Text className="cursor-pointer line-clamp-1">{title}</Text>
           <span className="flex-1" />
           <Text className="invisible group-hover:visible font-thin text-sm">{lastVisitDate.toLocaleDateString()}</Text>

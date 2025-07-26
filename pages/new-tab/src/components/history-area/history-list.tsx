@@ -3,7 +3,7 @@ import { useStorage } from '@extension/shared'
 import { historySuggestStorage } from '@extension/storage'
 import { ScrollArea, Stack } from '@extension/ui'
 import { type FC, useState, useEffect } from 'react'
-import { ListItem } from './history-list-item'
+import { HistoryListItem } from './history-list-item'
 
 export const HOUR_SECOND = 1000 * 60 * 60
 export const UPDTAE_KEY = 'history-update-key'
@@ -42,23 +42,10 @@ export const HistorySuggestionList: FC<{ className?: string }> = ({ className })
     }
   }, [refreshTrigger])
   return (
-    <ScrollArea className={cn('duration-300 w-full overflow-hidden h-56 max-xl:h-72', className)} scrollHideDelay={200}>
-      {/* <Stack direction={'row'} className="p-1 gap-2">
-              <Button variant={'ghost'} className="rounded-xl p-1 border border-slate-200/20">
-                History
-              </Button>
-              <Button
-                variant={'ghost'}
-                className="rounded-xl p-1 border border-slate-200/20"
-                onClick={() => {
-                  historySuggestStorage.refresh()
-                }}>
-                Refresh
-              </Button>
-            </Stack> */}
+    <ScrollArea className={cn('duration-300 w-full overflow-hidden h-40 md:h-32', className)} scrollHideDelay={200}>
       <Stack direction={'column'} className={cn('text-zinc-900 dark:text-zinc-300')}>
         {historySuggestItems.map(val => {
-          return <ListItem {...val} key={val.id} className="first:rounded-t-xl" />
+          return <HistoryListItem {...val} key={val.id} className="first:rounded-t-xl" />
         })}
       </Stack>
     </ScrollArea>

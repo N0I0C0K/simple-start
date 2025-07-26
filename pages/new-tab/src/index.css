@@ -99,6 +99,13 @@
     font-feature-settings:
       'rlig' 1,
       'calt' 1;
-    font-family: 'Maple Mono NF CN Thin', 'Segoe UI', Arial, 'Microsoft Yahei', sans-serif;
+    font-family:
+      -apple-system,
+      BlinkMacSystemFont,
+      San Francisco,
+      Segoe UI,
+      Roboto,
+      Helvetica Neue,
+      sans-serif;
   }
 }

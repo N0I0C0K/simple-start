@@ -6,8 +6,11 @@ import { CommandModule, SettingPanel, ScrollLinkCardPage, DndLinkCardPage } from
 
 import '@/src/style/placeholder.css'
 import { HistoryArea } from './components/history-area'
+import { settingStorage } from '@extension/storage'
+import { useStorage } from '@extension/shared'
 
 function SearchGroup() {
+  const settings = useStorage(settingStorage)
   const [searchText, setSearchText] = useState('')
   const searchFunc = useCallback(async (text: string) => {
     await chrome.search.query({ text: text, disposition: 'NEW_TAB' })
@@ -77,17 +80,17 @@ const TimeDisplay = () => {
   return (
     <Stack direction={'column'} className="items-center">
       <Stack className="items-end">
-        <Heading className="text-8xl select-none">{time?.getHours().toString().padStart(2, '0')}</Heading>
+        <Heading className="text-8xl select-none font-thin">{time?.getHours().toString().padStart(2, '0')}</Heading>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 6 24"
           fill="none"
           stroke="currentColor"
           className="w-4 h-20 fill-current stroke-10 mx-1">
-          <circle cx="3" cy="17" r="2" />
-          <circle cx="3" cy="7" r="2" />
+          <circle cx="3" cy="17" r="1" />
+          <circle cx="3" cy="7" r="1" />
         </svg>
-        <Heading className="text-8xl select-none">{time?.getMinutes().toString().padStart(2, '0')}</Heading>
+        <Heading className="text-8xl select-none font-thin">{time?.getMinutes().toString().padStart(2, '0')}</Heading>
       </Stack>
       <Text className="font-semibold select-none text-primary/80">
         {time.toLocaleDateString('en-US', { year: 'numeric', month: 'numeric', day: 'numeric', weekday: 'long' })}
@@ -97,6 +100,7 @@ const TimeDisplay = () => {
 }
 
 const NewTab = () => {
+  const settings = useStorage(settingStorage)
   return (
     <>
       <div className={'flex h-screen w-screen max-w-full flex-col justify-center gap-4 relative overflow-hidden'}>
@@ -114,13 +118,17 @@ const NewTab = () => {
             </div>
           </Center>
         </Stack>
-        <Stack direction={'column'} className="flex-1 flex flex-col justify-end">
-          <HistoryArea className="backdrop-blur-2xl rounded-t-xl shadow-md dark:backdrop-brightness-75 bg-slate-50/20 dark:bg-slate-700/20" />
-        </Stack>
+        {settings.useHistorySuggestion ? (
+          <Stack direction={'column'} className="flex-1 flex flex-col justify-end">
+            <HistoryArea className="backdrop-blur-2xl rounded-t-xl shadow-md dark:backdrop-brightness-75 bg-slate-50/20 dark:bg-slate-700/20" />
+          </Stack>
+        ) : (
+          <div style={{ flexGrow: 0.7 }} />
+        )}
       </div>
       <img
-        className="x-bg-img h-screen w-screen fixed top-0 left-0 -z-10 blur-sm scale-105 brightness-90 dark:brightness-75 object-cover select-none"
-        src="https://w.wallhaven.cc/full/vq/wallhaven-vq7e68.png"
+        className="x-bg-img h-screen w-screen fixed top-0 left-0 -z-10 scale-105 brightness-90 dark:brightness-75 object-cover select-none"
+        src="https://w.wallhaven.cc/full/ml/wallhaven-mlpll9.jpg"
         alt=""
         onError={e => {
           console.log('back ground err')

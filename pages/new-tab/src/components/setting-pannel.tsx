@@ -115,6 +115,17 @@ const SettingContent: FC<{
               />
             }
           />
+          <SettingItem
+            IconClass={History}
+            title="Auto Focus Command Input"
+            description="Auto focus command input."
+            control={
+              <Switch
+                checked={settings.autoFocusCommandInput}
+                onCheckedChange={val => settingStorage.update({ autoFocusCommandInput: val })}
+              />
+            }
+          />
         </Stack>
       </tabs.TabsContent>
     </tabs.Tabs>

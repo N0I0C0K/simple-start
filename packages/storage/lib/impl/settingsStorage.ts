@@ -4,6 +4,7 @@ import type { BaseStorage } from '../base/types'
 
 type SettingProps = {
   useHistorySuggestion: boolean
+  autoFocusCommandInput: boolean
 }
 
 type SettingsStorage = BaseStorage<SettingProps> & {
@@ -12,6 +13,7 @@ type SettingsStorage = BaseStorage<SettingProps> & {
 
 const defaultSetting: SettingProps = {
   useHistorySuggestion: true,
+  autoFocusCommandInput: true,
 }
 
 const storage = createStorage<SettingProps>('settings-storage', defaultSetting, {
