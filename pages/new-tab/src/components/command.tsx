@@ -41,38 +41,32 @@ export const CommandModule: FC<{
         className="h-14 md:h-12 text-lg md:text-base"
       />
       {focus && (
-        <ScrollArea className="max-h-80">
-          <command.CommandList>
-            <command.CommandEmpty>No results found.</command.CommandEmpty>
-            {result.map(val => {
-              return (
-                <command.CommandGroup heading={val.groupName} key={val.groupName}>
-                  {val.result.map(res => {
-                    return (
-                      <command.CommandItem
-                        key={res.id}
-                        value={res.id}
-                        onSelect={res.onSelect}
-                        className="py-1.5 w-full">
-                        <Stack center>
-                          <img src={res.iconUrl} className="size-6 rounded-md mx-3" alt="list-icon" />
-                          <Stack direction={'column'}>
-                            <Text level="s" className="line-clamp-1">
-                              {res.title}
-                            </Text>
-                            <Text level="xs" className="line-clamp-1" gray>
-                              {res.description}
-                            </Text>
-                          </Stack>
+        <command.CommandList className="max-h-80">
+          <command.CommandEmpty>No results found.</command.CommandEmpty>
+          {result.map(val => {
+            return (
+              <command.CommandGroup heading={val.groupName} key={val.groupName}>
+                {val.result.map(res => {
+                  return (
+                    <command.CommandItem key={res.id} value={res.id} onSelect={res.onSelect} className="py-1.5 w-full">
+                      <Stack center>
+                        <img src={res.iconUrl} className="size-6 rounded-md mx-3" alt="list-icon" />
+                        <Stack direction={'column'}>
+                          <Text level="s" className="line-clamp-1">
+                            {res.title}
+                          </Text>
+                          <Text level="xs" className="line-clamp-1" gray>
+                            {res.description}
+                          </Text>
                         </Stack>
-                      </command.CommandItem>
-                    )
-                  })}
-                </command.CommandGroup>
-              )
-            })}
-          </command.CommandList>
-        </ScrollArea>
+                      </Stack>
+                    </command.CommandItem>
+                  )
+                })}
+              </command.CommandGroup>
+            )
+          })}
+        </command.CommandList>
       )}
     </command.Command>
   )
