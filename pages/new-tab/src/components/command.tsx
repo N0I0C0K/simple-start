@@ -1,15 +1,16 @@
 import { cn, useBoolean } from '@/lib/utils'
 import { useDebounce, useStorage } from '@extension/shared'
 import { settingStorage } from '@extension/storage'
-import { command, ScrollArea, Stack, Text } from '@extension/ui'
+import { command, Stack, Text } from '@extension/ui'
 import { commandResolverService } from '@src/service/command-reslover'
 import type { CommandQueryParams, ICommandResultGroup } from '@src/service/command-reslover'
-import { useEffect, useState, type FC } from 'react'
+import { useEffect, useRef, useState, type FC } from 'react'
 
 export const CommandModule: FC<{
   className?: string
 }> = ({ className }) => {
   const [focus, focusFunc] = useBoolean(false)
+  const inputRef = useRef<HTMLInputElement>(null)
   const [inputVal, setInputVal] = useState('')
   const [result, setResult] = useState<ICommandResultGroup[]>([])
   const inputDelay = useDebounce(inputVal, 600)
@@ -24,6 +25,24 @@ export const CommandModule: FC<{
     })
   }, [inputDelay])
 
+  useEffect(() => {
+    const listener = (ev: KeyboardEvent) => {
+      console.log(ev)
+      if (ev.metaKey && (ev.key === 'k' || ev.key === 'K')) {
+        focusFunc.setTrue()
+        inputRef.current?.focus()
+      }
+      if (ev.key === 'Escape') {
+        focusFunc.setFalse()
+        inputRef.current?.blur()
+      }
+    }
+    window.addEventListener('keydown', listener)
+    return () => {
+      window.removeEventListener('keydown', listener)
+    }
+  }, [])
+
   const setting = useStorage(settingStorage)
 
   return (
@@ -32,6 +51,7 @@ export const CommandModule: FC<{
         onFocus={focusFunc.setTrue}
         onBlur={focusFunc.setFalse}
         value={inputVal}
+        ref={inputRef}
         onValueChange={newVal => {
           setInputVal(newVal)
         }}

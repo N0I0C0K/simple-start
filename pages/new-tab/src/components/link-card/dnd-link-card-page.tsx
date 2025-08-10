@@ -1,17 +1,9 @@
 import type { DragEndEvent } from '@dnd-kit/core'
-import {
-  closestCenter,
-  DndContext,
-  KeyboardSensor,
-  PointerSensor,
-  MouseSensor,
-  useSensor,
-  useSensors,
-} from '@dnd-kit/core'
+import { closestCenter, DndContext, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { rectSortingStrategy, SortableContext, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
 import { useStorage } from '@extension/shared'
 import { quickUrlItemsStorage } from '@extension/storage'
-import { FC, useState } from 'react'
+import { FC } from 'react'
 
 import { SortabelLinkCardItem } from '@/src/components/link-card/link-card-item'
 import { cn } from '@/lib/utils'
@@ -30,7 +22,7 @@ export const DndLinkCardPage: FC<{
   return (
     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
       <SortableContext items={userStorageItems} strategy={rectSortingStrategy}>
-        <div className={cn('grid md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7', className)}>
+        <div className={cn('grid md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 2xl:grid-cols-9', className)}>
           {userStorageItems.map(val => (
             <SortabelLinkCardItem {...val} key={val.id} />
           ))}
