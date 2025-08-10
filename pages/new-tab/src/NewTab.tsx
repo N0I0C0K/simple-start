@@ -2,7 +2,7 @@ import '@src/NewTab.css'
 import { Center, Input, Text, Heading, Stack } from '@extension/ui'
 import { Search, ArrowRight } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { CommandModule, SettingPanel, ScrollLinkCardPage, DndLinkCardPage } from './components'
+import { CommandModule, SettingPanel, ScrollLinkCardPage } from './components'
 
 import '@/src/style/placeholder.css'
 import { HistoryArea } from './components/history-area'

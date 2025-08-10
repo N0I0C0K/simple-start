@@ -1,5 +1,5 @@
 import type { DependencyList } from 'react'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState, useSyncExternalStore } from 'react'
 
 export function useDebounce<T>(val: T, delay: number = 200): T {
   const [delayVal, setDelayVal] = useState(val)
@@ -65,4 +65,29 @@ export function useMouseDownTime(ref?: HTMLElement | null, intervalTimeout: numb
     }
   }, [mouseDownCallback, mouseUpCallback, ref])
   return time
+}
+
+
+export function useMediaQuery(query: string) {
+  const subscribe = useCallback(
+    (callback) => {
+      const matchMedia = window.matchMedia(query);
+
+      matchMedia.addEventListener("change", callback);
+      return () => {
+        matchMedia.removeEventListener("change", callback);
+      };
+    },
+    [query]
+  );
+
+  const getSnapshot = () => {
+    return window.matchMedia(query).matches;
+  };
+
+  const getServerSnapshot = () => {
+    throw Error("useMediaQuery is a client-only hook");
+  };
+
+  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 }

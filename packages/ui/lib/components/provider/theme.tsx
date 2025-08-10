@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect } from 'react'
 import { exampleThemeStorage } from '@extension/storage'
-import { useStorage } from '@extension/shared'
+import { useMediaQuery, useStorage } from '@extension/shared'
 
 type Theme = 'dark' | 'light' | 'system'
 
@@ -23,6 +23,7 @@ const ThemeProviderContext = createContext<ThemeProviderState>(initialState)
 
 export function ThemeProvider({ children, defaultTheme = 'system', ...props }: ThemeProviderProps) {
   const theme = useStorage(exampleThemeStorage)
+  const systemThemeIsDark = useMediaQuery('(prefers-color-scheme: dark)')
 
   useEffect(() => {
     const root = window.document.documentElement
@@ -38,6 +39,14 @@ export function ThemeProvider({ children, defaultTheme = 'system', ...props }: T
 
     root.classList.add(theme)
   }, [theme])
+
+  useEffect(() => {
+    if (theme === 'system') {
+      const root = window.document.documentElement
+      root.classList.remove('light', 'dark')
+      root.classList.add(systemThemeIsDark ? 'dark' : 'light')
+    }
+  }, [systemThemeIsDark])
 
   const value = {
     theme,
