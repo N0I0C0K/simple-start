@@ -55,9 +55,7 @@ CommandInput.displayName = CommandPrimitive.Input.displayName
 const CommandList = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.List>,
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.List>
->(({ className, ...props }, ref) => (
-  <CommandPrimitive.List ref={ref} className={cn('overflow-y-auto overflow-x-hidden', className)} {...props} />
-))
+>(({ className, ...props }, ref) => <CommandPrimitive.List ref={ref} className={cn('', className)} {...props} />)
 
 CommandList.displayName = CommandPrimitive.List.displayName
 

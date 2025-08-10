@@ -42,7 +42,9 @@ export const HistorySuggestionList: FC<{ className?: string }> = ({ className })
     }
   }, [refreshTrigger])
   return (
-    <ScrollArea className={cn('duration-300 w-full overflow-hidden h-40 md:h-32', className)} scrollHideDelay={200}>
+    <ScrollArea
+      className={cn('duration-300 w-full overflow-hidden h-40 xl:h-52 lg:h-44 md:h-32 sm:h-24', className)}
+      scrollHideDelay={200}>
       <Stack direction={'column'} className={cn('text-zinc-900 dark:text-zinc-300')}>
         {historySuggestItems.map(val => {
           return <HistoryListItem {...val} key={val.id} className="first:rounded-t-xl" />

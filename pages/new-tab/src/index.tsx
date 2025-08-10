@@ -40,7 +40,6 @@ function init() {
     const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
 
     rootElement.classList.add(systemTheme)
-    return
   }
 
   rootElement.classList.add(theme)
