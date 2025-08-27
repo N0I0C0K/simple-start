@@ -5,10 +5,11 @@ import moment from 'moment'
 import { historySuggestStorage } from '@extension/storage'
 
 function convertHistoryItemToCommandResult(item: chrome.history.HistoryItem): ICommandResult {
+  const formatLastDate = moment(item.lastVisitTime).format('MM/DD HH:mm')
   return {
     id: item.id,
-    title: item.title!,
-    description: item.url!,
+    title: `${item.title!}`,
+    description: `${formatLastDate} ${item.url!}`,
     iconUrl: getDefaultIconUrl(item.url!),
     onSelect: () => {
       chrome.tabs.update({ url: item.url })

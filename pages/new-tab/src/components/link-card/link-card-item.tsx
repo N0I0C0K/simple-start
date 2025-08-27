@@ -49,7 +49,8 @@ export const LinkCardItem = forwardRef<HTMLDivElement, LinkCardProps & CustomGri
               <div
                 style={style}
                 className={cn(
-                  'relative min-w-[4.5rem] group flex flex-col items-center justify-center overflow-hidden p-2 gap-1 rounded-md duration-200',
+                  `relative min-w-[4.5rem] group flex flex-col items-center justify-center overflow-hidden p-2 gap-1
+                  rounded-md duration-200`,
                   className,
                 )}
                 key={id}
@@ -60,7 +61,8 @@ export const LinkCardItem = forwardRef<HTMLDivElement, LinkCardProps & CustomGri
                 <ContextMenuTrigger asChild>
                   <div
                     className={cn(
-                      'relative flex flex-row items-center justify-center rounded-lg size-[4.5rem] text-primary duration-200 cursor-pointer select-none',
+                      `relative flex flex-row items-center justify-center rounded-lg size-[4.5rem] text-primary
+                      duration-200 cursor-pointer select-none`,
                       'hover:bg-slate-200/40 active:bg-slate-100/70',
                       'dark:hover:bg-slate-100/20 dark:active:bg-slate-200/70',
                     )}
@@ -100,6 +102,7 @@ export const LinkCardItem = forwardRef<HTMLDivElement, LinkCardProps & CustomGri
                   }}>
                   {url}
                 </Text>
+                <Text>{id}</Text>
               </Stack>
             </TooltipContent>
             <ContextMenuContent className="w-44">

@@ -70,7 +70,7 @@ export function useMouseDownTime(ref?: HTMLElement | null, intervalTimeout: numb
 
 export function useMediaQuery(query: string) {
   const subscribe = useCallback(
-    (callback) => {
+    (callback: () => void) => {
       const matchMedia = window.matchMedia(query);
 
       matchMedia.addEventListener("change", callback);

@@ -27,7 +27,6 @@ export const CommandModule: FC<{
 
   useEffect(() => {
     const listener = (ev: KeyboardEvent) => {
-      console.log(ev)
       if (ev.metaKey && (ev.key === 'k' || ev.key === 'K')) {
         focusFunc.setTrue()
         inputRef.current?.focus()
@@ -41,12 +40,17 @@ export const CommandModule: FC<{
     return () => {
       window.removeEventListener('keydown', listener)
     }
-  }, [])
+  }, [focusFunc])
 
   const setting = useStorage(settingStorage)
 
   return (
-    <command.Command className={cn('rounded-2xl', className)} shouldFilter={false}>
+    <command.Command
+      className={cn('rounded-2xl', className)}
+      shouldFilter={false}
+      onValueChange={val => {
+        console.log('value change:', val)
+      }}>
       <command.CommandInput
         onFocus={focusFunc.setTrue}
         onBlur={focusFunc.setFalse}

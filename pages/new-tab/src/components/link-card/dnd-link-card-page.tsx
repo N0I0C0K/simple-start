@@ -3,7 +3,7 @@ import { closestCenter, DndContext, KeyboardSensor, PointerSensor, useSensor, us
 import { rectSortingStrategy, SortableContext, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
 import { useStorage } from '@extension/shared'
 import { quickUrlItemsStorage } from '@extension/storage'
-import { FC } from 'react'
+import type { FC } from 'react'
 
 import { SortabelLinkCardItem } from '@/src/components/link-card/link-card-item'
 import { cn } from '@/lib/utils'
@@ -13,7 +13,7 @@ export const DndLinkCardPage: FC<{
 }> = ({ className }) => {
   const userStorageItems = useStorage(quickUrlItemsStorage)
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { delay: 200, tolerance: 5 } }),
+    useSensor(PointerSensor, { activationConstraint: { delay: 150, tolerance: 5 } }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     }),
@@ -22,7 +22,8 @@ export const DndLinkCardPage: FC<{
   return (
     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
       <SortableContext items={userStorageItems} strategy={rectSortingStrategy}>
-        <div className={cn('grid md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 2xl:grid-cols-9', className)}>
+        <div
+          className={cn('grid sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 2xl:grid-cols-9', className)}>
           {userStorageItems.map(val => (
             <SortabelLinkCardItem {...val} key={val.id} />
           ))}
@@ -32,6 +33,7 @@ export const DndLinkCardPage: FC<{
   )
 
   function handleDragEnd(event: DragEndEvent) {
+    console.log(event)
     const { active, over } = event
 
     if (over && active.id !== over.id) {
