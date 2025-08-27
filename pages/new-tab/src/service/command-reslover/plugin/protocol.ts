@@ -17,7 +17,7 @@ export interface ICommandResult {
 }
 
 export interface CommandSettings {
-  priority: number
+  priority: number // The lower the number, the higher the priority
   active: boolean
   activeKey: string
   includeInGlobal: boolean

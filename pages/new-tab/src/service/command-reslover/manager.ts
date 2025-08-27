@@ -1,14 +1,12 @@
 import type {
   ICommandReslover,
   ICommandResultGroup,
-  ICommandResult,
   CommandQueryParams,
-  PartialCommandSettings,
   CommandSettings,
 } from './plugin'
 
 import {
-  historyReslover, tabSearchReslover
+  historyReslover, tabSearchReslover, webSearchReslover
 } from './plugin'
 import { WarpDefaultObject } from '@extension/shared'
 
@@ -85,3 +83,4 @@ export const commandResolverService = {
 
 commandResolverService.register(historyReslover)
 commandResolverService.register(tabSearchReslover)
+commandResolverService.register(webSearchReslover)

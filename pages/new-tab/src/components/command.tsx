@@ -6,6 +6,14 @@ import { commandResolverService } from '@src/service/command-reslover'
 import type { CommandQueryParams, ICommandResultGroup } from '@src/service/command-reslover'
 import { useEffect, useRef, useState, type FC } from 'react'
 
+
+const CommandItemIcon: FC<{ iconUrl?: string; IconType?: React.ElementType }> = ({ iconUrl, IconType }) => {
+  return <>
+    {iconUrl && <img src={iconUrl} alt="icon" className="size-6 rounded-md mx-3" />}
+    {IconType && <IconType className="stroke-2 h-10 w-10 mx-3" />}
+  </>
+}
+
 export const CommandModule: FC<{
   className?: string
 }> = ({ className }) => {
@@ -74,7 +82,7 @@ export const CommandModule: FC<{
                   return (
                     <command.CommandItem key={res.id} value={res.id} onSelect={res.onSelect} className="py-1.5 w-full">
                       <Stack center>
-                        <img src={res.iconUrl} className="size-6 rounded-md mx-3" alt="list-icon" />
+                        <CommandItemIcon iconUrl={res.iconUrl} IconType={res.IconType} />
                         <Stack direction={'column'}>
                           <Text level="s" className="line-clamp-1">
                             {res.title}
