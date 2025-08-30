@@ -2,7 +2,6 @@
 import { getDefaultIconUrl } from '@/lib/url'
 import { cn } from '@/lib/utils'
 import { QuickItemEditForm } from '@/src/components/quick-item-edit-form'
-import { useMouseDownTime } from '@extension/shared'
 import type { QuickUrlItem } from '@extension/storage'
 import { quickUrlItemsStorage } from '@extension/storage'
 import { Stack, Text, toast, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@extension/ui'
@@ -14,8 +13,8 @@ import {
 } from '@extension/ui/lib/components/ui/context-menu'
 import { useGlobalDialog } from '@src/provider'
 import { Pencil, Trash } from 'lucide-react'
-import type { CSSProperties, FC, MouseEventHandler, Ref, TouchEventHandler } from 'react'
-import { useEffect, useRef, useState, useImperativeHandle, forwardRef } from 'react'
+import type { CSSProperties, MouseEventHandler, Ref, TouchEventHandler } from 'react'
+import { useRef, useState, forwardRef } from 'react'
 
 import { MakeSortableItem } from '@/src/components/sortable-area'
 
@@ -50,7 +49,8 @@ export const LinkCardItem = forwardRef<HTMLDivElement, LinkCardProps & CustomGri
                 style={style}
                 className={cn(
                   `relative min-w-[4.5rem] group flex flex-col items-center justify-center overflow-hidden p-2 gap-1
-                  rounded-md duration-200`,
+                  rounded-md duration-200
+                  cursor-default`,
                   className,
                 )}
                 key={id}
@@ -62,7 +62,8 @@ export const LinkCardItem = forwardRef<HTMLDivElement, LinkCardProps & CustomGri
                   <div
                     className={cn(
                       `relative flex flex-row items-center justify-center rounded-lg size-[4.5rem] text-primary
-                      duration-200 cursor-pointer select-none`,
+                      duration-200 select-none
+                      cursor-pointer`,
                       'hover:bg-slate-200/40 active:bg-slate-100/70',
                       'dark:hover:bg-slate-100/20 dark:active:bg-slate-200/70',
                     )}
@@ -81,13 +82,6 @@ export const LinkCardItem = forwardRef<HTMLDivElement, LinkCardProps & CustomGri
                 <Text level="s" className="select-none line-clamp-1">
                   {title}
                 </Text>
-                {/* <div
-                  id={dragAreaVisable ? 'drag-area' : 'non-drag-area'}
-                  className={cn(
-                    'opacity-0 mt-1 duration-300 h-2 w-12 bg-slate-100/40 rounded-xl hover:bg-slate-100/80',
-                    dragAreaVisable ? 'opacity-100' : '',
-                  )}
-                /> */}
               </div>
             </TooltipTrigger>
             <TooltipContent asChild>

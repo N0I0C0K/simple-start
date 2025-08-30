@@ -32,7 +32,7 @@ export const historyReslover: ICommandReslover = {
     const result = await chrome.history.search({
       text: params.query,
       maxResults: 10,
-      startTime: moment().add(-2, 'week').valueOf(),
+      // startTime: moment().add(-2, 'month').valueOf(),
     })
     if (result.length === 0) return null
     return result.map(convertHistoryItemToCommandResult)

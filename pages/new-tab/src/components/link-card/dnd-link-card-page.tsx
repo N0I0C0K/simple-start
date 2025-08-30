@@ -23,7 +23,12 @@ export const DndLinkCardPage: FC<{
     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
       <SortableContext items={userStorageItems} strategy={rectSortingStrategy}>
         <div
-          className={cn('grid sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 2xl:grid-cols-9', className)}>
+          className={cn(
+            'grid',
+            className
+          )}
+          style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(6.5rem, 1fr))' }}
+        >
           {userStorageItems.map(val => (
             <SortabelLinkCardItem {...val} key={val.id} />
           ))}
