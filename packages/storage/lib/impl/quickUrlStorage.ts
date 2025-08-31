@@ -72,13 +72,15 @@ export function generateBasicUrlItemStorage<T extends QuickUrlItem>(
       if (oldIdx === newIdx) {
         return
       }
-      const moveItems = items.splice(oldIdx, 1)
-      if (oldIdx < newIdx) {
-        items.splice(newIdx, 0, ...moveItems)
-      } else {
-        items.splice(newIdx, 0, ...moveItems)
-      }
-      targetStorage.set(items)
+      await targetStorage.set((items)=>{
+        const moveItems = items.splice(oldIdx, 1)
+        if (oldIdx < newIdx) {
+          items.splice(newIdx, 0, ...moveItems)
+        } else {
+          items.splice(newIdx, 0, ...moveItems)
+        }
+        return items
+      })
     },
   }
 }

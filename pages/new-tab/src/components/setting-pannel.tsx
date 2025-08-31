@@ -66,10 +66,68 @@ const SettingItem: FC<{
   )
 }
 
+
+const CommonSettings: FC = () => {
+  const settings = useStorage(settingStorage)
+  return (
+    <Stack direction={'column'} className={'gap-2 w-full'}>
+      <SettingItem
+        IconClass={SunMoon}
+        title="Theme"
+        description="Change dark/light theme."
+        control={<ThemeToggle />}
+      />
+      <SettingItem
+        IconClass={FileImage}
+        title="Backgroud Image"
+        description="Personalized background picture"
+        control={
+          <Button size={'icon'} variant={'ghost'}>
+            <Edit />
+          </Button>
+        }
+      />
+      <SettingItem
+        IconClass={History}
+        title="History Suggestion"
+        description="Use history for recommendations."
+        control={
+          <Switch
+            checked={settings.useHistorySuggestion}
+            onCheckedChange={val => settingStorage.update({ useHistorySuggestion: val })}
+          />
+        }
+      />
+      <SettingItem
+        IconClass={History}
+        title="Auto Focus Command Input"
+        description="Auto focus command input."
+        control={
+          <Switch
+            checked={settings.autoFocusCommandInput}
+            onCheckedChange={val => settingStorage.update({ autoFocusCommandInput: val })}
+          />
+        }
+      />
+      <SettingItem
+        IconClass={HardDriveUpload}
+        title="Wallpaper URL"
+        description="Set a custom wallpaper URL."
+        control={
+          <Input
+            placeholder="Enter wallpaper URL"
+            value={settings.wallpaperUrl || ''}
+            onChange={e => settingStorage.update({ wallpaperUrl: e.target.value })}
+          />
+        }
+      />
+    </Stack>
+  )
+}
+
 const SettingContent: FC<{
   className?: string
 }> = ({ className }) => {
-  const settings = useStorage(settingStorage)
   return (
     <tabs.Tabs
       orientation="vertical"
@@ -87,46 +145,7 @@ const SettingContent: FC<{
         <Separator orientation="vertical" />
       </span>
       <tabs.TabsContent value="setting" className="flex-1">
-        <Stack direction={'column'} className={'gap-2 w-full'}>
-          <SettingItem
-            IconClass={SunMoon}
-            title="Theme"
-            description="Change dark/light theme."
-            control={<ThemeToggle />}
-          />
-          <SettingItem
-            IconClass={FileImage}
-            title="Backgroud Image"
-            description="Personalized background picture"
-            control={
-              <Button size={'icon'} variant={'ghost'}>
-                <Edit />
-              </Button>
-            }
-          />
-          <SettingItem
-            IconClass={History}
-            title="History Suggestion"
-            description="Use history for recommendations."
-            control={
-              <Switch
-                checked={settings.useHistorySuggestion}
-                onCheckedChange={val => settingStorage.update({ useHistorySuggestion: val })}
-              />
-            }
-          />
-          <SettingItem
-            IconClass={History}
-            title="Auto Focus Command Input"
-            description="Auto focus command input."
-            control={
-              <Switch
-                checked={settings.autoFocusCommandInput}
-                onCheckedChange={val => settingStorage.update({ autoFocusCommandInput: val })}
-              />
-            }
-          />
-        </Stack>
+        <CommonSettings />
       </tabs.TabsContent>
     </tabs.Tabs>
   )
@@ -145,12 +164,14 @@ const DrawerSettingPanel: FC<{ className?: string }> = ({ className }) => {
         <DrawerContent
           className="right-2 top-2 fixed z-20 outline-none w-[35rem] flex"
           style={{ '--initial-transform': 'calc(100% + 8px)' } as React.CSSProperties}>
-          <SettingContent className="rounded-xl bg-background p-4" />
-          <DrawerClose asChild>
+            <div className='bg-background w-full h-full p-6 rounded-lg shadow-lg'>
+              <CommonSettings />
+            </div>
+          {/* <DrawerClose asChild>
             <Button size={'icon'} variant={'ghost'} className="absolute top-2 right-2 rounded-full">
               <X />
             </Button>
-          </DrawerClose>
+          </DrawerClose> */}
         </DrawerContent>
       </DrawerPortal>
     </Drawer>

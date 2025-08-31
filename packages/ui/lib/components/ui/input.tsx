@@ -1,6 +1,7 @@
 import * as React from 'react'
 
 import { cn } from '@/lib/utils'
+import { useDebounce } from '@extension/shared'
 
 const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<'input'>>(
   ({ className, type, ...props }, ref) => {
@@ -20,5 +21,34 @@ const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<'input'>>(
   },
 )
 Input.displayName = 'Input'
+
+
+const DelayInput = React.forwardRef<HTMLInputElement, React.ComponentProps<'input'> & {
+  onValueDelayChange?: (value: string) => void,
+  delay?: number,
+}>(
+  ({ className, type, onValueDelayChange, delay = 300, ...props }, ref) => {
+    const [value, setValue] = React.useState('')
+    const delayedValue = useDebounce(value, delay)
+
+    React.useEffect(() => {
+      onValueDelayChange?.(delayedValue)
+    }, [delayedValue, onValueDelayChange])
+
+    return (
+      <Input
+        type={type}
+        className={className}
+        ref={ref}
+        {...props}
+        value={value}
+        onChange={e => {
+          setValue(e.target.value)
+        }}
+      />
+    )
+  },
+)
+DelayInput.displayName = 'DelayInput'
 
 export { Input }

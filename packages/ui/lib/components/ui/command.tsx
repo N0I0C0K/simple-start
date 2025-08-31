@@ -40,8 +40,10 @@ const CommandDialog = ({ children, ...props }: DialogProps) => {
 
 const CommandInput = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.Input>,
-  React.ComponentPropsWithoutRef<typeof CommandPrimitive.Input>
->(({ className, ...props }, ref) => (
+  React.ComponentPropsWithoutRef<typeof CommandPrimitive.Input> & {
+    keyBindings?: string
+  }
+>(({ className, keyBindings, ...props }, ref) => (
   <div className="flex items-center border-b px-3" cmdk-input-wrapper="">
     <Search className="mr-2 h-6 w-6 shrink-0 opacity-50" />
     <CommandPrimitive.Input
@@ -53,6 +55,7 @@ const CommandInput = React.forwardRef<
       )}
       {...props}
     />
+    {keyBindings && <CommandShortcut className="border rounded-sm p-0.5">{keyBindings}</CommandShortcut>}
   </div>
 ))
 

@@ -6,7 +6,7 @@ import { CommandModule, SettingPanel, ScrollLinkCardPage } from './components'
 
 import '@/src/style/placeholder.css'
 import { HistoryArea } from './components/history-area'
-import { settingStorage } from '@extension/storage'
+import { settingStorage, DEFAULT_WALLPAPER_URL } from '@extension/storage'
 import { useStorage } from '@extension/shared'
 
 function SearchGroup() {
@@ -101,6 +101,10 @@ const TimeDisplay = () => {
 
 const NewTab = () => {
   const settings = useStorage(settingStorage)
+  const [wallpaperUrl, setWallpaperUrl] = useState<string>(settings.wallpaperUrl ?? DEFAULT_WALLPAPER_URL)
+  useEffect(() => {
+    setWallpaperUrl(settings.wallpaperUrl ?? DEFAULT_WALLPAPER_URL)
+  }, [settings.wallpaperUrl])
   return (
     <>
       <div className={'flex h-screen w-screen max-w-full flex-col justify-center gap-4 relative overflow-hidden'}>
@@ -128,10 +132,12 @@ const NewTab = () => {
       </div>
       <img
         className="x-bg-img h-screen w-screen fixed top-0 left-0 -z-10 scale-105 brightness-90 dark:brightness-75 object-cover select-none"
-        src="https://w.wallhaven.cc/full/ml/wallhaven-mlpll9.jpg"
+        src={wallpaperUrl}
         alt=""
         onError={e => {
           console.log('back ground err')
+          if(wallpaperUrl !== DEFAULT_WALLPAPER_URL)
+            setWallpaperUrl(DEFAULT_WALLPAPER_URL)
         }}
       />
       <SettingPanel className="fixed top-2 right-2" />

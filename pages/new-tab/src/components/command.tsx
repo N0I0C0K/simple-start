@@ -6,12 +6,13 @@ import { commandResolverService } from '@src/service/command-reslover'
 import type { CommandQueryParams, ICommandResultGroup } from '@src/service/command-reslover'
 import { useEffect, useRef, useState, type FC } from 'react'
 
-
 const CommandItemIcon: FC<{ iconUrl?: string; IconType?: React.ElementType }> = ({ iconUrl, IconType }) => {
-  return <>
-    {iconUrl && <img src={iconUrl} alt="icon" className="size-6 rounded-md mx-3" />}
-    {IconType && <IconType className="stroke-2 h-10 w-10 mx-3" />}
-  </>
+  return (
+    <>
+      {iconUrl && <img src={iconUrl} alt="icon" className="size-6 rounded-md mx-3" />}
+      {IconType && <IconType className="stroke-2 h-10 w-10 mx-3" />}
+    </>
+  )
 }
 
 export const CommandModule: FC<{
@@ -22,6 +23,10 @@ export const CommandModule: FC<{
   const [inputVal, setInputVal] = useState('')
   const [result, setResult] = useState<ICommandResultGroup[]>([])
   const inputDelay = useDebounce(inputVal, 600)
+  const [isWindows] = useState(() => {
+    return navigator.userAgent.toLowerCase().includes('windows')
+  })
+  const keyBindings = isWindows ? 'Alt+K' : '⌘+K'
 
   useEffect(() => {
     const query: CommandQueryParams = {
@@ -35,7 +40,10 @@ export const CommandModule: FC<{
 
   useEffect(() => {
     const listener = (ev: KeyboardEvent) => {
-      if (ev.metaKey && (ev.key === 'k' || ev.key === 'K')) {
+      if (
+        (isWindows && ev.altKey && (ev.key === 'k' || ev.key === 'K')) ||
+        (!isWindows && ev.metaKey && (ev.key === 'k' || ev.key === 'K'))
+      ) {
         focusFunc.setTrue()
         inputRef.current?.focus()
       }
@@ -48,7 +56,7 @@ export const CommandModule: FC<{
     return () => {
       window.removeEventListener('keydown', listener)
     }
-  }, [focusFunc])
+  }, [focusFunc, isWindows])
 
   const setting = useStorage(settingStorage)
 
@@ -71,6 +79,7 @@ export const CommandModule: FC<{
         autoFocus={setting.autoFocusCommandInput}
         placeholder="search..."
         className="h-14 md:h-12 text-lg md:text-base"
+        keyBindings={keyBindings}
       />
       {focus && (
         <command.CommandList className="max-h-80">
