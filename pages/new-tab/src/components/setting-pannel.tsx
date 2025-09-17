@@ -3,31 +3,22 @@ import { useStorage } from '@extension/shared'
 import { settingStorage } from '@extension/storage'
 import {
   Button,
-  Heading,
   Drawer,
   DrawerContent,
   DrawerTrigger,
   DrawerPortal,
-  DrawerOverlay,
   Space,
   Stack,
   Text,
   ThemeToggle,
   Switch,
   Input,
-  DrawerClose,
   tabs,
   Separator,
 } from '@extension/ui'
-import {
-  Dialog,
-  DialogTrigger,
-  DialogOverlay,
-  DialogPortal,
-  DialogContent,
-} from '@extension/ui/lib/components/ui/dialog'
+import { Dialog, DialogTrigger, DialogContent } from '@extension/ui/lib/components/ui/dialog'
 import type { LucideProps } from 'lucide-react'
-import { AlignJustify, SunMoon, History, HardDriveUpload, FileImage, Edit, X } from 'lucide-react'
+import { AlignJustify, SunMoon, History, HardDriveUpload, FileImage, Pointer } from 'lucide-react'
 import type { ElementType, FC, ReactElement } from 'react'
 
 type SettingItemProps = {
@@ -51,7 +42,7 @@ const SettingItem: FC<{
         'bg-muted',
         className,
       )}>
-      <IconClass strokeWidth={1} className="size-16 mr-2 absolute -left-6 text-slate-400/60" />
+      <IconClass strokeWidth={1} className="size-16 mr-2 absolute -left-6 text-slate-400" />
       <Stack direction={'column'} className="ml-10">
         <Text className="font-medium" level="md">
           {title}
@@ -66,27 +57,11 @@ const SettingItem: FC<{
   )
 }
 
-
 const CommonSettings: FC = () => {
   const settings = useStorage(settingStorage)
   return (
     <Stack direction={'column'} className={'gap-2 w-full'}>
-      <SettingItem
-        IconClass={SunMoon}
-        title="Theme"
-        description="Change dark/light theme."
-        control={<ThemeToggle />}
-      />
-      <SettingItem
-        IconClass={FileImage}
-        title="Backgroud Image"
-        description="Personalized background picture"
-        control={
-          <Button size={'icon'} variant={'ghost'}>
-            <Edit />
-          </Button>
-        }
-      />
+      <SettingItem IconClass={SunMoon} title="Theme" description="Change dark/light theme." control={<ThemeToggle />} />
       <SettingItem
         IconClass={History}
         title="History Suggestion"
@@ -99,7 +74,7 @@ const CommonSettings: FC = () => {
         }
       />
       <SettingItem
-        IconClass={History}
+        IconClass={Pointer}
         title="Auto Focus Command Input"
         description="Auto focus command input."
         control={
@@ -164,9 +139,9 @@ const DrawerSettingPanel: FC<{ className?: string }> = ({ className }) => {
         <DrawerContent
           className="right-2 top-2 fixed z-20 outline-none w-[35rem] flex"
           style={{ '--initial-transform': 'calc(100% + 8px)' } as React.CSSProperties}>
-            <div className='bg-background w-full h-full p-6 rounded-lg shadow-lg'>
-              <CommonSettings />
-            </div>
+          <div className="bg-background w-full h-full p-6 rounded-lg shadow-lg">
+            <CommonSettings />
+          </div>
           {/* <DrawerClose asChild>
             <Button size={'icon'} variant={'ghost'} className="absolute top-2 right-2 rounded-full">
               <X />

@@ -10,6 +10,7 @@ export * from './switch'
 export * from './drawer'
 export * from './separator'
 export * from './scroll-area'
+export * from './portal'
 
 export * as tabs from './tabs'
 export * as form from './form'
