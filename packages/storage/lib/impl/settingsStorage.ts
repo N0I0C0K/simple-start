@@ -3,11 +3,19 @@ import { createStorage } from '../base/base'
 import type { BaseStorage } from '../base/types'
 
 export const DEFAULT_WALLPAPER_URL = 'https://w.wallhaven.cc/full/ml/wallhaven-mlpll9.jpg'
+export const DEFAULT_MQTT_BROKER_URL = 'mqtt://broker.emqx.io'
+
+type MqttSetting = {
+  mqttBrokerUrl?: string
+  secretKey?: string
+  enabled?: boolean
+}
 
 type SettingProps = {
   useHistorySuggestion: boolean
   autoFocusCommandInput: boolean
   wallpaperUrl?: string
+  mqttSettings?: MqttSetting
 }
 
 type SettingsStorage = BaseStorage<SettingProps> & {

@@ -13,19 +13,10 @@ import {
   ThemeToggle,
   Switch,
   Input,
-  tabs,
-  Separator,
 } from '@extension/ui'
-import { Dialog, DialogTrigger, DialogContent } from '@extension/ui/lib/components/ui/dialog'
 import type { LucideProps } from 'lucide-react'
-import { AlignJustify, SunMoon, History, HardDriveUpload, FileImage, Pointer } from 'lucide-react'
+import { AlignJustify, Send, SunMoon, History, HardDriveUpload, Pointer } from 'lucide-react'
 import type { ElementType, FC, ReactElement } from 'react'
-
-type SettingItemProps = {
-  title: string
-  description: string
-  icon: ElementType<LucideProps>
-}
 
 const SettingItem: FC<{
   className?: string
@@ -100,32 +91,6 @@ const CommonSettings: FC = () => {
   )
 }
 
-const SettingContent: FC<{
-  className?: string
-}> = ({ className }) => {
-  return (
-    <tabs.Tabs
-      orientation="vertical"
-      defaultValue="setting"
-      className={cn('w-full h-full flex gap-2 border border-slate-400/40 shadow-lg', className)}>
-      <tabs.TabsList className="flex-col gap-2 h-full">
-        <tabs.TabsTrigger value="setting" className="w-full data-[state=active]:bg-muted">
-          Setting
-        </tabs.TabsTrigger>
-        <tabs.TabsTrigger value="other" className="w-full data-[state=active]:bg-slate-400/40">
-          Other
-        </tabs.TabsTrigger>
-      </tabs.TabsList>
-      <span>
-        <Separator orientation="vertical" />
-      </span>
-      <tabs.TabsContent value="setting" className="flex-1">
-        <CommonSettings />
-      </tabs.TabsContent>
-    </tabs.Tabs>
-  )
-}
-
 const DrawerSettingPanel: FC<{ className?: string }> = ({ className }) => {
   return (
     <Drawer direction="right" shouldScaleBackground>
@@ -135,39 +100,42 @@ const DrawerSettingPanel: FC<{ className?: string }> = ({ className }) => {
         </Button>
       </DrawerTrigger>
       <DrawerPortal>
-        {/* <DrawerOverlay className="fixed inset-0 z-10 bg-black/40" /> */}
-        <DrawerContent
-          className="right-2 top-2 fixed z-20 outline-none w-[35rem] flex"
-          style={{ '--initial-transform': 'calc(100% + 8px)' } as React.CSSProperties}>
+        <DrawerContent className="right-2 top-2 fixed z-20 outline-none w-[35rem] flex">
           <div className="bg-background w-full h-full p-6 rounded-lg shadow-lg">
             <CommonSettings />
           </div>
-          {/* <DrawerClose asChild>
-            <Button size={'icon'} variant={'ghost'} className="absolute top-2 right-2 rounded-full">
-              <X />
-            </Button>
-          </DrawerClose> */}
         </DrawerContent>
       </DrawerPortal>
     </Drawer>
   )
 }
 
-const DialogSettingPanel: FC<{ className?: string }> = ({ className }) => {
+const ActionPanel: FC<{ className?: string }> = ({ className }) => {
   return (
-    <Dialog>
-      <DialogTrigger asChild>
+    <Drawer direction="right" shouldScaleBackground>
+      <DrawerTrigger asChild>
         <Button size={'icon'} variant={'ghost'} className={cn('rounded-full', className)}>
-          <AlignJustify />
+          <Send />
         </Button>
-      </DialogTrigger>
-      <DialogContent>
-        <SettingContent />
-      </DialogContent>
-    </Dialog>
+      </DrawerTrigger>
+      <DrawerPortal>
+        <DrawerContent className="right-2 top-2 fixed z-20 outline-none w-[4rem] flex">
+          <Stack direction={'column'} className="bg-background w-full h-full p-6 rounded-lg shadow-lg">
+            <Button size={'icon'} variant={'ghost'} className={cn('rounded-full', className)}>
+              <Send />
+            </Button>
+          </Stack>
+        </DrawerContent>
+      </DrawerPortal>
+    </Drawer>
   )
 }
 
 export const SettingPanel: FC<{ className?: string }> = ({ className }) => {
-  return <DrawerSettingPanel className={className} />
+  return (
+    <Stack direction={'column'} className={className}>
+      <DrawerSettingPanel />
+      <ActionPanel />
+    </Stack>
+  )
 }

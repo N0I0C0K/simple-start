@@ -38,7 +38,7 @@ export function useMouseDownTime(ref?: HTMLElement | null, intervalTimeout: numb
       const t = setInterval(() => {
         setTime(Date.now() - downTime!)
       }, intervalTimeout)
-      setDowningCountInterval(t)
+      //setDowningCountInterval(t)
     } else {
       setTime(0)
     }
@@ -67,27 +67,26 @@ export function useMouseDownTime(ref?: HTMLElement | null, intervalTimeout: numb
   return time
 }
 
-
 export function useMediaQuery(query: string) {
   const subscribe = useCallback(
     (callback: () => void) => {
-      const matchMedia = window.matchMedia(query);
+      const matchMedia = window.matchMedia(query)
 
-      matchMedia.addEventListener("change", callback);
+      matchMedia.addEventListener('change', callback)
       return () => {
-        matchMedia.removeEventListener("change", callback);
-      };
+        matchMedia.removeEventListener('change', callback)
+      }
     },
-    [query]
-  );
+    [query],
+  )
 
   const getSnapshot = () => {
-    return window.matchMedia(query).matches;
-  };
+    return window.matchMedia(query).matches
+  }
 
   const getServerSnapshot = () => {
-    throw Error("useMediaQuery is a client-only hook");
-  };
+    throw Error('useMediaQuery is a client-only hook')
+  }
 
-  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)
 }
