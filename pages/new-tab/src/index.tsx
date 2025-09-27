@@ -2,15 +2,16 @@ import '@src/index.css'
 import { createRoot } from 'react-dom/client'
 //import '@extension/ui/lib/global.css'
 import { exampleThemeStorage } from '@extension/storage'
-import { ThemeProvider, Toaster } from '@extension/ui'
+import { ThemeProvider, Toaster, useTheme } from '@extension/ui'
 import { GlobalDialog } from '@src/components/global-dialog'
 import NewTab from './NewTab'
 function App() {
+  const theme = useTheme()
   return (
     <div>
       <GlobalDialog>
         <NewTab />
-        <Toaster />
+        <Toaster invert={theme.realTheme === 'light'} />
       </GlobalDialog>
     </div>
   )

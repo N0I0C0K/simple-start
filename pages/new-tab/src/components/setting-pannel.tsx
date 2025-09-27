@@ -13,10 +13,16 @@ import {
   ThemeToggle,
   Switch,
   Input,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+  toast,
+  TooltipButton,
 } from '@extension/ui'
 import type { LucideProps } from 'lucide-react'
-import { AlignJustify, Send, SunMoon, History, HardDriveUpload, Pointer } from 'lucide-react'
-import type { ElementType, FC, ReactElement } from 'react'
+import { AlignJustify, Send, SunMoon, History, HardDriveUpload, Pointer, Check, X } from 'lucide-react'
+import type { ElementType, FC, ReactElement, ReactNode } from 'react'
 
 const SettingItem: FC<{
   className?: string
@@ -91,51 +97,134 @@ const CommonSettings: FC = () => {
   )
 }
 
-const DrawerSettingPanel: FC<{ className?: string }> = ({ className }) => {
+const SidebarButton: FC<{
+  className?: string
+  IconClass: ElementType<LucideProps>
+  children: ReactNode
+  label: string
+}> = ({ className, IconClass, children, label }) => {
   return (
     <Drawer direction="right" shouldScaleBackground>
-      <DrawerTrigger asChild>
-        <Button size={'icon'} variant={'ghost'} className={cn('rounded-full', className)}>
-          <AlignJustify />
-        </Button>
-      </DrawerTrigger>
-      <DrawerPortal>
-        <DrawerContent className="right-2 top-2 fixed z-20 outline-none w-[35rem] flex">
-          <div className="bg-background w-full h-full p-6 rounded-lg shadow-lg">
-            <CommonSettings />
-          </div>
-        </DrawerContent>
-      </DrawerPortal>
+      <Tooltip>
+        <DrawerTrigger asChild>
+          <TooltipTrigger asChild>
+            <Button size={'icon'} variant={'ghost'} className={cn('rounded-full')}>
+              <IconClass />
+            </Button>
+          </TooltipTrigger>
+        </DrawerTrigger>
+        <DrawerPortal>
+          <DrawerContent className={cn('right-2 top-2 fixed z-20 outline-none flex', className)}>
+            {children}
+          </DrawerContent>
+        </DrawerPortal>
+        <TooltipContent side="left">
+          <Text>{label}</Text>
+        </TooltipContent>
+      </Tooltip>
     </Drawer>
+  )
+}
+
+const DrawerSettingPanel: FC<{ className?: string }> = ({ className }) => {
+  return (
+    <SidebarButton IconClass={AlignJustify} label="Settings">
+      <div className="bg-background w-full h-full p-6 rounded-lg shadow-lg">
+        <CommonSettings />
+      </div>
+    </SidebarButton>
+  )
+}
+
+const CupPng = () => {
+  return (
+    <img className="w-10 h-10" src="https://img.icons8.com/?size=100&id=12873&format=png&color=000000" alt="coffee" />
+  )
+}
+
+const DrinkPanel: FC<{ className?: string; id: string | number }> = ({ className, id }) => {
+  return (
+    <Stack
+      direction={'row'}
+      center
+      className="shadow-lg p-4"
+      style={{
+        width: 356,
+      }}>
+      <CupPng />
+      <Stack direction={'column'} className="ml-2">
+        <Text className="select-none">Time to drink water!</Text>
+        <Text className="select-none -mt-1" level="s" gray>
+          From Nick at 13:45
+        </Text>
+      </Stack>
+      <Space />
+      <TooltipButton
+        tooltip="Drink!"
+        variant="ghost"
+        size={'icon'}
+        className={cn('rounded-full text-green-700', className)}
+        onClick={() => toast.dismiss(id)}>
+        <Check size={32} strokeWidth={4} />
+      </TooltipButton>
+      <Button
+        variant="ghost"
+        size={'icon'}
+        className={cn('rounded-full text-red-700', className)}
+        onClick={() => toast.dismiss(id)}>
+        <X size={32} strokeWidth={4} />
+      </Button>
+    </Stack>
+  )
+}
+
+const DrinkPanelAction: FC<{ className?: string }> = ({ className }) => {
+  return (
+    <Stack direction={'row'} center>
+      <Button variant="ghost" className={cn('rounded-full', className)}>
+        Drink
+      </Button>
+    </Stack>
   )
 }
 
 const ActionPanel: FC<{ className?: string }> = ({ className }) => {
   return (
-    <Drawer direction="right" shouldScaleBackground>
-      <DrawerTrigger asChild>
-        <Button size={'icon'} variant={'ghost'} className={cn('rounded-full', className)}>
+    <SidebarButton IconClass={Send} label="Small signal">
+      <Stack direction={'column'} className="bg-background w-full h-full p-6 rounded-lg shadow-lg">
+        <Button
+          size={'icon'}
+          variant={'ghost'}
+          className={cn('rounded-full', className)}
+          onClick={() => {
+            toast.custom(
+              id => {
+                return <DrinkPanel id={id} />
+              },
+              {
+                duration: Infinity,
+                position: 'top-center',
+                dismissible: false,
+                style: {
+                  borderRadius: '0.75rem',
+                },
+              },
+            )
+          }}>
           <Send />
         </Button>
-      </DrawerTrigger>
-      <DrawerPortal>
-        <DrawerContent className="right-2 top-2 fixed z-20 outline-none w-[4rem] flex">
-          <Stack direction={'column'} className="bg-background w-full h-full p-6 rounded-lg shadow-lg">
-            <Button size={'icon'} variant={'ghost'} className={cn('rounded-full', className)}>
-              <Send />
-            </Button>
-          </Stack>
-        </DrawerContent>
-      </DrawerPortal>
-    </Drawer>
+      </Stack>
+    </SidebarButton>
   )
 }
 
 export const SettingPanel: FC<{ className?: string }> = ({ className }) => {
   return (
-    <Stack direction={'column'} className={className}>
-      <DrawerSettingPanel />
-      <ActionPanel />
-    </Stack>
+    <TooltipProvider>
+      <Stack direction={'column'} className={className}>
+        <DrawerSettingPanel />
+        <ActionPanel />
+      </Stack>
+    </TooltipProvider>
   )
 }
