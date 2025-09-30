@@ -178,16 +178,6 @@ const DrinkPanel: FC<{ className?: string; id: string | number }> = ({ className
   )
 }
 
-const DrinkPanelAction: FC<{ className?: string }> = ({ className }) => {
-  return (
-    <Stack direction={'row'} center>
-      <Button variant="ghost" className={cn('rounded-full', className)}>
-        Drink
-      </Button>
-    </Stack>
-  )
-}
-
 const ActionPanel: FC<{ className?: string }> = ({ className }) => {
   return (
     <SidebarButton IconClass={Send} label="Small signal">

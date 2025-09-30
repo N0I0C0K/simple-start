@@ -1,7 +1,7 @@
 import 'webextension-polyfill'
 import { settingStorage } from '@extension/storage'
 import type { MqttProvider } from '@extension/shared'
-import { generateClient } from '@extension/shared'
+import { generateClient, generateEventCenter, } from '@extension/shared'
 
 // exampleThemeStorage.get().then(theme => {
 //   console.log('theme', theme)
@@ -35,6 +35,9 @@ async function setupMqtt() {
   mqttProvider.registerTopicCallback<string>('AHDDC/test/topic', payload => {
     console.log('Received message on test/topic:', payload)
   })
+
+  const eventCenter = await generateEventCenter(mqttProvider)
+  eventCenter.registerEvent
 }
 
 setupMqtt()
