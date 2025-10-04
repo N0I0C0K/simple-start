@@ -1,7 +1,13 @@
 import 'webextension-polyfill'
+// import { nanoid } from 'nanoid'
 import { settingStorage } from '@extension/storage'
-import type { MqttProvider } from '@extension/shared'
-import { generateClient, generateEventCenter, } from '@extension/shared'
+import type { EventCenter, MqttProvider, events, Event } from '@extension/shared'
+import {
+  generateClient,
+  generateEventCenter,
+  drinkWaterConfirmMessage,
+  drinkWaterLaunchMessage,
+} from '@extension/shared'
 
 // exampleThemeStorage.get().then(theme => {
 //   console.log('theme', theme)
@@ -19,6 +25,26 @@ chrome.runtime.onSuspendCanceled.addListener(() => {
 })
 
 let mqttProvider: MqttProvider | null = null
+let eventCenter: EventCenter | null = null
+let drinkWaterLaunchEvent: Event<events.DrinkWaterLaunchPayload> | null = null
+
+async function onReceiveDrinkWaterConfirm(payload: events.DrinkWaterConfirmPayload) {
+  await drinkWaterConfirmMessage.emit(payload)
+}
+
+async function onReceiveDrinkWaterLaunch(payload: events.DrinkWaterLaunchPayload) {
+  if (!eventCenter) return
+  const mqttSettings = await settingStorage.getMqttSettings()
+  if (!mqttSettings) return
+
+  await drinkWaterLaunchMessage.emit(payload)
+
+  const confirmEvent = eventCenter.getOrRegisterEvent<events.DrinkWaterConfirmPayload>({
+    eventName: `drink-water-confirm-${payload.id}`,
+    topic: payload.topic,
+  })
+  confirmEvent.registerReceiveCallback(onReceiveDrinkWaterConfirm)
+}
 
 async function setupMqtt() {
   const settings = await settingStorage.get()
@@ -32,12 +58,26 @@ async function setupMqtt() {
   mqttProvider = await generateClient('ws://broker.emqx.io:8083/mqtt')
   console.log('MQTT connected')
 
-  mqttProvider.registerTopicCallback<string>('AHDDC/test/topic', payload => {
-    console.log('Received message on test/topic:', payload)
+  eventCenter = await generateEventCenter(mqttProvider)
+  drinkWaterLaunchEvent = eventCenter.getOrRegisterEvent<events.DrinkWaterLaunchPayload>({
+    eventName: 'drink-water-launch',
+    topic: `${settings.mqttSettings.secretKey}/drink-water/launch`,
   })
-
-  const eventCenter = await generateEventCenter(mqttProvider)
-  eventCenter.registerEvent
+  drinkWaterLaunchEvent.registerReceiveCallback(onReceiveDrinkWaterLaunch)
 }
+
+drinkWaterLaunchMessage.registerListener(async payload => {
+  if (!drinkWaterLaunchEvent) return
+  const mqttSettings = await settingStorage.getMqttSettings()
+  if (!mqttSettings) return
+  drinkWaterLaunchEvent.emit(payload)
+})
+drinkWaterConfirmMessage.registerListener(async payload => {
+  const confirmEventName = `drink-water-confirm-${payload.id}`
+  if (!eventCenter) return
+  const confirmEvent = eventCenter.getRegisteredEvent<events.DrinkWaterConfirmPayload>(confirmEventName)
+  if (!confirmEvent) return
+  confirmEvent.emit(payload)
+})
 
 setupMqtt()

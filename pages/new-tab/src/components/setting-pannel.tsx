@@ -200,6 +200,12 @@ const ActionPanel: FC<{ className?: string }> = ({ className }) => {
                 },
               },
             )
+            chrome.notifications.create({
+              type: 'basic',
+              iconUrl: 'https://img.icons8.com/?size=100&id=12873&format=png&color=000000',
+              title: 'Time to drink water!',
+              message: 'Stay hydrated for better health.',
+            })
           }}>
           <Send />
         </Button>

@@ -1,60 +1,72 @@
 import type { MqttProvider } from './provider'
 
-export interface Event<T, P> {
-  registerReciveCallback: (callback: (payload: P) => void) => void
-  unregisterReciveCallback: (callback: (payload: P) => void) => void
-  onReceive: (payload: P) => void
-  emit: (payload: T) => void
+export interface EventProps {
   eventName: string
-  registeredCallbacks: Array<(payload: P) => void>
+  topic: string
+}
+
+export interface Event<T> {
+  registerReceiveCallback: (callback: (payload: T) => void) => void
+  unregisterReceiveCallback: (callback: (payload: T) => void) => void
+  onReceive: (payload: T) => void
+  emit: (payload: T) => Promise<void>
+  props: EventProps
+  registeredCallbacks: Array<(payload: T) => void>
 }
 
 export interface EventCenter {
-  registerEvent: <T, P>(eventName: string) => Event<T, P>
-  unregisterEvent: <T, P>(event: Event<T, P>) => void
+  getOrRegisterEvent: <T>(eventProps: EventProps) => Event<T>
+  unregisterEvent: <T>(event: Event<T>) => void
+  getRegisteredEvent: <T>(eventName: string) => Event<T> | null
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  events: Map<string, Event<any, any>>
+  events: Map<string, Event<any>>
 }
 
-const createEvent = <T, P>(eventName: string, mqttProvider: MqttProvider): Event<T, P> => {
+const createEvent = <T>(eventProps: EventProps, mqttProvider: MqttProvider): Event<T> => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const registeredCallbacks: Array<(payload: any) => void> = []
   return {
-    eventName,
+    props: eventProps,
     registeredCallbacks,
-    registerReciveCallback: function (callback: (payload: P) => void) {
+    registerReceiveCallback: function (callback: (payload: T) => void) {
+      const alreadyRegistered = registeredCallbacks.find(cb => cb === callback)
+      if (alreadyRegistered) return
       registeredCallbacks.push(callback)
     },
-    unregisterReciveCallback: function (callback: (payload: P) => void) {
+    unregisterReceiveCallback: function (callback: (payload: T) => void) {
       registeredCallbacks.filter(cb => cb !== callback)
     },
-    onReceive: function (payload: P) {
+    onReceive: function (payload: T) {
       registeredCallbacks.forEach(callback => callback(payload))
     },
-    emit: function (payload: T) {
-      mqttProvider.publish<T>(this.eventName, payload)
+    emit: async function (payload: T) {
+      await mqttProvider.publish<T>(eventProps.topic, payload)
     },
   }
 }
 
 export const generateEventCenter = async (client: MqttProvider): Promise<EventCenter> => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const registedEvents = new Map<string, Event<any, any>>()
+  const registeredEvents = new Map<string, Event<any>>()
   return {
-    events: registedEvents,
-    registerEvent: <T, P>(eventName: string) => {
-      if (registedEvents.has(eventName)) {
-        return registedEvents.get(eventName)! as Event<T, P>
+    events: registeredEvents,
+    getOrRegisterEvent: <T>(eventProps: EventProps) => {
+      if (registeredEvents.has(eventProps.eventName)) {
+        return registeredEvents.get(eventProps.eventName)! as Event<T>
       }
-      const event = createEvent<T, P>(eventName, client)
-      registedEvents.set(eventName, event)
-      client.registerTopicCallback<P>(eventName, event.onReceive)
-      return event
+      const newEvent = createEvent<T>(eventProps, client)
+      registeredEvents.set(eventProps.eventName, newEvent)
+      client.registerTopicCallback<T>(eventProps.topic, newEvent.onReceive)
+      return newEvent
     },
-    unregisterEvent: <T, P>(event: Event<T, P>) => {
-      if (!registedEvents.has(event.eventName)) return
-      registedEvents.delete(event.eventName)
-      client.unregisterTopicCallback<P>(event.eventName, event.onReceive)
+    unregisterEvent: <T>(event: Event<T>) => {
+      if (!registeredEvents.has(event.props.eventName)) return
+      registeredEvents.delete(event.props.eventName)
+      client.unregisterTopicCallback<T>(event.props.topic, event.onReceive)
+    },
+    getRegisteredEvent: <T>(eventName: string) => {
+      if (!registeredEvents.has(eventName)) return null
+      return registeredEvents.get(eventName)! as Event<T>
     },
   }
 }

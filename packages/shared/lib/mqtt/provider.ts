@@ -1,6 +1,6 @@
 import mqtt from 'mqtt'
 
-class TopicEvent<T> {
+class TopicEventHandler<T> {
   private topic: string
   private regx: RegExp
   private callbacks: Array<(payload: T) => void> = []
@@ -11,6 +11,8 @@ class TopicEvent<T> {
   }
 
   public subscribe(callback: (payload: T) => void) {
+    const alreadyRegistered = this.callbacks.find(cb => cb === callback)
+    if (alreadyRegistered) return
     this.callbacks.push(callback)
   }
 
@@ -18,7 +20,7 @@ class TopicEvent<T> {
     this.callbacks = this.callbacks.filter(cb => cb !== callback)
   }
 
-  public emit(topic: string, payload: T) {
+  public onReceive(topic: string, payload: T) {
     this.callbacks.forEach(callback => callback(payload))
   }
 
@@ -32,9 +34,9 @@ export interface MqttProvider {
   registerTopicCallback: <T>(topic: string, callback: (payload: T) => void) => void
   unregisterTopicCallback: <T>(topic: string, callback: (payload: T) => void) => void
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  registeredTopics: Map<string, TopicEvent<any>>
-  get_or_create_topic_event: <T>(topic: string) => TopicEvent<T>
-  publish: <T>(topic: string, payload: T) => void
+  registeredTopics: Map<string, TopicEventHandler<any>>
+  get_or_create_topic_event: <T>(topic: string) => TopicEventHandler<T>
+  publish: <T>(topic: string, payload: T) => Promise<void>
 }
 
 export const generateClient = async (brokerUrl: string): Promise<MqttProvider> => {
@@ -57,13 +59,13 @@ export const generateClient = async (brokerUrl: string): Promise<MqttProvider> =
     get_or_create_topic_event: function <T>(topic: string) {
       if (!this.registeredTopics.has(topic)) {
         this.client.subscribe(topic)
-        this.registeredTopics.set(topic, new TopicEvent<T>(topic))
+        this.registeredTopics.set(topic, new TopicEventHandler<T>(topic))
       }
       return this.registeredTopics.get(topic)!
     },
-    publish: function <T>(topic: string, payload: T) {
-      this.client.publish(topic, JSON.stringify(payload))
-    }
+    publish: async function <T>(topic: string, payload: T) {
+      await this.client.publish(topic, JSON.stringify(payload))
+    },
   }
 
   client.on('message', (topic: string, message: Buffer) => {
@@ -72,7 +74,7 @@ export const generateClient = async (brokerUrl: string): Promise<MqttProvider> =
     if (!topicEvent) return
     try {
       const payload = JSON.parse(message.toString())
-      topicEvent.emit(topic, payload)
+      topicEvent.onReceive(topic, payload)
     } catch (error) {
       console.error('Error emitting topic event:', error)
     }

@@ -6,9 +6,10 @@ export const DEFAULT_WALLPAPER_URL = 'https://w.wallhaven.cc/full/ml/wallhaven-m
 export const DEFAULT_MQTT_BROKER_URL = 'mqtt://broker.emqx.io'
 
 type MqttSetting = {
-  mqttBrokerUrl?: string
-  secretKey?: string
-  enabled?: boolean
+  mqttBrokerUrl: string
+  secretKey: string
+  enabled: boolean
+  username: string
 }
 
 type SettingProps = {
@@ -20,6 +21,7 @@ type SettingProps = {
 
 type SettingsStorage = BaseStorage<SettingProps> & {
   update: (data: Partial<SettingProps>) => Promise<void>
+  getMqttSettings: () => Promise<MqttSetting | undefined>
 }
 
 const defaultSetting: SettingProps = {
@@ -37,5 +39,9 @@ export const settingStorage: SettingsStorage = {
   ...storage,
   update: async data => {
     storage.set(preVal => Object.assign(preVal, data))
+  },
+  getMqttSettings: async () => {
+    const settings = await storage.get()
+    return settings.mqttSettings
   },
 }
