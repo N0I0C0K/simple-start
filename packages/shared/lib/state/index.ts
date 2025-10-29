@@ -1,0 +1,1 @@
+export { drinkWaterEventGlobalState } from './events'

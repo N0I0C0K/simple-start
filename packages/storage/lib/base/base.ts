@@ -111,6 +111,11 @@ export function createStorage<D = string>(key: string, fallback: D, config?: Sto
     _emitChange();
   };
 
+  const remove = async () => {
+    await chrome?.storage[storageEnum].remove(key);
+    _emitChange();
+  }
+
   const subscribe = (listener: () => void) => {
     listeners = [...listeners, listener];
 
@@ -153,5 +158,6 @@ export function createStorage<D = string>(key: string, fallback: D, config?: Sto
     set,
     getSnapshot,
     subscribe,
+    remove,
   };
 }

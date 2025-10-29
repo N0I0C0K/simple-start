@@ -50,6 +50,7 @@ export const generateClient = async (brokerUrl: string): Promise<MqttProvider> =
       const topicEvent = this.get_or_create_topic_event<T>(topic)
       topicEvent.subscribe(callback)
       client.subscribe(topic)
+      console.log('Registered MQTT topic callback:', topic)
     },
     unregisterTopicCallback: function <T>(topic: string, callback: (payload: T) => void) {
       const topicEvent = this.registeredTopics.get(topic)

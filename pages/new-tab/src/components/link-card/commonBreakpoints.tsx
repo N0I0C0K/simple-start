@@ -1,4 +1,4 @@
-import { commonLayoutLike } from './link-card-group'
+import type { commonLayoutLike } from './link-card-group'
 
 // NOTE: MUST BE ORDERED BY SIZE DESC
 

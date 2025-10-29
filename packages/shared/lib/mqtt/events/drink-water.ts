@@ -5,8 +5,12 @@ export interface DrinkWaterLaunchPayload {
   topic: string
 }
 
+export type DrinkWaterAction = 'accept' | 'reject'
+
 export interface DrinkWaterConfirmPayload {
   date: string
   from: string
   id: string
+  eventId: string
+  action: DrinkWaterAction
 }

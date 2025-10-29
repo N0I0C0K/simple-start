@@ -1,13 +1,19 @@
 import 'webextension-polyfill'
 // import { nanoid } from 'nanoid'
-import { settingStorage } from '@extension/storage'
+import { mqttStateManager, mqttStateStorage, settingStorage } from '@extension/storage'
 import type { EventCenter, MqttProvider, events, Event } from '@extension/shared'
 import {
   generateClient,
   generateEventCenter,
-  drinkWaterConfirmMessage,
-  drinkWaterLaunchMessage,
+  receiveDrinkWaterConfirmMessage,
+  receiveDrinkWaterLaunchMessage,
+  closeMqttClientMessage,
+  openMqttClientMessage,
+  setLaunchPollingMessage,
+  drinkWaterEventGlobalState,
+  sendDrinkWaterConfirmMessage,
 } from '@extension/shared'
+import type { MqttClient } from 'mqtt/*'
 
 // exampleThemeStorage.get().then(theme => {
 //   console.log('theme', theme)
@@ -29,7 +35,37 @@ let eventCenter: EventCenter | null = null
 let drinkWaterLaunchEvent: Event<events.DrinkWaterLaunchPayload> | null = null
 
 async function onReceiveDrinkWaterConfirm(payload: events.DrinkWaterConfirmPayload) {
-  await drinkWaterConfirmMessage.emit(payload)
+  await receiveDrinkWaterConfirmMessage.emit(payload)
+}
+
+async function initializeMqttState() {
+  await mqttStateManager.setConnected(false)
+  const mqttSettings = await settingStorage.getMqttSettings()
+  if (mqttSettings?.enabled) {
+    await setupMqtt()
+  } else {
+    return
+  }
+}
+
+async function registerConfirmEvent(payload: events.DrinkWaterLaunchPayload) {
+  if (!eventCenter) return
+  const mqttSettings = await settingStorage.getMqttSettings()
+  if (!mqttSettings)
+    throw new Error('MQTT settings not found')
+  const confirmEvent = eventCenter.getOrRegisterEvent<events.DrinkWaterConfirmPayload>({
+    eventName: `drink-water-confirm-${payload.id}`,
+    topic: `${mqttSettings.secretKey}/drink-water/confirm/${payload.id}`,
+  })
+  confirmEvent.registerReceiveCallback(onReceiveDrinkWaterConfirm)
+}
+
+async function unregisterConfirmEvent(payload: events.DrinkWaterLaunchPayload) {
+  if (!eventCenter) return
+  const confirmEvent = eventCenter.getRegisteredEvent<events.DrinkWaterConfirmPayload>(`drink-water-confirm-${payload.id}`)
+  if (!confirmEvent) return
+  confirmEvent.unregisterReceiveCallback(onReceiveDrinkWaterConfirm)
+  eventCenter.unregisterEvent(confirmEvent)
 }
 
 async function onReceiveDrinkWaterLaunch(payload: events.DrinkWaterLaunchPayload) {
@@ -37,26 +73,36 @@ async function onReceiveDrinkWaterLaunch(payload: events.DrinkWaterLaunchPayload
   const mqttSettings = await settingStorage.getMqttSettings()
   if (!mqttSettings) return
 
-  await drinkWaterLaunchMessage.emit(payload)
+  await receiveDrinkWaterLaunchMessage.emit(payload)
 
-  const confirmEvent = eventCenter.getOrRegisterEvent<events.DrinkWaterConfirmPayload>({
-    eventName: `drink-water-confirm-${payload.id}`,
-    topic: payload.topic,
+  await registerConfirmEvent(payload)
+}
+
+async function _initMqttClientEvent(client: MqttClient) {
+  client.on('close', async () => {
+    console.log('MQTT connection closed')
+    await mqttStateManager.setConnected(false)
   })
-  confirmEvent.registerReceiveCallback(onReceiveDrinkWaterConfirm)
+  client.on('connect', async () => {
+    console.log('MQTT connected')
+    await mqttStateManager.setConnected(true)
+  })
 }
 
 async function setupMqtt() {
   const settings = await settingStorage.get()
   console.log('Current MQTT settings:', settings.mqttSettings)
 
-  if (!(settings.mqttSettings?.enabled && settings.mqttSettings.mqttBrokerUrl && settings.mqttSettings.secretKey)) {
+  if (!(settings.mqttSettings?.enabled && settings.mqttSettings.secretKey)) {
     console.log('MQTT is disabled or not properly configured.')
     return
   }
   console.log('Connecting to MQTT broker...')
   mqttProvider = await generateClient('ws://broker.emqx.io:8083/mqtt')
   console.log('MQTT connected')
+  _initMqttClientEvent(mqttProvider.client)
+
+  await mqttStateManager.setConnected(true)
 
   eventCenter = await generateEventCenter(mqttProvider)
   drinkWaterLaunchEvent = eventCenter.getOrRegisterEvent<events.DrinkWaterLaunchPayload>({
@@ -66,18 +112,71 @@ async function setupMqtt() {
   drinkWaterLaunchEvent.registerReceiveCallback(onReceiveDrinkWaterLaunch)
 }
 
-drinkWaterLaunchMessage.registerListener(async payload => {
-  if (!drinkWaterLaunchEvent) return
-  const mqttSettings = await settingStorage.getMqttSettings()
-  if (!mqttSettings) return
-  drinkWaterLaunchEvent.emit(payload)
-})
-drinkWaterConfirmMessage.registerListener(async payload => {
-  const confirmEventName = `drink-water-confirm-${payload.id}`
+// receiveDrinkWaterLaunchMessage.registerListener(async payload => {
+//   if (!drinkWaterLaunchEvent) return
+//   drinkWaterLaunchEvent.emit(payload)
+//   await registerConfirmEvent(payload)
+// })
+
+sendDrinkWaterConfirmMessage.registerListener(async payload => {
+  const confirmEventName = `drink-water-confirm-${payload.eventId}`
   if (!eventCenter) return
   const confirmEvent = eventCenter.getRegisteredEvent<events.DrinkWaterConfirmPayload>(confirmEventName)
   if (!confirmEvent) return
-  confirmEvent.emit(payload)
+  await confirmEvent.emit(payload)
+  console.log('Send drink water confirm message:', payload)
 })
 
-setupMqtt()
+closeMqttClientMessage.registerListener(async () => {
+  if (!mqttProvider) return
+  await mqttProvider.client.endAsync()
+})
+
+openMqttClientMessage.registerListener(async () => {
+  if (!mqttProvider) {
+    await setupMqtt()
+    return
+  }
+  if (mqttProvider.client.connected) return
+  mqttProvider.client.reconnect()
+})
+
+let _launchPollingHandler: {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  intervalId: any
+  launchPayload: events.DrinkWaterLaunchPayload
+} | null = null
+
+setLaunchPollingMessage.registerListener(async payload => {
+  if (!drinkWaterLaunchEvent) return
+  if (payload === null) {
+    if (_launchPollingHandler) {
+      clearInterval(_launchPollingHandler.intervalId)
+      _launchPollingHandler = null
+    }
+    return
+  }
+
+  if (_launchPollingHandler?.launchPayload.id === payload?.id) {
+    return
+  }
+
+  const intervalId = setInterval(async () => {
+    const state = await drinkWaterEventGlobalState.get()
+    if (state.currentEvent?.id !== payload.id) {
+      console.log('Stopping launch polling for event:', payload)
+      clearInterval(intervalId)
+      _launchPollingHandler = null
+      return
+    }
+    drinkWaterLaunchEvent!.emit(payload)
+  }, 5 * 1000)
+
+  _launchPollingHandler = {
+    intervalId: intervalId,
+    launchPayload: payload,
+  }
+  registerConfirmEvent(payload)
+})
+
+initializeMqttState()

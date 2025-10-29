@@ -8,6 +8,7 @@ import '@/src/style/placeholder.css'
 import { HistoryArea } from './components/history-area'
 import { settingStorage, DEFAULT_WALLPAPER_URL } from '@extension/storage'
 import { useStorage } from '@extension/shared'
+import { DrinkWaterEventMountComponent } from './components/events'
 
 function SearchGroup() {
   const settings = useStorage(settingStorage)
@@ -24,7 +25,7 @@ function SearchGroup() {
     })
   }, [])
   return (
-    <div className=" w-[40%] min-w-[20rem] max-w-[40rem]">
+    <div className="w-[40%] min-w-[20rem] max-w-[40rem]">
       <div className="relative">
         <Input
           ref={inputRef}
@@ -42,12 +43,18 @@ function SearchGroup() {
             }
           }}
         />
-        <div className="pointer-events-none absolute inset-y-0 start-1 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
+        <div
+          className="pointer-events-none absolute inset-y-0 start-1 flex items-center justify-center ps-3
+            text-muted-foreground/80 peer-disabled:opacity-50">
           <Search size={16} strokeWidth={3} />
         </div>
 
         <button
-          className="absolute inset-y-0 end-1 flex h-full w-9 items-center justify-center rounded-e-lg text-muted-foreground/80 ring-offset-background transition-shadow hover:text-foreground focus-visible:border focus-visible:border-ring focus-visible:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
+          className="absolute inset-y-0 end-1 flex h-full w-9 items-center justify-center rounded-e-lg
+            text-muted-foreground/80 ring-offset-background transition-shadow hover:text-foreground focus-visible:border
+            focus-visible:border-ring focus-visible:text-foreground focus-visible:outline-none focus-visible:ring-2
+            focus-visible:ring-ring/30 focus-visible:ring-offset-2 disabled:pointer-events-none
+            disabled:cursor-not-allowed disabled:opacity-50"
           aria-label="Submit search"
           type="submit"
           onClick={() => {
@@ -117,30 +124,37 @@ const NewTab = () => {
           </Center>
           <Center>
             <div className="relative min-w-[20rem] w-[50%]">
-              <ScrollLinkCardPage className="relative backdrop-blur-2xl rounded-2xl shadow-md dark:backdrop-brightness-75 w-full overflow-hidden bg-slate-50/20 dark:bg-slate-700/20" />
+              <ScrollLinkCardPage
+                className="relative backdrop-blur-2xl rounded-2xl shadow-md dark:backdrop-brightness-75 w-full
+                  overflow-hidden bg-slate-50/15 dark:bg-slate-700/5"
+              />
               {/* <DndLinkCardPage className="relative backdrop-blur-2xl rounded-2xl shadow-md dark:backdrop-brightness-75 w-full overflow-hidden bg-slate-50/20 dark:bg-slate-700/20" /> */}
             </div>
           </Center>
         </Stack>
         {settings.useHistorySuggestion ? (
           <Stack direction={'column'} className="flex-1 flex flex-col justify-end">
-            <HistoryArea className="backdrop-blur-2xl rounded-t-xl shadow-md dark:backdrop-brightness-75 bg-slate-50/20 dark:bg-slate-700/20" />
+            <HistoryArea
+              className="backdrop-blur-2xl rounded-t-xl shadow-md dark:backdrop-brightness-75 bg-slate-50/20
+                dark:bg-slate-700/20"
+            />
           </Stack>
         ) : (
           <div style={{ flexGrow: 0.7 }} />
         )}
       </div>
       <img
-        className="x-bg-img h-screen w-screen fixed top-0 left-0 -z-10 scale-105 brightness-90 dark:brightness-75 object-cover select-none"
+        className="x-bg-img h-screen w-screen fixed top-0 left-0 -z-10 scale-105 brightness-90 dark:brightness-75
+          object-cover select-none"
         src={wallpaperUrl}
         alt=""
         onError={e => {
           console.log('back ground err')
-          if(wallpaperUrl !== DEFAULT_WALLPAPER_URL)
-            setWallpaperUrl(DEFAULT_WALLPAPER_URL)
+          if (wallpaperUrl !== DEFAULT_WALLPAPER_URL) setWallpaperUrl(DEFAULT_WALLPAPER_URL)
         }}
       />
       <SettingPanel className="fixed top-2 right-2" />
+      <DrinkWaterEventMountComponent />
     </>
   )
 }

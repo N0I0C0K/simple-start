@@ -1,8 +1,7 @@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@extension/ui/lib/components'
 import type { GlobalDialogInnerProps } from '@src/provider'
 import { GlobalDialogContext } from '@src/provider/global-dialog'
-import type { ReactNode } from 'react'
-import { useEffect, useState, type FC } from 'react'
+import { type ReactNode, useState, type FC } from 'react'
 
 export const GlobalDialog: FC<{
   children: ReactNode

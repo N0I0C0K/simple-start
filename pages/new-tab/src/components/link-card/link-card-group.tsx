@@ -23,7 +23,7 @@ export function sortItemByLayouts(layouts: Layout[], urlItems: QuickUrlItem[]) {
   )
 }
 
-type commonLayoutLike = {
+export type commonLayoutLike = {
   lg: number
   md: number
   sm: number
@@ -111,7 +111,8 @@ export const LinkCardGroup: FC = () => {
   return (
     <div
       ref={ref}
-      className="relative backdrop-blur-2xl rounded-xl shadow-md dark:backdrop-brightness-75 duration-300 w-full overflow-hidden">
+      className="relative backdrop-blur-2xl rounded-xl shadow-md dark:backdrop-brightness-75 duration-300 w-full
+        overflow-hidden">
       <Carousel className="w-full" opts={{ duration: 50, watchDrag: !hasItemDragging }} setApi={setCarouselApi}>
         <CarouselContent>
           {pages.map(page => {

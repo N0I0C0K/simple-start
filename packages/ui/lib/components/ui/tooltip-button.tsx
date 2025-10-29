@@ -13,7 +13,7 @@ export const TooltipButton = React.forwardRef<
   return (
     <TooltipProvider>
       <Tooltip>
-        <TooltipTrigger>
+        <TooltipTrigger asChild>
           <Button ref={ref} {...props} />
         </TooltipTrigger>
         <TooltipContent className="">{React.isValidElement(tooltip) ? tooltip : <span>{tooltip}</span>}</TooltipContent>

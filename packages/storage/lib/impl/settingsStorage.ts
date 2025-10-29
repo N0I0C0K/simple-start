@@ -1,6 +1,7 @@
 import { StorageEnum } from '../base/enums'
 import { createStorage } from '../base/base'
 import type { BaseStorage } from '../base/types'
+import deepmerge from 'deepmerge'
 
 export const DEFAULT_WALLPAPER_URL = 'https://w.wallhaven.cc/full/ml/wallhaven-mlpll9.jpg'
 export const DEFAULT_MQTT_BROKER_URL = 'mqtt://broker.emqx.io'
@@ -15,19 +16,31 @@ type MqttSetting = {
 type SettingProps = {
   useHistorySuggestion: boolean
   autoFocusCommandInput: boolean
-  wallpaperUrl?: string
-  mqttSettings?: MqttSetting
+  wallpaperUrl: string | null
+  mqttSettings: MqttSetting
 }
 
+type DeepPartial<T> = T extends object
+  ? {
+    [K in keyof T]?: DeepPartial<T[K]>;
+  }
+  : T;
+
 type SettingsStorage = BaseStorage<SettingProps> & {
-  update: (data: Partial<SettingProps>) => Promise<void>
-  getMqttSettings: () => Promise<MqttSetting | undefined>
+  update: (data: DeepPartial<SettingProps>) => Promise<void>
+  getMqttSettings: () => Promise<MqttSetting | null>
 }
 
 const defaultSetting: SettingProps = {
   useHistorySuggestion: true,
   autoFocusCommandInput: true,
-  wallpaperUrl: undefined,
+  wallpaperUrl: null,
+  mqttSettings: {
+    enabled: false,
+    mqttBrokerUrl: DEFAULT_MQTT_BROKER_URL,
+    secretKey: 'ABCDEF',
+    username: 'MomoBoss',
+  },
 }
 
 const storage = createStorage<SettingProps>('settings-storage', defaultSetting, {
@@ -38,7 +51,7 @@ const storage = createStorage<SettingProps>('settings-storage', defaultSetting, 
 export const settingStorage: SettingsStorage = {
   ...storage,
   update: async data => {
-    storage.set(preVal => Object.assign(preVal, data))
+    storage.set(preVal => (deepmerge(preVal, data) as SettingProps))
   },
   getMqttSettings: async () => {
     const settings = await storage.get()

@@ -1,12 +1,15 @@
 import { cn } from '@/lib/utils'
-import { useStorage } from '@extension/shared'
-import { settingStorage } from '@extension/storage'
+import {
+  closeMqttClientMessage,
+  receiveDrinkWaterLaunchMessage,
+  openMqttClientMessage,
+  useStorage,
+} from '@extension/shared'
+import { useDrinkWaterEventManager } from '@extension/shared/lib/state/events'
+import { mqttStateManager, settingStorage } from '@extension/storage'
+import deepmerge from 'deepmerge'
 import {
   Button,
-  Drawer,
-  DrawerContent,
-  DrawerTrigger,
-  DrawerPortal,
   Space,
   Stack,
   Text,
@@ -17,12 +20,37 @@ import {
   TooltipTrigger,
   TooltipContent,
   TooltipProvider,
-  toast,
   TooltipButton,
+  Separator,
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogTitle,
+  DialogHeader,
+  DialogDescription,
+  Badge,
+  ScrollArea,
 } from '@extension/ui'
 import type { LucideProps } from 'lucide-react'
-import { AlignJustify, Send, SunMoon, History, HardDriveUpload, Pointer, Check, X } from 'lucide-react'
+import {
+  AlignJustify,
+  Send,
+  SunMoon,
+  History,
+  HardDriveUpload,
+  Pointer,
+  CupSoda,
+  Link2,
+  KeyRound,
+  ToggleRight,
+  User,
+  RefreshCcw,
+  Activity,
+  Dot,
+} from 'lucide-react'
+import { nanoid } from 'nanoid'
 import type { ElementType, FC, ReactElement, ReactNode } from 'react'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@extension/ui/lib/components/ui/tabs'
 
 const SettingItem: FC<{
   className?: string
@@ -30,7 +58,8 @@ const SettingItem: FC<{
   description?: string
   control: ReactElement
   IconClass: ElementType<LucideProps>
-}> = ({ control, title, className, description, IconClass }) => {
+  additionalControl?: ReactElement
+}> = ({ control, title, className, description, IconClass, additionalControl }) => {
   return (
     <Stack
       direction={'row'}
@@ -48,8 +77,112 @@ const SettingItem: FC<{
           {description}
         </Text>
       </Stack>
-      <Space />
-      {control}
+      <Space className="mx-1" />
+      <div className="max-w-[50%]">{control}</div>
+      {additionalControl}
+    </Stack>
+  )
+}
+
+const ConnectedBadge: FC = () => {
+  return (
+    <Badge className="bg-green-500">
+      <Link2 />
+      Connected
+    </Badge>
+  )
+}
+
+const DisconnectedBadge: FC = () => {
+  return (
+    <Badge className="bg-red-500">
+      <Link2 />
+      Disconnected
+    </Badge>
+  )
+}
+
+const ConnectSettingItem: FC = () => {
+  const mqttServerState = useStorage(mqttStateManager)
+  return (
+    <SettingItem
+      IconClass={Activity}
+      title="Refresh Connection"
+      description="Reconnect to MQTT server."
+      control={
+        <Button
+          variant={'link'}
+          onClick={async () => {
+            if (mqttServerState.connected) {
+              await closeMqttClientMessage.emit()
+              return
+            }
+            await openMqttClientMessage.emit()
+          }}>
+          {mqttServerState.connected ? 'Disconnect' : 'Connect'}
+        </Button>
+      }
+      additionalControl={
+        <>
+          <Stack direction={'row'} center className="absolute bottom-0 end-1">
+            <Dot className={mqttServerState.connected ? 'text-green-500' : 'text-red-500'} />
+            <Text gray level="xs" className="-ml-2">
+              {mqttServerState.connected ? 'Connected' : 'Disconnected'}
+            </Text>
+          </Stack>
+        </>
+      }
+    />
+  )
+}
+
+const MqttSettings: FC = () => {
+  const settings = useStorage(settingStorage)
+  return (
+    <Stack direction={'column'} className={'gap-2 w-full'}>
+      <Stack direction={'column'}>
+        <Text gray level="s">
+          Configure your MQTT server settings to enable small signal functionality.
+        </Text>
+      </Stack>
+      <SettingItem
+        IconClass={ToggleRight}
+        title="Enable"
+        description="Enable or disable MQTT small signal functionality."
+        control={
+          <Switch
+            checked={settings.mqttSettings?.enabled}
+            onCheckedChange={async val => {
+              await settingStorage.update({ mqttSettings: { enabled: val } })
+            }}
+          />
+        }
+      />
+      <ConnectSettingItem />
+      <SettingItem
+        IconClass={KeyRound}
+        title="Secret Key"
+        description="Use the same secret key under same group."
+        control={
+          <Input
+            placeholder="Enter secret key"
+            value={settings.mqttSettings?.secretKey || ''}
+            onChange={e => settingStorage.update({ mqttSettings: { secretKey: e.target.value } })}
+          />
+        }
+      />
+      <SettingItem
+        IconClass={User}
+        title="Username"
+        description="Nick name for small signal."
+        control={
+          <Input
+            placeholder="Enter username"
+            value={settings.mqttSettings?.username || ''}
+            onChange={e => settingStorage.update({ mqttSettings: { username: e.target.value } })}
+          />
+        }
+      />
     </Stack>
   )
 }
@@ -58,6 +191,9 @@ const CommonSettings: FC = () => {
   const settings = useStorage(settingStorage)
   return (
     <Stack direction={'column'} className={'gap-2 w-full'}>
+      <Text gray level="s">
+        Configure your general settings.
+      </Text>
       <SettingItem IconClass={SunMoon} title="Theme" description="Change dark/light theme." control={<ThemeToggle />} />
       <SettingItem
         IconClass={History}
@@ -97,129 +233,86 @@ const CommonSettings: FC = () => {
   )
 }
 
+const SettingTabs: FC = () => {
+  return (
+    <Tabs defaultValue="common-settings">
+      <TabsList>
+        <TabsTrigger value="common-settings">Common</TabsTrigger>
+        <TabsTrigger value="mqtt-settings">Server</TabsTrigger>
+      </TabsList>
+      <TabsContent value="common-settings">
+        <CommonSettings />
+      </TabsContent>
+      <TabsContent value="mqtt-settings">
+        <MqttSettings />
+      </TabsContent>
+    </Tabs>
+  )
+}
+
 const SidebarButton: FC<{
   className?: string
   IconClass: ElementType<LucideProps>
   children: ReactNode
   label: string
-}> = ({ className, IconClass, children, label }) => {
+  description?: string
+}> = ({ className, IconClass, children, label, description }) => {
   return (
-    <Drawer direction="right" shouldScaleBackground>
-      <Tooltip>
-        <DrawerTrigger asChild>
+    <Tooltip>
+      <Dialog>
+        <DialogTrigger asChild>
           <TooltipTrigger asChild>
             <Button size={'icon'} variant={'ghost'} className={cn('rounded-full')}>
               <IconClass />
             </Button>
           </TooltipTrigger>
-        </DrawerTrigger>
-        <DrawerPortal>
-          <DrawerContent className={cn('right-2 top-2 fixed z-20 outline-none flex', className)}>
-            {children}
-          </DrawerContent>
-        </DrawerPortal>
+        </DialogTrigger>
+        <DialogContent className={cn('', className)}>
+          <DialogHeader>
+            <DialogTitle>{label}</DialogTitle>
+            <DialogDescription>{description}</DialogDescription>
+          </DialogHeader>
+          {children}
+        </DialogContent>
         <TooltipContent side="left">
           <Text>{label}</Text>
         </TooltipContent>
-      </Tooltip>
-    </Drawer>
+      </Dialog>
+    </Tooltip>
   )
 }
 
 const DrawerSettingPanel: FC<{ className?: string }> = ({ className }) => {
   return (
-    <SidebarButton IconClass={AlignJustify} label="Settings">
-      <div className="bg-background w-full h-full p-6 rounded-lg shadow-lg">
-        <CommonSettings />
-      </div>
+    <SidebarButton IconClass={AlignJustify} label="Settings" description="Set your preferences">
+      <SettingTabs />
     </SidebarButton>
   )
 }
 
-const CupPng = () => {
+const DrinkWaterButton: FC<{ className?: string }> = ({ className }) => {
+  const drinkWaterState = useDrinkWaterEventManager()
   return (
-    <img className="w-10 h-10" src="https://img.icons8.com/?size=100&id=12873&format=png&color=000000" alt="coffee" />
-  )
-}
-
-const DrinkPanel: FC<{ className?: string; id: string | number }> = ({ className, id }) => {
-  return (
-    <Stack
-      direction={'row'}
-      center
-      className="shadow-lg p-4"
-      style={{
-        width: 356,
+    <TooltipButton
+      size={'icon'}
+      tooltip="Drink Water"
+      variant={'ghost'}
+      className={cn('rounded-full', className)}
+      onClick={async () => {
+        await drinkWaterState.launchEvent()
       }}>
-      <CupPng />
-      <Stack direction={'column'} className="ml-2">
-        <Text className="select-none">Time to drink water!</Text>
-        <Text className="select-none -mt-1" level="s" gray>
-          From Nick at 13:45
-        </Text>
-      </Stack>
-      <Space />
-      <TooltipButton
-        tooltip="Drink!"
-        variant="ghost"
-        size={'icon'}
-        className={cn('rounded-full text-green-700', className)}
-        onClick={() => toast.dismiss(id)}>
-        <Check size={32} strokeWidth={4} />
-      </TooltipButton>
-      <Button
-        variant="ghost"
-        size={'icon'}
-        className={cn('rounded-full text-red-700', className)}
-        onClick={() => toast.dismiss(id)}>
-        <X size={32} strokeWidth={4} />
-      </Button>
-    </Stack>
-  )
-}
-
-const ActionPanel: FC<{ className?: string }> = ({ className }) => {
-  return (
-    <SidebarButton IconClass={Send} label="Small signal">
-      <Stack direction={'column'} className="bg-background w-full h-full p-6 rounded-lg shadow-lg">
-        <Button
-          size={'icon'}
-          variant={'ghost'}
-          className={cn('rounded-full', className)}
-          onClick={() => {
-            toast.custom(
-              id => {
-                return <DrinkPanel id={id} />
-              },
-              {
-                duration: Infinity,
-                position: 'top-center',
-                dismissible: false,
-                style: {
-                  borderRadius: '0.75rem',
-                },
-              },
-            )
-            chrome.notifications.create({
-              type: 'basic',
-              iconUrl: 'https://img.icons8.com/?size=100&id=12873&format=png&color=000000',
-              title: 'Time to drink water!',
-              message: 'Stay hydrated for better health.',
-            })
-          }}>
-          <Send />
-        </Button>
-      </Stack>
-    </SidebarButton>
+      <CupSoda />
+    </TooltipButton>
   )
 }
 
 export const SettingPanel: FC<{ className?: string }> = ({ className }) => {
   return (
     <TooltipProvider>
-      <Stack direction={'column'} className={className}>
+      <Stack direction={'column'} className={cn('gap-2', className)}>
         <DrawerSettingPanel />
-        <ActionPanel />
+        <Separator className="bg-gray-600/40" />
+        <DrinkWaterButton />
       </Stack>
     </TooltipProvider>
   )

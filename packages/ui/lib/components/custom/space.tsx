@@ -1,3 +1,5 @@
-export function Space() {
-  return <span className='flex-1' />
+import { cn } from '@/lib/utils'
+
+export function Space({ className }: { className?: string }) {
+  return <span className={cn('flex-1', className)} />
 }

@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import type { FC } from 'react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@extension/ui'
 
 const ThemeSelect: FC = () => {
