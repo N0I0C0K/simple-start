@@ -33,6 +33,7 @@ chrome.runtime.onSuspendCanceled.addListener(() => {
 let mqttProvider: MqttProvider | null = null
 let eventCenter: EventCenter | null = null
 let drinkWaterLaunchEvent: Event<events.DrinkWaterLaunchPayload> | null = null
+let heartbeatEvent: Event<events.HeartbeatPayload> | null = null
 let heartbeatInterval: ReturnType<typeof setInterval> | null = null
 
 async function onReceiveDrinkWaterConfirm(payload: events.DrinkWaterConfirmPayload) {
@@ -87,14 +88,13 @@ function startHeartbeat() {
   
   // Start heartbeat every 10 seconds
   heartbeatInterval = setInterval(async () => {
-    if (mqttProvider?.client.connected) {
-      const heartbeatTopic = '__heartbeat__'
-      const heartbeatPayload = {
+    if (heartbeatEvent && mqttProvider?.client.connected) {
+      const heartbeatPayload: events.HeartbeatPayload = {
         timestamp: Date.now(),
         message: 'ping'
       }
       try {
-        await mqttProvider.publish(heartbeatTopic, heartbeatPayload)
+        await heartbeatEvent.emit(heartbeatPayload)
         console.log('MQTT heartbeat sent:', heartbeatPayload.timestamp)
       } catch (error) {
         console.error('Failed to send MQTT heartbeat:', error)
@@ -138,16 +138,23 @@ async function setupMqtt() {
   _initMqttClientEvent(mqttProvider.client)
 
   await mqttStateManager.setConnected(true)
-  
-  // Start heartbeat immediately after connection
-  startHeartbeat()
 
   eventCenter = await generateEventCenter(mqttProvider)
+  
+  // Register heartbeat event
+  heartbeatEvent = eventCenter.getOrRegisterEvent<events.HeartbeatPayload>({
+    eventName: 'heartbeat',
+    topic: '__heartbeat__',
+  })
+  
   drinkWaterLaunchEvent = eventCenter.getOrRegisterEvent<events.DrinkWaterLaunchPayload>({
     eventName: 'drink-water-launch',
     topic: `${settings.mqttSettings.secretKey}/drink-water/launch`,
   })
   drinkWaterLaunchEvent.registerReceiveCallback(onReceiveDrinkWaterLaunch)
+  
+  // Start heartbeat after events are registered
+  startHeartbeat()
 }
 
 // receiveDrinkWaterLaunchMessage.registerListener(async payload => {
