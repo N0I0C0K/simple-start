@@ -35,6 +35,7 @@ let eventCenter: EventCenter | null = null
 let drinkWaterLaunchEvent: Event<events.DrinkWaterLaunchPayload> | null = null
 let heartbeatEvent: Event<events.HeartbeatPayload> | null = null
 let heartbeatInterval: ReturnType<typeof setInterval> | null = null
+let heartbeatStartTime: number | null = null
 
 async function onReceiveDrinkWaterConfirm(payload: events.DrinkWaterConfirmPayload) {
   await receiveDrinkWaterConfirmMessage.emit(payload)
@@ -86,12 +87,15 @@ function startHeartbeat() {
     clearInterval(heartbeatInterval)
   }
   
+  // Record the first heartbeat time
+  heartbeatStartTime = Date.now()
+  
   // Start heartbeat every 10 seconds
   heartbeatInterval = setInterval(async () => {
-    if (heartbeatEvent && mqttProvider?.client.connected) {
+    if (heartbeatEvent && mqttProvider?.client.connected && heartbeatStartTime !== null) {
       const heartbeatPayload: events.HeartbeatPayload = {
         timestamp: Date.now(),
-        message: 'ping'
+        sinceTimestamp: heartbeatStartTime
       }
       try {
         await heartbeatEvent.emit(heartbeatPayload)
@@ -107,6 +111,7 @@ function stopHeartbeat() {
   if (heartbeatInterval) {
     clearInterval(heartbeatInterval)
     heartbeatInterval = null
+    heartbeatStartTime = null
     console.log('MQTT heartbeat stopped')
   }
 }
@@ -144,7 +149,7 @@ async function setupMqtt() {
   // Register heartbeat event
   heartbeatEvent = eventCenter.getOrRegisterEvent<events.HeartbeatPayload>({
     eventName: 'heartbeat',
-    topic: '__heartbeat__',
+    topic: `${settings.mqttSettings.secretKey}/heartbeat`,
   })
   
   drinkWaterLaunchEvent = eventCenter.getOrRegisterEvent<events.DrinkWaterLaunchPayload>({
