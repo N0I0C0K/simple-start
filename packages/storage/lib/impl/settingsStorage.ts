@@ -2,6 +2,8 @@ import { StorageEnum } from '../base/enums'
 import { createStorage } from '../base/base'
 import type { BaseStorage } from '../base/types'
 import deepmerge from 'deepmerge'
+import type { ExportedData } from '../utils/exportImport'
+import { exportDataAsJSON, importDataFromJSON } from '../utils/exportImport'
 
 export const DEFAULT_WALLPAPER_URL = 'https://w.wallhaven.cc/full/ml/wallhaven-mlpll9.jpg'
 export const DEFAULT_MQTT_BROKER_URL = 'mqtt://broker.emqx.io'
@@ -29,6 +31,8 @@ type DeepPartial<T> = T extends object
 type SettingsStorage = BaseStorage<SettingProps> & {
   update: (data: DeepPartial<SettingProps>) => Promise<void>
   getMqttSettings: () => Promise<MqttSetting | null>
+  exportData: () => Promise<void>
+  importData: (file: File) => Promise<void>
 }
 
 const defaultSetting: SettingProps = {
@@ -56,5 +60,29 @@ export const settingStorage: SettingsStorage = {
   getMqttSettings: async () => {
     const settings = await storage.get()
     return settings.mqttSettings
+  },
+  exportData: async () => {
+    const { quickUrlItemsStorage } = await import('./quickUrlStorage')
+    const settings = await storage.get()
+    const quickUrls = await quickUrlItemsStorage.get()
+    
+    const exportData: ExportedData = {
+      version: '1.0.0',
+      exportDate: new Date().toISOString(),
+      settings,
+      quickUrls,
+    }
+    
+    exportDataAsJSON(exportData)
+  },
+  importData: async (file: File) => {
+    const { quickUrlItemsStorage } = await import('./quickUrlStorage')
+    const data = await importDataFromJSON(file)
+    
+    // Import settings
+    await storage.set(data.settings)
+    
+    // Import quick URLs
+    await quickUrlItemsStorage.set(data.quickUrls)
   },
 }
