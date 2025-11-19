@@ -94,7 +94,16 @@ export const CommandModule: FC<{
               <command.CommandGroup heading={val.groupName} key={val.groupName}>
                 {val.result.map(res => {
                   return (
-                    <command.CommandItem key={res.id} value={res.id} onSelect={res.onSelect} className="py-1.5 w-full">
+                    <command.CommandItem
+                      key={res.id}
+                      value={res.id}
+                      onSelect={() => {
+                        res.onSelect()
+                        // Hide the panel after selection
+                        focusFunc.setFalse()
+                        inputRef.current?.blur()
+                      }}
+                      className="py-1.5 w-full">
                       <Stack center>
                         <CommandItemIcon iconUrl={res.iconUrl} IconType={res.IconType} />
                         <Stack direction={'column'}>
