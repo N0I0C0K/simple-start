@@ -82,14 +82,28 @@ export const CommandModule: FC<{
         keyBindings={keyBindings}
       />
       {focus && (
-        <command.CommandList className="max-h-80">
+        <command.CommandList
+          className="max-h-80"
+          onMouseDown={e => {
+            // Prevent the input from losing focus when clicking on items
+            e.preventDefault()
+          }}>
           <command.CommandEmpty>No results found.</command.CommandEmpty>
           {result.map(val => {
             return (
               <command.CommandGroup heading={val.groupName} key={val.groupName}>
                 {val.result.map(res => {
                   return (
-                    <command.CommandItem key={res.id} value={res.id} onSelect={res.onSelect} className="py-1.5 w-full">
+                    <command.CommandItem
+                      key={res.id}
+                      value={res.id}
+                      onSelect={() => {
+                        res.onSelect()
+                        // Hide the panel after selection
+                        focusFunc.setFalse()
+                        inputRef.current?.blur()
+                      }}
+                      className="py-1.5 w-full">
                       <Stack center>
                         <CommandItemIcon iconUrl={res.iconUrl} IconType={res.IconType} />
                         <Stack direction={'column'}>
