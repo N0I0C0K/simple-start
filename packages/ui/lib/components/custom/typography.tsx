@@ -52,7 +52,7 @@ export const Text: FC<TextProps> = ({ level = 'md', children, className, gray, .
       className={cn(
         'font-normal subpixel-antialiased',
         pLevelToSizeMapping[level],
-        gray ? 'text-gray-400' : '',
+        gray ? 'text-muted-foreground' : '',
         className,
       )}>
       {children}
