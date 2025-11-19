@@ -82,7 +82,12 @@ export const CommandModule: FC<{
         keyBindings={keyBindings}
       />
       {focus && (
-        <command.CommandList className="max-h-80">
+        <command.CommandList
+          className="max-h-80"
+          onMouseDown={e => {
+            // Prevent the input from losing focus when clicking on items
+            e.preventDefault()
+          }}>
           <command.CommandEmpty>No results found.</command.CommandEmpty>
           {result.map(val => {
             return (
