@@ -264,37 +264,35 @@ const CommonSettings: FC = () => {
         }
       />
       <Separator className="my-2" />
-      <Stack direction={'row'} className={'gap-2 w-full'}>
-        <SettingItem
-          IconClass={Download}
-          title="Export Settings"
-          description="Export all settings and quick URLs as JSON."
-          control={
-            <Button variant={'outline'} onClick={handleExport}>
-              Export
+      <SettingItem
+        IconClass={Download}
+        title="Export Settings"
+        description="Export all settings and quick URLs as JSON."
+        control={
+          <Button variant={'outline'} onClick={handleExport}>
+            Export
+          </Button>
+        }
+      />
+      <SettingItem
+        IconClass={Upload}
+        title="Import Settings"
+        description="Import settings and quick URLs from JSON file."
+        control={
+          <>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".json"
+              onChange={handleImport}
+              style={{ display: 'none' }}
+            />
+            <Button variant={'outline'} onClick={() => fileInputRef.current?.click()}>
+              Import
             </Button>
-          }
-        />
-        <SettingItem
-          IconClass={Upload}
-          title="Import Settings"
-          description="Import settings and quick URLs from JSON file."
-          control={
-            <>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept=".json"
-                onChange={handleImport}
-                style={{ display: 'none' }}
-              />
-              <Button variant={'outline'} onClick={() => fileInputRef.current?.click()}>
-                Import
-              </Button>
-            </>
-          }
-        />
-      </Stack>
+          </>
+        }
+      />
     </Stack>
   )
 }
