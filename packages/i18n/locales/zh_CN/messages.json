@@ -26,5 +26,141 @@
   "hello": {
     "description": "Placeholder example",
     "message": "你好 $1"
+  },
+  "searchPlaceholder": {
+    "description": "Search input placeholder",
+    "message": "搜索..."
+  },
+  "searchCommandPlaceholder": {
+    "description": "Command search input placeholder",
+    "message": "搜索..."
+  },
+  "submitSearch": {
+    "description": "Submit search button aria label",
+    "message": "提交搜索"
+  },
+  "settings": {
+    "description": "Settings label",
+    "message": "设置"
+  },
+  "setYourPreferences": {
+    "description": "Settings description",
+    "message": "设置您的偏好"
+  },
+  "drinkWater": {
+    "description": "Drink water button tooltip",
+    "message": "喝水"
+  },
+  "commonTab": {
+    "description": "Common settings tab",
+    "message": "通用"
+  },
+  "serverTab": {
+    "description": "Server settings tab",
+    "message": "服务器"
+  },
+  "theme": {
+    "description": "Theme setting title",
+    "message": "主题"
+  },
+  "themeDescription": {
+    "description": "Theme setting description",
+    "message": "切换深色/浅色主题。"
+  },
+  "historySuggestion": {
+    "description": "History suggestion setting title",
+    "message": "历史建议"
+  },
+  "historySuggestionDescription": {
+    "description": "History suggestion setting description",
+    "message": "使用历史记录进行推荐。"
+  },
+  "autoFocusCommandInput": {
+    "description": "Auto focus command input setting title",
+    "message": "自动聚焦命令输入"
+  },
+  "autoFocusCommandInputDescription": {
+    "description": "Auto focus command input setting description",
+    "message": "自动聚焦命令输入框。"
+  },
+  "wallpaperUrl": {
+    "description": "Wallpaper URL setting title",
+    "message": "壁纸 URL"
+  },
+  "wallpaperUrlDescription": {
+    "description": "Wallpaper URL setting description",
+    "message": "设置自定义壁纸 URL。"
+  },
+  "enterWallpaperUrl": {
+    "description": "Wallpaper URL input placeholder",
+    "message": "输入壁纸 URL"
+  },
+  "configureMqttSettings": {
+    "description": "MQTT settings description",
+    "message": "配置您的 MQTT 服务器设置以启用小信号功能。"
+  },
+  "configureGeneralSettings": {
+    "description": "General settings description",
+    "message": "配置您的通用设置。"
+  },
+  "enable": {
+    "description": "Enable setting title",
+    "message": "启用"
+  },
+  "enableMqttDescription": {
+    "description": "Enable MQTT setting description",
+    "message": "启用或禁用 MQTT 小信号功能。"
+  },
+  "refreshConnection": {
+    "description": "Refresh connection setting title",
+    "message": "刷新连接"
+  },
+  "refreshConnectionDescription": {
+    "description": "Refresh connection setting description",
+    "message": "重新连接到 MQTT 服务器。"
+  },
+  "secretKey": {
+    "description": "Secret key setting title",
+    "message": "密钥"
+  },
+  "secretKeyDescription": {
+    "description": "Secret key setting description",
+    "message": "在同一组下使用相同的密钥。"
+  },
+  "enterSecretKey": {
+    "description": "Secret key input placeholder",
+    "message": "输入密钥"
+  },
+  "username": {
+    "description": "Username setting title",
+    "message": "用户名"
+  },
+  "usernameDescription": {
+    "description": "Username setting description",
+    "message": "小信号的昵称。"
+  },
+  "enterUsername": {
+    "description": "Username input placeholder",
+    "message": "输入用户名"
+  },
+  "connected": {
+    "description": "Connected status",
+    "message": "已连接"
+  },
+  "disconnected": {
+    "description": "Disconnected status",
+    "message": "未连接"
+  },
+  "connect": {
+    "description": "Connect button",
+    "message": "连接"
+  },
+  "disconnect": {
+    "description": "Disconnect button",
+    "message": "断开"
+  },
+  "noResultsFound": {
+    "description": "No results found message",
+    "message": "未找到结果。"
   }
 }

@@ -26,5 +26,141 @@
   "hello": {
     "description": "Placeholder example",
     "message": "Hello $1"
+  },
+  "searchPlaceholder": {
+    "description": "Search input placeholder",
+    "message": "Search..."
+  },
+  "searchCommandPlaceholder": {
+    "description": "Command search input placeholder",
+    "message": "search..."
+  },
+  "submitSearch": {
+    "description": "Submit search button aria label",
+    "message": "Submit search"
+  },
+  "settings": {
+    "description": "Settings label",
+    "message": "Settings"
+  },
+  "setYourPreferences": {
+    "description": "Settings description",
+    "message": "Set your preferences"
+  },
+  "drinkWater": {
+    "description": "Drink water button tooltip",
+    "message": "Drink Water"
+  },
+  "commonTab": {
+    "description": "Common settings tab",
+    "message": "Common"
+  },
+  "serverTab": {
+    "description": "Server settings tab",
+    "message": "Server"
+  },
+  "theme": {
+    "description": "Theme setting title",
+    "message": "Theme"
+  },
+  "themeDescription": {
+    "description": "Theme setting description",
+    "message": "Change dark/light theme."
+  },
+  "historySuggestion": {
+    "description": "History suggestion setting title",
+    "message": "History Suggestion"
+  },
+  "historySuggestionDescription": {
+    "description": "History suggestion setting description",
+    "message": "Use history for recommendations."
+  },
+  "autoFocusCommandInput": {
+    "description": "Auto focus command input setting title",
+    "message": "Auto Focus Command Input"
+  },
+  "autoFocusCommandInputDescription": {
+    "description": "Auto focus command input setting description",
+    "message": "Auto focus command input."
+  },
+  "wallpaperUrl": {
+    "description": "Wallpaper URL setting title",
+    "message": "Wallpaper URL"
+  },
+  "wallpaperUrlDescription": {
+    "description": "Wallpaper URL setting description",
+    "message": "Set a custom wallpaper URL."
+  },
+  "enterWallpaperUrl": {
+    "description": "Wallpaper URL input placeholder",
+    "message": "Enter wallpaper URL"
+  },
+  "configureMqttSettings": {
+    "description": "MQTT settings description",
+    "message": "Configure your MQTT server settings to enable small signal functionality."
+  },
+  "configureGeneralSettings": {
+    "description": "General settings description",
+    "message": "Configure your general settings."
+  },
+  "enable": {
+    "description": "Enable setting title",
+    "message": "Enable"
+  },
+  "enableMqttDescription": {
+    "description": "Enable MQTT setting description",
+    "message": "Enable or disable MQTT small signal functionality."
+  },
+  "refreshConnection": {
+    "description": "Refresh connection setting title",
+    "message": "Refresh Connection"
+  },
+  "refreshConnectionDescription": {
+    "description": "Refresh connection setting description",
+    "message": "Reconnect to MQTT server."
+  },
+  "secretKey": {
+    "description": "Secret key setting title",
+    "message": "Secret Key"
+  },
+  "secretKeyDescription": {
+    "description": "Secret key setting description",
+    "message": "Use the same secret key under same group."
+  },
+  "enterSecretKey": {
+    "description": "Secret key input placeholder",
+    "message": "Enter secret key"
+  },
+  "username": {
+    "description": "Username setting title",
+    "message": "Username"
+  },
+  "usernameDescription": {
+    "description": "Username setting description",
+    "message": "Nick name for small signal."
+  },
+  "enterUsername": {
+    "description": "Username input placeholder",
+    "message": "Enter username"
+  },
+  "connected": {
+    "description": "Connected status",
+    "message": "Connected"
+  },
+  "disconnected": {
+    "description": "Disconnected status",
+    "message": "Disconnected"
+  },
+  "connect": {
+    "description": "Connect button",
+    "message": "Connect"
+  },
+  "disconnect": {
+    "description": "Disconnect button",
+    "message": "Disconnect"
+  },
+  "noResultsFound": {
+    "description": "No results found message",
+    "message": "No results found."
   }
 }

@@ -5,6 +5,7 @@ import { command, Stack, Text } from '@extension/ui'
 import { commandResolverService } from '@src/service/command-reslover'
 import type { CommandQueryParams, ICommandResultGroup } from '@src/service/command-reslover'
 import { useEffect, useRef, useState, type FC } from 'react'
+import { t } from '@extension/i18n'
 
 const CommandItemIcon: FC<{ iconUrl?: string; IconType?: React.ElementType }> = ({ iconUrl, IconType }) => {
   return (
@@ -77,7 +78,7 @@ export const CommandModule: FC<{
         }}
         // eslint-disable-next-line jsx-a11y/no-autofocus
         autoFocus={setting.autoFocusCommandInput}
-        placeholder="search..."
+        placeholder={t('searchCommandPlaceholder')}
         className="h-14 md:h-12 text-lg md:text-base"
         keyBindings={keyBindings}
       />
@@ -88,7 +89,7 @@ export const CommandModule: FC<{
             // Prevent the input from losing focus when clicking on items
             e.preventDefault()
           }}>
-          <command.CommandEmpty>No results found.</command.CommandEmpty>
+          <command.CommandEmpty>{t('noResultsFound')}</command.CommandEmpty>
           {result.map(val => {
             return (
               <command.CommandGroup heading={val.groupName} key={val.groupName}>
