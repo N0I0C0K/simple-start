@@ -63,12 +63,15 @@ export const settingStorage: SettingsStorage = {
   },
   exportData: async () => {
     const { quickUrlItemsStorage } = await import('./quickUrlStorage')
+    const { exampleThemeStorage } = await import('./exampleThemeStorage')
     const settings = await storage.get()
     const quickUrls = await quickUrlItemsStorage.get()
+    const theme = await exampleThemeStorage.get()
     
     const exportData: ExportedData = {
       version: '1.0.0',
       exportDate: new Date().toISOString(),
+      theme,
       settings,
       quickUrls,
     }
@@ -77,6 +80,7 @@ export const settingStorage: SettingsStorage = {
   },
   importData: async (file: File) => {
     const { quickUrlItemsStorage } = await import('./quickUrlStorage')
+    const { exampleThemeStorage } = await import('./exampleThemeStorage')
     const data = await importDataFromJSON(file)
     
     // Import settings
@@ -84,5 +88,10 @@ export const settingStorage: SettingsStorage = {
     
     // Import quick URLs
     await quickUrlItemsStorage.set(data.quickUrls)
+    
+    // Import theme if present
+    if (data.theme) {
+      await exampleThemeStorage.set(data.theme)
+    }
   },
 }

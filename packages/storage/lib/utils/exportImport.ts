@@ -7,6 +7,7 @@ import type { QuickUrlItem } from '../base/types'
 export interface ExportedData {
   version: string
   exportDate: string
+  theme?: 'light' | 'dark' | 'system'
   settings: {
     useHistorySuggestion: boolean
     autoFocusCommandInput: boolean
@@ -52,7 +53,21 @@ export function importDataFromJSON(file: File): Promise<ExportedData> {
         
         // Validate the imported data structure
         if (!data.settings || !data.quickUrls || !Array.isArray(data.quickUrls)) {
-          throw new Error('Invalid data format')
+          throw new Error('Invalid data format: missing required fields (settings or quickUrls)')
+        }
+        
+        // Validate settings structure
+        if (typeof data.settings.useHistorySuggestion !== 'boolean' ||
+            typeof data.settings.autoFocusCommandInput !== 'boolean' ||
+            !data.settings.mqttSettings) {
+          throw new Error('Invalid settings format')
+        }
+        
+        // Validate quick URLs
+        for (const item of data.quickUrls) {
+          if (!item.id || !item.title || !item.url) {
+            throw new Error('Invalid quick URL item: missing required fields')
+          }
         }
         
         resolve(data)
