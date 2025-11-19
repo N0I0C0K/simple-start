@@ -1,0 +1,30 @@
+{
+  "extensionDescription": {
+    "description": "Extension description",
+    "message": "使用 Vite、React 和 Typescript 开发的 Chrome 扩展模板"
+  },
+  "extensionName": {
+    "description": "Extension name",
+    "message": "Chrome 扩展模板"
+  },
+  "toggleTheme": {
+    "message": "切换主题"
+  },
+  "loading": {
+    "message": "加载中..."
+  },
+  "greeting": {
+    "description": "Greeting message",
+    "message": "你好，我的名字是 $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "张三"
+      }
+    }
+  },
+  "hello": {
+    "description": "Placeholder example",
+    "message": "你好 $1"
+  }
+}
