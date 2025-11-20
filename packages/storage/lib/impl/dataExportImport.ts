@@ -4,6 +4,9 @@
 
 import type { QuickUrlItem } from '../base/types'
 import type { SettingProps } from './settingsStorage'
+import { settingStorage } from './settingsStorage'
+import { quickUrlItemsStorage } from './quickUrlStorage'
+import { exampleThemeStorage } from './exampleThemeStorage'
 
 // Import types from existing implementations
 type Theme = 'light' | 'dark' | 'system'
@@ -20,10 +23,6 @@ export interface ExportedData {
  * Export all user data as JSON and download it
  */
 export async function exportAllData(): Promise<void> {
-  const { settingStorage } = await import('./settingsStorage')
-  const { quickUrlItemsStorage } = await import('./quickUrlStorage')
-  const { exampleThemeStorage } = await import('./exampleThemeStorage')
-  
   const settings = await settingStorage.get()
   const quickUrls = await quickUrlItemsStorage.get()
   const theme = await exampleThemeStorage.get()
@@ -54,10 +53,6 @@ export async function exportAllData(): Promise<void> {
  */
 export async function importAllData(file: File): Promise<void> {
   const data = await parseAndValidateImportFile(file)
-  
-  const { settingStorage } = await import('./settingsStorage')
-  const { quickUrlItemsStorage } = await import('./quickUrlStorage')
-  const { exampleThemeStorage } = await import('./exampleThemeStorage')
   
   // Import settings
   await settingStorage.set(data.settings)
