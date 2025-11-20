@@ -1,32 +1,42 @@
 /**
- * Utility functions for exporting and importing settings
+ * Data export/import functionality for user settings and data
  */
 
 import type { QuickUrlItem } from '../base/types'
+import type { SettingProps } from './settingsStorage'
+
+// Import types from existing implementations
+type Theme = 'light' | 'dark' | 'system'
 
 export interface ExportedData {
   version: string
   exportDate: string
-  theme?: 'light' | 'dark' | 'system'
-  settings: {
-    useHistorySuggestion: boolean
-    autoFocusCommandInput: boolean
-    wallpaperUrl: string | null
-    mqttSettings: {
-      mqttBrokerUrl: string
-      secretKey: string
-      enabled: boolean
-      username: string
-    }
-  }
+  theme?: Theme
+  settings: SettingProps
   quickUrls: QuickUrlItem[]
 }
 
 /**
- * Export data as JSON and download it
+ * Export all user data as JSON and download it
  */
-export function exportDataAsJSON(data: ExportedData): void {
-  const jsonString = JSON.stringify(data, null, 2)
+export async function exportAllData(): Promise<void> {
+  const { settingStorage } = await import('./settingsStorage')
+  const { quickUrlItemsStorage } = await import('./quickUrlStorage')
+  const { exampleThemeStorage } = await import('./exampleThemeStorage')
+  
+  const settings = await settingStorage.get()
+  const quickUrls = await quickUrlItemsStorage.get()
+  const theme = await exampleThemeStorage.get()
+  
+  const exportData: ExportedData = {
+    version: '1.0.0',
+    exportDate: new Date().toISOString(),
+    theme,
+    settings,
+    quickUrls,
+  }
+  
+  const jsonString = JSON.stringify(exportData, null, 2)
   const blob = new Blob([jsonString], { type: 'application/json' })
   const url = URL.createObjectURL(blob)
   
@@ -40,9 +50,31 @@ export function exportDataAsJSON(data: ExportedData): void {
 }
 
 /**
- * Import data from a JSON file
+ * Import all user data from a JSON file
  */
-export function importDataFromJSON(file: File): Promise<ExportedData> {
+export async function importAllData(file: File): Promise<void> {
+  const data = await parseAndValidateImportFile(file)
+  
+  const { settingStorage } = await import('./settingsStorage')
+  const { quickUrlItemsStorage } = await import('./quickUrlStorage')
+  const { exampleThemeStorage } = await import('./exampleThemeStorage')
+  
+  // Import settings
+  await settingStorage.set(data.settings)
+  
+  // Import quick URLs
+  await quickUrlItemsStorage.set(data.quickUrls)
+  
+  // Import theme if present
+  if (data.theme) {
+    await exampleThemeStorage.set(data.theme)
+  }
+}
+
+/**
+ * Parse and validate the imported JSON file
+ */
+function parseAndValidateImportFile(file: File): Promise<ExportedData> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
     

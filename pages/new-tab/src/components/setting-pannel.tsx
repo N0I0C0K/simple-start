@@ -6,7 +6,7 @@ import {
   useStorage,
 } from '@extension/shared'
 import { useDrinkWaterEventManager } from '@extension/shared/lib/state/events'
-import { mqttStateManager, settingStorage } from '@extension/storage'
+import { mqttStateManager, settingStorage, exportAllData, importAllData } from '@extension/storage'
 import deepmerge from 'deepmerge'
 import {
   Button,
@@ -195,7 +195,7 @@ const CommonSettings: FC = () => {
   
   const handleExport = async () => {
     try {
-      await settingStorage.exportData()
+      await exportAllData()
     } catch (error) {
       console.error('Failed to export settings:', error)
       alert('Failed to export settings. Please try again.')
@@ -207,7 +207,7 @@ const CommonSettings: FC = () => {
     if (!file) return
     
     try {
-      await settingStorage.importData(file)
+      await importAllData(file)
       alert('Settings imported successfully!')
       // Reset file input
       if (fileInputRef.current) {

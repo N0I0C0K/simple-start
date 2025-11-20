@@ -8,5 +8,3 @@ export async function getIconUrlFromWebsit(websitUrl: string): Promise<string> {
   const iconUrl = matchRes === null ? '/favicon.ico' : matchRes[1]
   return iconUrl.startsWith('/') ? `${url.origin}${iconUrl}` : iconUrl
 }
-
-export * from './exportImport'
