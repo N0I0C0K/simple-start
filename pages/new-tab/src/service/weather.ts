@@ -83,13 +83,20 @@ export const fetchWeatherData = async (coords: LocationCoords): Promise<WeatherD
 
   const data = await response.json()
 
+  // Validate API response structure
+  if (!data.current || typeof data.current !== 'object') {
+    throw new Error('Invalid API response structure')
+  }
+
+  const current = data.current
+
   return {
-    temperature: Math.round(data.current.temperature_2m),
-    apparentTemperature: Math.round(data.current.apparent_temperature),
-    weatherCode: data.current.weather_code,
-    humidity: data.current.relative_humidity_2m,
-    windSpeed: Math.round(data.current.wind_speed_10m),
-    isDay: data.current.is_day === 1,
+    temperature: Math.round(current.temperature_2m ?? 0),
+    apparentTemperature: Math.round(current.apparent_temperature ?? 0),
+    weatherCode: current.weather_code ?? 0,
+    humidity: current.relative_humidity_2m ?? 0,
+    windSpeed: Math.round(current.wind_speed_10m ?? 0),
+    isDay: current.is_day === 1,
   }
 }
 

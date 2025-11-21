@@ -20,7 +20,7 @@ import { cn } from '@/lib/utils'
 const getWeatherIcon = (code: number, isDay: boolean, size: number = 48) => {
   const iconProps = { size, strokeWidth: 1.5 }
 
-  if (code === 0) return isDay ? <Sun {...iconProps} /> : <Sun {...iconProps} />
+  if (code === 0) return <Sun {...iconProps} />
   if (code === 1 || code === 2) return <CloudSun {...iconProps} />
   if (code === 3) return <Cloud {...iconProps} />
   if (code === 45 || code === 48) return <CloudFog {...iconProps} />
@@ -52,7 +52,8 @@ export const WeatherCard = ({ className }: WeatherCardProps) => {
         setWeather(data)
       } catch (err) {
         console.error('Weather fetch error:', err)
-        if (err instanceof GeolocationPositionError) {
+        // Check if error is related to geolocation permission
+        if (err && typeof err === 'object' && 'code' in err && err.code === 1) {
           setError(t('weatherLocationError'))
         } else {
           setError(t('weatherError'))
