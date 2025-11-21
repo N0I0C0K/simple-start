@@ -6,14 +6,14 @@ import deepmerge from 'deepmerge'
 export const DEFAULT_WALLPAPER_URL = 'https://w.wallhaven.cc/full/ml/wallhaven-mlpll9.jpg'
 export const DEFAULT_MQTT_BROKER_URL = 'mqtt://broker.emqx.io'
 
-type MqttSetting = {
+export type MqttSetting = {
   mqttBrokerUrl: string
   secretKey: string
   enabled: boolean
   username: string
 }
 
-type SettingProps = {
+export type SettingProps = {
   useHistorySuggestion: boolean
   autoFocusCommandInput: boolean
   wallpaperUrl: string | null

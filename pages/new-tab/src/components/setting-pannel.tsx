@@ -6,7 +6,7 @@ import {
   useStorage,
 } from '@extension/shared'
 import { useDrinkWaterEventManager } from '@extension/shared/lib/state/events'
-import { mqttStateManager, settingStorage } from '@extension/storage'
+import { mqttStateManager, settingStorage, exportAllData, importAllData } from '@extension/storage'
 import deepmerge from 'deepmerge'
 import {
   Button,
@@ -47,9 +47,11 @@ import {
   RefreshCcw,
   Activity,
   Dot,
+  Download,
+  Upload,
 } from 'lucide-react'
 import { nanoid } from 'nanoid'
-import type { ElementType, FC, ReactElement, ReactNode } from 'react'
+import React, { type ElementType, type FC, type ReactElement, type ReactNode } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@extension/ui/lib/components/ui/tabs'
 
 const SettingItem: FC<{
@@ -189,6 +191,38 @@ const MqttSettings: FC = () => {
 
 const CommonSettings: FC = () => {
   const settings = useStorage(settingStorage)
+  const fileInputRef = React.useRef<HTMLInputElement>(null)
+  
+  const handleExport = async () => {
+    try {
+      await exportAllData()
+    } catch (error) {
+      console.error('Failed to export settings:', error)
+      alert('Failed to export settings. Please try again.')
+    }
+  }
+  
+  const handleImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+    
+    try {
+      await importAllData(file)
+      alert('Settings imported successfully!')
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
+      }
+    } catch (error) {
+      console.error('Failed to import settings:', error)
+      alert('Failed to import settings: ' + (error as Error).message)
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
+      }
+    }
+  }
+  
   return (
     <Stack direction={'column'} className={'gap-2 w-full'}>
       <Text gray level="s">
@@ -227,6 +261,36 @@ const CommonSettings: FC = () => {
             value={settings.wallpaperUrl || ''}
             onChange={e => settingStorage.update({ wallpaperUrl: e.target.value })}
           />
+        }
+      />
+      <Separator className="my-2" />
+      <SettingItem
+        IconClass={Download}
+        title="Export Settings"
+        description="Export all settings and quick URLs as JSON."
+        control={
+          <Button variant={'outline'} onClick={handleExport}>
+            Export
+          </Button>
+        }
+      />
+      <SettingItem
+        IconClass={Upload}
+        title="Import Settings"
+        description="Import settings and quick URLs from JSON file."
+        control={
+          <>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".json"
+              onChange={handleImport}
+              style={{ display: 'none' }}
+            />
+            <Button variant={'outline'} onClick={() => fileInputRef.current?.click()}>
+              Import
+            </Button>
+          </>
         }
       />
     </Stack>
