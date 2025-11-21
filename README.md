@@ -83,9 +83,9 @@ pnpm zip
 
 1. 构建完成后，在浏览器中打开扩展管理页面：
    - **Chrome**：访问 `chrome://extensions`
-   - **Firefox**：访问 `about:addons`
-2. 启用"开发者模式"
-3. 点击"加载已解压的扩展程序"
+   - **Firefox**：访问 `about:debugging#/runtime/this-firefox`
+2. 启用"开发者模式"（Chrome）
+3. 点击"加载已解压的扩展程序"（Chrome）或"临时加载附加组件"（Firefox）
 4. 选择 `dist` 目录
 
 ### 🔧 开发命令

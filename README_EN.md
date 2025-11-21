@@ -83,9 +83,9 @@ pnpm zip
 
 1. After building, open the extension management page in your browser:
    - **Chrome**: Navigate to `chrome://extensions`
-   - **Firefox**: Navigate to `about:addons`
-2. Enable "Developer mode"
-3. Click "Load unpacked extension"
+   - **Firefox**: Navigate to `about:debugging#/runtime/this-firefox`
+2. Enable "Developer mode" (Chrome)
+3. Click "Load unpacked extension" (Chrome) or "Load Temporary Add-on" (Firefox)
 4. Select the `dist` directory
 
 ### 🔧 Development Commands
