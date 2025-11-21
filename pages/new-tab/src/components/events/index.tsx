@@ -133,7 +133,7 @@ const DrinkPanel: FC<{ className?: string; payload: events.DrinkWaterLaunchPaylo
           <div className="space-y-2">
             <Text className="text-xs opacity-60 font-medium">Team responses:</Text>
             <Stack direction={'row'} className="flex -space-x-2">
-              {drinkWaterManager.receivedConfirm?.map(confirm => (
+              {drinkWaterManager.receivedConfirm.map(confirm => (
                 <Avatar
                   key={confirm.id}
                   data-action={confirm.action}
