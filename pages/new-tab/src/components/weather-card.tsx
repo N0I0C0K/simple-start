@@ -52,9 +52,11 @@ export const WeatherCard = ({ className }: WeatherCardProps) => {
         setWeather(data)
       } catch (err) {
         console.error('Weather fetch error:', err)
-        // Check if error is related to geolocation permission (PERMISSION_DENIED = 1)
-        const PERMISSION_DENIED = 1
-        if (err && typeof err === 'object' && 'code' in err && err.code === PERMISSION_DENIED) {
+        // Check if error is related to geolocation permission denial
+        const errorMessage = err instanceof Error ? err.message : String(err)
+        const isPermissionError = errorMessage.includes('permission denied')
+        
+        if (isPermissionError) {
           setError(t('weatherLocationError'))
         } else {
           setError(t('weatherError'))

@@ -59,7 +59,14 @@ export const getUserLocation = (): Promise<LocationCoords> => {
         })
       },
       error => {
-        reject(error)
+        // Wrap geolocation error with context
+        const errorMessage =
+          error.code === 1
+            ? 'Location permission denied by user'
+            : error.code === 2
+              ? 'Location position unavailable'
+              : 'Location request timeout'
+        reject(new Error(`Geolocation failed: ${errorMessage}`, { cause: error }))
       },
       {
         timeout: 10000,
