@@ -15,7 +15,7 @@ const CupPng = () => {
   )
 }
 
-const DrinkPanel: FC<{ className?: string; id: string | number; payload: events.DrinkWaterLaunchPayload }> = ({
+const DrinkPanel: FC<{ className?: string; payload: events.DrinkWaterLaunchPayload }> = ({
   className,
   payload,
 }) => {
@@ -132,13 +132,13 @@ const DrinkPanel: FC<{ className?: string; id: string | number; payload: events.
           <Separator className="my-3 bg-gradient-to-r from-transparent via-border to-transparent" />
           <div className="space-y-2">
             <Text className="text-xs opacity-60 font-medium">Team responses:</Text>
-            <Stack direction={'row'} className="flex -space-x-2 *:ring-2 *:transition-all *:duration-200 hover:*:scale-110">
+            <Stack direction={'row'} className="flex -space-x-2">
               {drinkWaterManager.receivedConfirm?.map(confirm => (
                 <Avatar
                   key={confirm.id}
                   data-action={confirm.action}
                   className={cn(
-                    'cursor-pointer',
+                    'cursor-pointer ring-2 transition-all duration-200 hover:scale-110',
                     'data-[action=accept]:ring-green-500/60 data-[action=accept]:bg-green-100 dark:data-[action=accept]:bg-green-900/40',
                     'data-[action=reject]:ring-red-500/60 data-[action=reject]:bg-red-100 dark:data-[action=reject]:bg-red-900/40'
                   )}
@@ -175,7 +175,6 @@ export const DrinkWaterEventMountComponent: FC = () => {
       {drinkWaterManager.currentEvent && (
         <DrinkPanel
           className="fixed top-4 left-4 rounded-xl w-96 shadow-2xl"
-          id={drinkWaterManager.currentEvent.id}
           payload={drinkWaterManager.currentEvent}
         />
       )}
