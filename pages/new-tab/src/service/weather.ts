@@ -73,7 +73,14 @@ export const getUserLocation = (): Promise<LocationCoords> => {
 export const fetchWeatherData = async (coords: LocationCoords): Promise<WeatherData> => {
   const { latitude, longitude } = coords
 
-  const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,apparent_temperature,weather_code,relative_humidity_2m,wind_speed_10m,is_day&timezone=auto`
+  const params = new URLSearchParams({
+    latitude: latitude.toString(),
+    longitude: longitude.toString(),
+    current: 'temperature_2m,apparent_temperature,weather_code,relative_humidity_2m,wind_speed_10m,is_day',
+    timezone: 'auto',
+  })
+
+  const url = `https://api.open-meteo.com/v1/forecast?${params.toString()}`
 
   const response = await fetch(url)
 
