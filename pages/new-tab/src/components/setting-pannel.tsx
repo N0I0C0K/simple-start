@@ -53,6 +53,7 @@ import {
 import { nanoid } from 'nanoid'
 import React, { type ElementType, type FC, type ReactElement, type ReactNode } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@extension/ui/lib/components/ui/tabs'
+import { t } from '@extension/i18n'
 
 const SettingItem: FC<{
   className?: string
@@ -90,7 +91,7 @@ const ConnectedBadge: FC = () => {
   return (
     <Badge className="bg-green-500">
       <Link2 />
-      Connected
+      {t('connected')}
     </Badge>
   )
 }
@@ -99,7 +100,7 @@ const DisconnectedBadge: FC = () => {
   return (
     <Badge className="bg-red-500">
       <Link2 />
-      Disconnected
+      {t('disconnected')}
     </Badge>
   )
 }
@@ -109,8 +110,8 @@ const ConnectSettingItem: FC = () => {
   return (
     <SettingItem
       IconClass={Activity}
-      title="Refresh Connection"
-      description="Reconnect to MQTT server."
+      title={t('refreshConnection')}
+      description={t('refreshConnectionDescription')}
       control={
         <Button
           variant={'link'}
@@ -121,7 +122,7 @@ const ConnectSettingItem: FC = () => {
             }
             await openMqttClientMessage.emit()
           }}>
-          {mqttServerState.connected ? 'Disconnect' : 'Connect'}
+          {mqttServerState.connected ? t('disconnect') : t('connect')}
         </Button>
       }
       additionalControl={
@@ -129,7 +130,7 @@ const ConnectSettingItem: FC = () => {
           <Stack direction={'row'} center className="absolute bottom-0 end-1">
             <Dot className={mqttServerState.connected ? 'text-green-500' : 'text-red-500'} />
             <Text gray level="xs" className="-ml-2">
-              {mqttServerState.connected ? 'Connected' : 'Disconnected'}
+              {mqttServerState.connected ? t('connected') : t('disconnected')}
             </Text>
           </Stack>
         </>
@@ -144,13 +145,13 @@ const MqttSettings: FC = () => {
     <Stack direction={'column'} className={'gap-2 w-full'}>
       <Stack direction={'column'}>
         <Text gray level="s">
-          Configure your MQTT server settings to enable small signal functionality.
+          {t('configureMqttSettings')}
         </Text>
       </Stack>
       <SettingItem
         IconClass={ToggleRight}
-        title="Enable"
-        description="Enable or disable MQTT small signal functionality."
+        title={t('enable')}
+        description={t('enableMqttDescription')}
         control={
           <Switch
             checked={settings.mqttSettings?.enabled}
@@ -163,11 +164,11 @@ const MqttSettings: FC = () => {
       <ConnectSettingItem />
       <SettingItem
         IconClass={KeyRound}
-        title="Secret Key"
-        description="Use the same secret key under same group."
+        title={t('secretKey')}
+        description={t('secretKeyDescription')}
         control={
           <Input
-            placeholder="Enter secret key"
+            placeholder={t('enterSecretKey')}
             value={settings.mqttSettings?.secretKey || ''}
             onChange={e => settingStorage.update({ mqttSettings: { secretKey: e.target.value } })}
           />
@@ -175,11 +176,11 @@ const MqttSettings: FC = () => {
       />
       <SettingItem
         IconClass={User}
-        title="Username"
-        description="Nick name for small signal."
+        title={t('username')}
+        description={t('usernameDescription')}
         control={
           <Input
-            placeholder="Enter username"
+            placeholder={t('enterUsername')}
             value={settings.mqttSettings?.username || ''}
             onChange={e => settingStorage.update({ mqttSettings: { username: e.target.value } })}
           />
@@ -226,13 +227,13 @@ const CommonSettings: FC = () => {
   return (
     <Stack direction={'column'} className={'gap-2 w-full'}>
       <Text gray level="s">
-        Configure your general settings.
+        {t('configureGeneralSettings')}
       </Text>
-      <SettingItem IconClass={SunMoon} title="Theme" description="Change dark/light theme." control={<ThemeToggle />} />
+      <SettingItem IconClass={SunMoon} title={t('theme')} description={t('themeDescription')} control={<ThemeToggle />} />
       <SettingItem
         IconClass={History}
-        title="History Suggestion"
-        description="Use history for recommendations."
+        title={t('historySuggestion')}
+        description={t('historySuggestionDescription')}
         control={
           <Switch
             checked={settings.useHistorySuggestion}
@@ -242,8 +243,8 @@ const CommonSettings: FC = () => {
       />
       <SettingItem
         IconClass={Pointer}
-        title="Auto Focus Command Input"
-        description="Auto focus command input."
+        title={t('autoFocusCommandInput')}
+        description={t('autoFocusCommandInputDescription')}
         control={
           <Switch
             checked={settings.autoFocusCommandInput}
@@ -253,11 +254,11 @@ const CommonSettings: FC = () => {
       />
       <SettingItem
         IconClass={HardDriveUpload}
-        title="Wallpaper URL"
-        description="Set a custom wallpaper URL."
+        title={t('wallpaperUrl')}
+        description={t('wallpaperUrlDescription')}
         control={
           <Input
-            placeholder="Enter wallpaper URL"
+            placeholder={t('enterWallpaperUrl')}
             value={settings.wallpaperUrl || ''}
             onChange={e => settingStorage.update({ wallpaperUrl: e.target.value })}
           />
@@ -301,8 +302,8 @@ const SettingTabs: FC = () => {
   return (
     <Tabs defaultValue="common-settings">
       <TabsList>
-        <TabsTrigger value="common-settings">Common</TabsTrigger>
-        <TabsTrigger value="mqtt-settings">Server</TabsTrigger>
+        <TabsTrigger value="common-settings">{t('commonTab')}</TabsTrigger>
+        <TabsTrigger value="mqtt-settings">{t('serverTab')}</TabsTrigger>
       </TabsList>
       <TabsContent value="common-settings">
         <CommonSettings />
@@ -348,7 +349,7 @@ const SidebarButton: FC<{
 
 const DrawerSettingPanel: FC<{ className?: string }> = ({ className }) => {
   return (
-    <SidebarButton IconClass={AlignJustify} label="Settings" description="Set your preferences">
+    <SidebarButton IconClass={AlignJustify} label={t('settings')} description={t('setYourPreferences')}>
       <SettingTabs />
     </SidebarButton>
   )
@@ -359,7 +360,7 @@ const DrinkWaterButton: FC<{ className?: string }> = ({ className }) => {
   return (
     <TooltipButton
       size={'icon'}
-      tooltip="Drink Water"
+      tooltip={t('drinkWater')}
       variant={'ghost'}
       className={cn('rounded-full', className)}
       onClick={async () => {

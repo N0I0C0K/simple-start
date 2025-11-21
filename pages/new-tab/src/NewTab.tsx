@@ -9,6 +9,7 @@ import { HistoryArea } from './components/history-area'
 import { settingStorage, DEFAULT_WALLPAPER_URL } from '@extension/storage'
 import { useStorage } from '@extension/shared'
 import { DrinkWaterEventMountComponent } from './components/events'
+import { t } from '@extension/i18n'
 
 function SearchGroup() {
   const settings = useStorage(settingStorage)
@@ -31,7 +32,7 @@ function SearchGroup() {
           ref={inputRef}
           id="input-26"
           className="peer pe-9 ps-10 rounded-full h-12 font-medium shadow-md"
-          placeholder="Search..."
+          placeholder={t('searchPlaceholder')}
           type="search"
           value={searchText}
           onChange={ev => {
@@ -55,7 +56,7 @@ function SearchGroup() {
             focus-visible:border-ring focus-visible:text-foreground focus-visible:outline-none focus-visible:ring-2
             focus-visible:ring-ring/30 focus-visible:ring-offset-2 disabled:pointer-events-none
             disabled:cursor-not-allowed disabled:opacity-50"
-          aria-label="Submit search"
+          aria-label={t('submitSearch')}
           type="submit"
           onClick={() => {
             searchFunc(searchText)
