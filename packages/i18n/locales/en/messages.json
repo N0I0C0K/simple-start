@@ -162,5 +162,29 @@
   "noResultsFound": {
     "description": "No results found message",
     "message": "No results found."
+  },
+  "weatherLoading": {
+    "description": "Weather loading message",
+    "message": "Loading weather..."
+  },
+  "weatherError": {
+    "description": "Weather error message",
+    "message": "Unable to load weather"
+  },
+  "weatherLocationError": {
+    "description": "Weather location error message",
+    "message": "Location access denied"
+  },
+  "feelsLike": {
+    "description": "Feels like temperature label",
+    "message": "Feels like"
+  },
+  "humidity": {
+    "description": "Humidity label",
+    "message": "Humidity"
+  },
+  "windSpeed": {
+    "description": "Wind speed label",
+    "message": "Wind"
   }
 }
