@@ -7,6 +7,18 @@ export interface WeatherData {
   isDay: boolean
 }
 
+export interface HourlyWeatherData {
+  time: string
+  temperature: number
+  weatherCode: number
+}
+
+export interface WeatherResponse {
+  current: WeatherData
+  hourly: HourlyWeatherData[]
+  timestamp: number
+}
+
 export interface LocationCoords {
   latitude: number
   longitude: number
@@ -76,15 +88,53 @@ export const getUserLocation = (): Promise<LocationCoords> => {
   })
 }
 
+// Cache key for localStorage
+const WEATHER_CACHE_KEY = 'weather_cache'
+const CACHE_DURATION = 30 * 60 * 1000 // 30 minutes in milliseconds
+
+// Get cached weather data
+const getCachedWeather = (): WeatherResponse | null => {
+  try {
+    const cached = localStorage.getItem(WEATHER_CACHE_KEY)
+    if (!cached) return null
+
+    const data: WeatherResponse = JSON.parse(cached)
+    const now = Date.now()
+
+    // Check if cache is still valid (within 30 minutes)
+    if (now - data.timestamp < CACHE_DURATION) {
+      return data
+    }
+
+    // Cache expired, remove it
+    localStorage.removeItem(WEATHER_CACHE_KEY)
+    return null
+  } catch (error) {
+    console.error('Error reading weather cache:', error)
+    return null
+  }
+}
+
+// Save weather data to cache
+const setCachedWeather = (data: WeatherResponse): void => {
+  try {
+    localStorage.setItem(WEATHER_CACHE_KEY, JSON.stringify(data))
+  } catch (error) {
+    console.error('Error saving weather cache:', error)
+  }
+}
+
 // Fetch weather data from Open-Meteo API
-export const fetchWeatherData = async (coords: LocationCoords): Promise<WeatherData> => {
+export const fetchWeatherData = async (coords: LocationCoords): Promise<WeatherResponse> => {
   const { latitude, longitude } = coords
 
   const params = new URLSearchParams({
     latitude: latitude.toString(),
     longitude: longitude.toString(),
     current: 'temperature_2m,apparent_temperature,weather_code,relative_humidity_2m,wind_speed_10m,is_day',
+    hourly: 'temperature_2m,weather_code',
     timezone: 'auto',
+    forecast_days: '1',
   })
 
   const url = `https://api.open-meteo.com/v1/forecast?${params.toString()}`
@@ -103,19 +153,57 @@ export const fetchWeatherData = async (coords: LocationCoords): Promise<WeatherD
   }
 
   const current = data.current
+  const hourly = data.hourly
 
-  return {
-    temperature: Math.round(current.temperature_2m ?? 0),
-    apparentTemperature: Math.round(current.apparent_temperature ?? 0),
-    weatherCode: current.weather_code ?? 0,
-    humidity: current.relative_humidity_2m ?? 0,
-    windSpeed: Math.round(current.wind_speed_10m ?? 0),
-    isDay: current.is_day === 1,
+  // Get next 6 hours of forecast
+  const hourlyForecast: HourlyWeatherData[] = []
+
+  if (hourly && hourly.time && Array.isArray(hourly.time)) {
+    for (let i = 0; i < Math.min(6, hourly.time.length); i++) {
+      const time = hourly.time[i]
+      const temp = hourly.temperature_2m?.[i]
+      const code = hourly.weather_code?.[i]
+
+      if (time && temp !== undefined && code !== undefined) {
+        hourlyForecast.push({
+          time,
+          temperature: Math.round(temp),
+          weatherCode: code,
+        })
+      }
+    }
   }
+
+  const weatherResponse: WeatherResponse = {
+    current: {
+      temperature: Math.round(current.temperature_2m ?? 0),
+      apparentTemperature: Math.round(current.apparent_temperature ?? 0),
+      weatherCode: current.weather_code ?? 0,
+      humidity: current.relative_humidity_2m ?? 0,
+      windSpeed: Math.round(current.wind_speed_10m ?? 0),
+      isDay: current.is_day === 1,
+    },
+    hourly: hourlyForecast,
+    timestamp: Date.now(),
+  }
+
+  // Save to cache
+  setCachedWeather(weatherResponse)
+
+  return weatherResponse
 }
 
-// Main function to get weather data
-export const getWeatherData = async (): Promise<WeatherData> => {
+// Main function to get weather data with caching
+export const getWeatherData = async (): Promise<WeatherResponse> => {
+  // Check cache first
+  const cached = getCachedWeather()
+  if (cached) {
+    console.log('Using cached weather data')
+    return cached
+  }
+
+  // Fetch fresh data if cache miss or expired
+  console.log('Fetching fresh weather data')
   const coords = await getUserLocation()
   return await fetchWeatherData(coords)
 }

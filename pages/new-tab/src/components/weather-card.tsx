@@ -13,7 +13,7 @@ import {
   Wind,
   Zap,
 } from 'lucide-react'
-import { getWeatherData, getWeatherDescription, type WeatherData } from '@/src/service/weather'
+import { getWeatherData, getWeatherDescription, type WeatherResponse } from '@/src/service/weather'
 import { cn } from '@/lib/utils'
 
 // Get appropriate weather icon based on weather code
@@ -39,7 +39,7 @@ interface WeatherCardProps {
 }
 
 export const WeatherCard = ({ className }: WeatherCardProps) => {
-  const [weather, setWeather] = useState<WeatherData | null>(null)
+  const [weatherData, setWeatherData] = useState<WeatherResponse | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -49,7 +49,7 @@ export const WeatherCard = ({ className }: WeatherCardProps) => {
         setLoading(true)
         setError(null)
         const data = await getWeatherData()
-        setWeather(data)
+        setWeatherData(data)
       } catch (err) {
         console.error('Weather fetch error:', err)
         // Check if error is related to geolocation permission denial
@@ -91,7 +91,7 @@ export const WeatherCard = ({ className }: WeatherCardProps) => {
     )
   }
 
-  if (error || !weather) {
+  if (error || !weatherData) {
     return (
       <div
         className={cn(
@@ -105,6 +105,9 @@ export const WeatherCard = ({ className }: WeatherCardProps) => {
       </div>
     )
   }
+
+  const weather = weatherData.current
+  const hourlyData = weatherData.hourly.slice(1, 7) // Get next 6 hours (skip current hour)
 
   return (
     <div
@@ -147,6 +150,27 @@ export const WeatherCard = ({ className }: WeatherCardProps) => {
             <Text className="text-sm font-medium text-primary/80">{weather.apparentTemperature}°</Text>
           </Stack>
         </Stack>
+
+        {/* Hourly forecast */}
+        {hourlyData.length > 0 && (
+          <Stack className="gap-2 pt-3 border-t border-primary/10 overflow-x-auto">
+            {hourlyData.map((hour, index) => {
+              const hourTime = new Date(hour.time)
+              const hourStr = hourTime.getHours().toString().padStart(2, '0') + ':00'
+              
+              return (
+                <Stack
+                  key={index}
+                  direction="column"
+                  className="items-center gap-1 min-w-[3rem] flex-shrink-0">
+                  <Text className="text-xs text-primary/60">{hourStr}</Text>
+                  <div className="text-primary/70">{getWeatherIcon(hour.weatherCode, weather.isDay, 20)}</div>
+                  <Text className="text-sm font-medium text-primary/80">{hour.temperature}°</Text>
+                </Stack>
+              )
+            })}
+          </Stack>
+        )}
       </Stack>
     </div>
   )
