@@ -9,6 +9,7 @@ import {
   CloudSnow,
   CloudSun,
   Droplets,
+  Moon,
   Sun,
   Wind,
   Zap,
@@ -16,12 +17,16 @@ import {
 import { getWeatherData, getWeatherDescription, type WeatherResponse } from '@/src/service/weather'
 import { cn } from '@/lib/utils'
 
+// Constants
+const HOURLY_FORECAST_COUNT = 6
+const SKIP_CURRENT_HOUR = 1
+
 // Get appropriate weather icon based on weather code
 const getWeatherIcon = (code: number, isDay: boolean, size: number = 48) => {
   const iconProps = { size, strokeWidth: 1.5 }
 
   // Clear sky - show sun during day, moon at night
-  if (code === 0) return <Sun {...iconProps} />
+  if (code === 0) return isDay ? <Sun {...iconProps} /> : <Moon {...iconProps} />
   if (code === 1 || code === 2) return <CloudSun {...iconProps} />
   if (code === 3) return <Cloud {...iconProps} />
   if (code === 45 || code === 48) return <CloudFog {...iconProps} />
@@ -108,7 +113,7 @@ export const WeatherCard = ({ className }: WeatherCardProps) => {
   }
 
   const weather = weatherData.current
-  const hourlyData = weatherData.hourly.slice(1, 7) // Get next 6 hours (skip current hour)
+  const hourlyData = weatherData.hourly.slice(SKIP_CURRENT_HOUR, SKIP_CURRENT_HOUR + HOURLY_FORECAST_COUNT)
 
   return (
     <div

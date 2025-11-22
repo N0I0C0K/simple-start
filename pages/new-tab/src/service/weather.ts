@@ -92,6 +92,7 @@ export const getUserLocation = (): Promise<LocationCoords> => {
 // Cache key for localStorage
 const WEATHER_CACHE_KEY = 'weather_cache'
 const CACHE_DURATION = 30 * 60 * 1000 // 30 minutes in milliseconds
+const HOURLY_FORECAST_COUNT = 6 // Number of hours to fetch for forecast
 
 // Get cached weather data
 const getCachedWeather = (): WeatherResponse | null => {
@@ -160,7 +161,7 @@ export const fetchWeatherData = async (coords: LocationCoords): Promise<WeatherR
   const hourlyForecast: HourlyWeatherData[] = []
 
   if (hourly && hourly.time && Array.isArray(hourly.time)) {
-    for (let i = 0; i < Math.min(6, hourly.time.length); i++) {
+    for (let i = 0; i < Math.min(HOURLY_FORECAST_COUNT, hourly.time.length); i++) {
       const time = hourly.time[i]
       const temp = hourly.temperature_2m?.[i]
       const code = hourly.weather_code?.[i]
