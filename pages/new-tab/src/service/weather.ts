@@ -11,6 +11,7 @@ export interface HourlyWeatherData {
   time: string
   temperature: number
   weatherCode: number
+  isDay: boolean
 }
 
 export interface WeatherResponse {
@@ -132,7 +133,7 @@ export const fetchWeatherData = async (coords: LocationCoords): Promise<WeatherR
     latitude: latitude.toString(),
     longitude: longitude.toString(),
     current: 'temperature_2m,apparent_temperature,weather_code,relative_humidity_2m,wind_speed_10m,is_day',
-    hourly: 'temperature_2m,weather_code',
+    hourly: 'temperature_2m,weather_code,is_day',
     timezone: 'auto',
     forecast_days: '1',
   })
@@ -163,12 +164,14 @@ export const fetchWeatherData = async (coords: LocationCoords): Promise<WeatherR
       const time = hourly.time[i]
       const temp = hourly.temperature_2m?.[i]
       const code = hourly.weather_code?.[i]
+      const isDay = hourly.is_day?.[i]
 
-      if (time && temp !== undefined && code !== undefined) {
+      if (time && temp !== undefined && code !== undefined && isDay !== undefined) {
         hourlyForecast.push({
           time,
           temperature: Math.round(temp),
           weatherCode: code,
+          isDay: isDay === 1,
         })
       }
     }
