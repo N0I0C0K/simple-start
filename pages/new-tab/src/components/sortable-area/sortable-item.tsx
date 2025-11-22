@@ -7,11 +7,11 @@ import { DragOverlay, useDndContext } from '@dnd-kit/core'
 import { createPortal } from 'react-dom'
 
 export function SortableItem({ id, children }: { id: string | number; children: ReactNode }) {
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id })
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id })
 
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition,
+    transition: isDragging ? undefined : transition,
   }
   return (
     <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
