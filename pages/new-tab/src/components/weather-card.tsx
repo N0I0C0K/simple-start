@@ -156,7 +156,10 @@ export const WeatherCard = ({ className }: WeatherCardProps) => {
           <Stack className="gap-2 pt-3 border-t border-primary/10 overflow-x-auto">
             {hourlyData.map((hour, index) => {
               const hourTime = new Date(hour.time)
-              const hourStr = hourTime.getHours().toString().padStart(2, '0') + ':00'
+              const hourOfDay = hourTime.getHours()
+              const hourStr = hourOfDay.toString().padStart(2, '0') + ':00'
+              // Determine if hour is day or night (approximate: day is 6am-7pm)
+              const isHourDay = hourOfDay >= 6 && hourOfDay < 19
               
               return (
                 <Stack
@@ -164,7 +167,7 @@ export const WeatherCard = ({ className }: WeatherCardProps) => {
                   direction="column"
                   className="items-center gap-1 min-w-[3rem] flex-shrink-0">
                   <Text className="text-xs text-primary/60">{hourStr}</Text>
-                  <div className="text-primary/70">{getWeatherIcon(hour.weatherCode, weather.isDay, 20)}</div>
+                  <div className="text-primary/70">{getWeatherIcon(hour.weatherCode, isHourDay, 20)}</div>
                   <Text className="text-sm font-medium text-primary/80">{hour.temperature}°</Text>
                 </Stack>
               )

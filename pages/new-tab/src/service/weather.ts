@@ -198,12 +198,10 @@ export const getWeatherData = async (): Promise<WeatherResponse> => {
   // Check cache first
   const cached = getCachedWeather()
   if (cached) {
-    console.log('Using cached weather data')
     return cached
   }
 
   // Fetch fresh data if cache miss or expired
-  console.log('Fetching fresh weather data')
   const coords = await getUserLocation()
   return await fetchWeatherData(coords)
 }
