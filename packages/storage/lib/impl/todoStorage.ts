@@ -21,7 +21,7 @@ export const todoItemsStorage: TodoItemsStorage & TodoItemsStorageFunc = {
   ...storage,
   add: async (text: string) => {
     const newTodo: TodoItem = {
-      id: `todo-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      id: `todo-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`,
       text,
       completed: false,
       createdAt: Date.now(),
