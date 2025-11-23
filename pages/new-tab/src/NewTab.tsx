@@ -2,7 +2,7 @@ import '@src/NewTab.css'
 import { Center, Input, Text, Heading, Stack } from '@extension/ui'
 import { Search, ArrowRight } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { CommandModule, SettingPanel, ScrollLinkCardPage } from './components'
+import { CommandModule, SettingPanel, ScrollLinkCardPage, WeatherCard } from './components'
 
 import '@/src/style/placeholder.css'
 import { HistoryArea } from './components/history-area'
@@ -117,7 +117,10 @@ const NewTab = () => {
     <>
       <div className={'flex h-screen w-screen max-w-full flex-col justify-center gap-4 relative overflow-hidden'}>
         <Center column className="flex-1">
-          <TimeDisplay />
+          <Stack direction="row" className="items-center gap-8">
+            <TimeDisplay />
+            <WeatherCard className="w-72" />
+          </Stack>
         </Center>
         <Stack direction={'column'} className="flex-1">
           <Center className="mb-8 h-10">
