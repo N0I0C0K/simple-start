@@ -51,3 +51,10 @@ export interface QuickUrlItem {
   url: string
   iconUrl?: string
 }
+
+export interface TodoItem {
+  id: string
+  text: string
+  completed: boolean
+  createdAt: number
+}

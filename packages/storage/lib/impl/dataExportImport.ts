@@ -2,11 +2,12 @@
  * Data export/import functionality for user settings and data
  */
 
-import type { QuickUrlItem } from '../base/types'
+import type { QuickUrlItem, TodoItem } from '../base/types'
 import type { SettingProps } from './settingsStorage'
 import { settingStorage } from './settingsStorage'
 import { quickUrlItemsStorage } from './quickUrlStorage'
 import { exampleThemeStorage } from './exampleThemeStorage'
+import { todoItemsStorage } from './todoStorage'
 
 // Import types from existing implementations
 type Theme = 'light' | 'dark' | 'system'
@@ -17,6 +18,7 @@ export interface ExportedData {
   theme?: Theme
   settings: SettingProps
   quickUrls: QuickUrlItem[]
+  todos?: TodoItem[]
 }
 
 /**
@@ -26,6 +28,7 @@ export async function exportAllData(): Promise<void> {
   const settings = await settingStorage.get()
   const quickUrls = await quickUrlItemsStorage.get()
   const theme = await exampleThemeStorage.get()
+  const todos = await todoItemsStorage.get()
   
   const exportData: ExportedData = {
     version: '1.0.0',
@@ -33,6 +36,7 @@ export async function exportAllData(): Promise<void> {
     theme,
     settings,
     quickUrls,
+    todos,
   }
   
   const jsonString = JSON.stringify(exportData, null, 2)
@@ -63,6 +67,11 @@ export async function importAllData(file: File): Promise<void> {
   // Import theme if present
   if (data.theme) {
     await exampleThemeStorage.set(data.theme)
+  }
+  
+  // Import todos if present
+  if (data.todos && Array.isArray(data.todos)) {
+    await todoItemsStorage.set(data.todos)
   }
 }
 
