@@ -15,25 +15,25 @@ const TodoItemComponent: FC<TodoItemProps> = ({ todo, onToggle, onDelete }) => {
   return (
     <div
       className={cn(
-        'group flex items-center gap-2 rounded-lg px-3 py-2 transition-all hover:bg-white/10',
-        'dark:hover:bg-white/5',
+        'group flex items-center gap-2 rounded-lg px-3 py-2 transition-all hover:bg-white/20',
+        'dark:hover:bg-black/20',
       )}>
       <button
         onClick={() => onToggle(todo.id)}
         className={cn(
           'flex h-5 w-5 items-center justify-center rounded border-2 transition-all',
           todo.completed
-            ? 'border-green-500 bg-green-500/20 dark:border-green-400 dark:bg-green-400/20'
-            : 'border-gray-400 hover:border-gray-300 dark:border-gray-500 dark:hover:border-gray-400',
+            ? 'border-green-600 bg-green-500/30 dark:border-green-400 dark:bg-green-500/30'
+            : 'border-gray-500 hover:border-gray-400 dark:border-gray-400 dark:hover:border-gray-300',
         )}>
-        {todo.completed && <Check size={14} className="text-green-600 dark:text-green-400" strokeWidth={3} />}
+        {todo.completed && <Check size={14} className="text-green-700 dark:text-green-300" strokeWidth={3} />}
       </button>
       <span
         className={cn(
-          'flex-1 text-sm transition-all',
+          'flex-1 text-sm transition-all font-medium',
           todo.completed
-            ? 'text-gray-500 line-through dark:text-gray-400'
-            : 'text-gray-800 dark:text-gray-200',
+            ? 'text-gray-600 line-through dark:text-gray-400'
+            : 'text-gray-900 dark:text-gray-100',
         )}>
         {todo.text}
       </span>
@@ -41,7 +41,7 @@ const TodoItemComponent: FC<TodoItemProps> = ({ todo, onToggle, onDelete }) => {
         onClick={() => onDelete(todo.id)}
         className={cn(
           'opacity-0 transition-opacity group-hover:opacity-100',
-          'text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400',
+          'text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400',
         )}>
         <X size={16} />
       </button>
@@ -84,13 +84,13 @@ export const TodoCard: FC<{ className?: string }> = ({ className }) => {
     <div
       className={cn(
         className,
-        'backdrop-blur-2xl rounded-2xl shadow-md dark:backdrop-brightness-75',
-        'bg-slate-50/15 dark:bg-slate-700/5 overflow-hidden',
+        'backdrop-blur-2xl rounded-2xl shadow-lg dark:backdrop-brightness-75',
+        'bg-white/40 dark:bg-slate-800/40 overflow-hidden border border-white/20 dark:border-slate-700/30',
       )}>
       <div className="p-4">
         <div className="mb-3 flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100">Todo List</h3>
-          <div className="text-xs text-gray-500 dark:text-gray-400">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Todo List</h3>
+          <div className="text-xs text-gray-600 dark:text-gray-300">
             {activeTodos.length} active
           </div>
         </div>
@@ -135,7 +135,7 @@ export const TodoCard: FC<{ className?: string }> = ({ className }) => {
                   }
                 }}
                 placeholder="Enter todo..."
-                className="flex-1 h-9 bg-white/50 dark:bg-black/20"
+                className="flex-1 h-9 bg-white/70 dark:bg-slate-700/70 text-gray-900 dark:text-gray-100"
               />
               <Button onClick={handleAddTodo} size="sm" variant="ghost" className="h-9 px-3">
                 <Check size={16} />
@@ -155,7 +155,7 @@ export const TodoCard: FC<{ className?: string }> = ({ className }) => {
             <Button
               onClick={() => setIsAdding(true)}
               variant="ghost"
-              className="w-full justify-start text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200">
+              className="w-full justify-start text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100 font-medium">
               <Plus size={16} />
               Add task
             </Button>
@@ -168,7 +168,7 @@ export const TodoCard: FC<{ className?: string }> = ({ className }) => {
               onClick={() => todoItemsStorage.clearCompleted()}
               variant="ghost"
               size="sm"
-              className="w-full text-xs text-gray-500 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-400">
+              className="w-full text-xs text-gray-600 hover:text-red-600 dark:text-gray-300 dark:hover:text-red-400 font-medium">
               <Trash2 size={14} />
               Clear completed
             </Button>
