@@ -1,4 +1,4 @@
-import { Stack, Text } from '@extension/ui'
+import { ScrollArea, Stack, Text } from '@extension/ui'
 import { t } from '@extension/i18n'
 import { useEffect, useState } from 'react'
 import {
@@ -159,23 +159,27 @@ export const WeatherCard = ({ className }: WeatherCardProps) => {
 
         {/* Hourly forecast */}
         {hourlyData.length > 0 && (
-          <Stack className="gap-2 pt-3 border-t border-primary/10 overflow-x-auto">
-            {hourlyData.map((hour, index) => {
-              const hourTime = new Date(hour.time)
-              const hourStr = hourTime.getHours().toString().padStart(2, '0') + ':00'
-              
-              return (
-                <Stack
-                  key={index}
-                  direction="column"
-                  className="items-center gap-1 min-w-[3rem] flex-shrink-0">
-                  <Text className="text-xs text-primary/60">{hourStr}</Text>
-                  <div className="text-primary/70">{getWeatherIcon(hour.weatherCode, hour.isDay, 20)}</div>
-                  <Text className="text-sm font-medium text-primary/80">{hour.temperature}°</Text>
-                </Stack>
-              )
-            })}
-          </Stack>
+          <div className="pt-3 border-t border-primary/10">
+            <ScrollArea className="w-full" scrollHideDelay={200}>
+              <Stack className="gap-2">
+                {hourlyData.map((hour, index) => {
+                  const hourTime = new Date(hour.time)
+                  const hourStr = hourTime.getHours().toString().padStart(2, '0') + ':00'
+                  
+                  return (
+                    <Stack
+                      key={index}
+                      direction="column"
+                      className="items-center gap-1 min-w-[3rem] flex-shrink-0">
+                      <Text className="text-xs text-primary/60">{hourStr}</Text>
+                      <div className="text-primary/70">{getWeatherIcon(hour.weatherCode, hour.isDay, 20)}</div>
+                      <Text className="text-sm font-medium text-primary/80">{hour.temperature}°</Text>
+                    </Stack>
+                  )
+                })}
+              </Stack>
+            </ScrollArea>
+          </div>
         )}
       </Stack>
     </div>
