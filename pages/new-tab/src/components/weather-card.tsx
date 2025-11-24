@@ -17,10 +17,6 @@ import {
 import { getWeatherData, getWeatherDescription, type WeatherResponse } from '@/src/service/weather'
 import { cn } from '@/lib/utils'
 
-// Constants
-const HOURLY_FORECAST_COUNT = 6
-const SKIP_CURRENT_HOUR = 1
-
 // Get appropriate weather icon based on weather code
 const getWeatherIcon = (code: number, isDay: boolean, size: number = 48) => {
   const iconProps = { size, strokeWidth: 1.5 }
@@ -113,7 +109,7 @@ export const WeatherCard = ({ className }: WeatherCardProps) => {
   }
 
   const weather = weatherData.current
-  const hourlyData = weatherData.hourly.slice(SKIP_CURRENT_HOUR, SKIP_CURRENT_HOUR + HOURLY_FORECAST_COUNT)
+  const hourlyData = weatherData.hourly
 
   return (
     <div

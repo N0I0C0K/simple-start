@@ -157,11 +157,25 @@ export const fetchWeatherData = async (coords: LocationCoords): Promise<WeatherR
   const current = data.current
   const hourly = data.hourly
 
-  // Get next 6 hours of forecast
+  // Get next 6 hours of forecast starting from current hour
   const hourlyForecast: HourlyWeatherData[] = []
 
   if (hourly && hourly.time && Array.isArray(hourly.time)) {
-    for (let i = 0; i < Math.min(HOURLY_FORECAST_COUNT, hourly.time.length); i++) {
+    // Find current hour index in the hourly data
+    const now = new Date()
+    const currentHourStr = now.toISOString().slice(0, 13) // "YYYY-MM-DDTHH"
+    
+    let startIndex = 0
+    for (let i = 0; i < hourly.time.length; i++) {
+      if (hourly.time[i].startsWith(currentHourStr)) {
+        startIndex = i
+        break
+      }
+    }
+
+    // Get next 6 hours starting from current hour + 1
+    const endIndex = Math.min(startIndex + HOURLY_FORECAST_COUNT + 1, hourly.time.length)
+    for (let i = startIndex + 1; i < endIndex; i++) {
       const time = hourly.time[i]
       const temp = hourly.temperature_2m?.[i]
       const code = hourly.weather_code?.[i]
