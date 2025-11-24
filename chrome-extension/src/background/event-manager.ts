@@ -6,11 +6,14 @@ export let eventCenter: EventCenter | null = null
 export let drinkWaterLaunchEvent: Event<events.DrinkWaterLaunchPayload> | null = null
 
 export async function initializeEventCenter(mqttProvider: MqttProvider) {
-  const settings = await settingStorage.get()
+  const mqttSettings = await settingStorage.getMqttSettings()
+  if (!mqttSettings?.secretKey) {
+    throw new Error('MQTT settings not found')
+  }
   eventCenter = await generateEventCenter(mqttProvider)
   drinkWaterLaunchEvent = eventCenter.getOrRegisterEvent<events.DrinkWaterLaunchPayload>({
     eventName: 'drink-water-launch',
-    topic: `${settings.mqttSettings.secretKey}/drink-water/launch`,
+    topic: `${mqttSettings.secretKey}/drink-water/launch`,
   })
 }
 
