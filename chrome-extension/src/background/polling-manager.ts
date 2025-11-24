@@ -3,6 +3,8 @@ import { drinkWaterEventGlobalState } from '@extension/shared'
 import { drinkWaterLaunchEvent, registerConfirmEvent } from './event-manager'
 import { onReceiveDrinkWaterConfirm } from './drink-water-handlers'
 
+const LAUNCH_POLLING_INTERVAL_MS = 5000
+
 let launchPollingHandler: {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   intervalId: any
@@ -33,7 +35,7 @@ export async function setLaunchPolling(payload: events.DrinkWaterLaunchPayload |
       return
     }
     drinkWaterLaunchEvent!.emit(payload)
-  }, 5 * 1000)
+  }, LAUNCH_POLLING_INTERVAL_MS)
 
   launchPollingHandler = {
     intervalId: intervalId,

@@ -17,10 +17,10 @@ function initMqttClientEvent(client: MqttClient) {
 }
 
 export async function setupMqtt(): Promise<MqttProvider | null> {
-  const settings = await settingStorage.get()
-  console.log('Current MQTT settings:', settings.mqttSettings)
+  const mqttSettings = await settingStorage.getMqttSettings()
+  console.log('Current MQTT settings:', mqttSettings)
 
-  if (!(settings.mqttSettings?.enabled && settings.mqttSettings.secretKey)) {
+  if (!(mqttSettings?.enabled && mqttSettings.secretKey)) {
     console.log('MQTT is disabled or not properly configured.')
     return null
   }
