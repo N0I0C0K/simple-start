@@ -119,7 +119,7 @@ const NewTab = () => {
         <Center column className="flex-1">
           <Stack direction="row" className="items-center gap-8">
             <TimeDisplay />
-            <WeatherCard className="w-72" />
+            {settings.showWeatherCard && <WeatherCard className="w-72" />}
           </Stack>
         </Center>
         <Stack direction={'column'} className="flex-1">

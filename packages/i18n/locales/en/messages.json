@@ -186,5 +186,13 @@
   "windSpeed": {
     "description": "Wind speed label",
     "message": "Wind"
+  },
+  "weatherCard": {
+    "description": "Weather card setting title",
+    "message": "Weather Card"
+  },
+  "weatherCardDescription": {
+    "description": "Weather card setting description",
+    "message": "Show weather information on new tab page."
   }
 }
