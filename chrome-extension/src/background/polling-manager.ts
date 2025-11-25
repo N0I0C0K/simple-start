@@ -22,7 +22,7 @@ export async function setLaunchPolling(payload: events.DrinkWaterLaunchPayload |
     return
   }
 
-  if (launchPollingHandler?.launchPayload.id === payload?.id) {
+  if (launchPollingHandler?.launchPayload.id === payload.id) {
     return
   }
 
@@ -34,7 +34,8 @@ export async function setLaunchPolling(payload: events.DrinkWaterLaunchPayload |
       launchPollingHandler = null
       return
     }
-    drinkWaterLaunchEvent!.emit(payload)
+    if (!drinkWaterLaunchEvent) return
+    drinkWaterLaunchEvent.emit(payload)
   }, LAUNCH_POLLING_INTERVAL_MS)
 
   launchPollingHandler = {

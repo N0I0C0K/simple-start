@@ -22,6 +22,7 @@ export async function setupMqtt(): Promise<MqttProvider | null> {
 
   if (!(mqttSettings?.enabled && mqttSettings.secretKey)) {
     console.log('MQTT is disabled or not properly configured.')
+    mqttProvider = null
     return null
   }
   console.log('Connecting to MQTT broker...')
@@ -34,9 +35,11 @@ export async function setupMqtt(): Promise<MqttProvider | null> {
 }
 
 export async function initializeMqttState() {
-  await mqttStateManager.setConnected(false)
   const mqttSettings = await settingStorage.getMqttSettings()
   if (mqttSettings?.enabled) {
     await setupMqtt()
+  } else {
+    await mqttStateManager.setConnected(false)
+    mqttProvider = null
   }
 }

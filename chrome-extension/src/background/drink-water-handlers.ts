@@ -14,6 +14,7 @@ export async function onReceiveDrinkWaterLaunch(payload: events.DrinkWaterLaunch
   if (!eventCenter) return
   const mqttSettings = await settingStorage.getMqttSettings()
   if (!mqttSettings) return
+  if (!mqttSettings.secretKey) return
 
   await receiveDrinkWaterLaunchMessage.emit(payload)
 

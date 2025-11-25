@@ -20,7 +20,7 @@ export async function initializeEventCenter(mqttProvider: MqttProvider) {
 export async function registerConfirmEvent(payload: events.DrinkWaterLaunchPayload) {
   if (!eventCenter) return
   const mqttSettings = await settingStorage.getMqttSettings()
-  if (!mqttSettings)
+  if (!mqttSettings?.secretKey)
     throw new Error('MQTT settings not found')
   const confirmEvent = eventCenter.getOrRegisterEvent<events.DrinkWaterConfirmPayload>({
     eventName: `drink-water-confirm-${payload.id}`,
@@ -29,6 +29,11 @@ export async function registerConfirmEvent(payload: events.DrinkWaterLaunchPaylo
   return confirmEvent
 }
 
+/**
+ * Unregisters a confirm event for a drink water launch payload.
+ * This function is intended for cleanup when an event is no longer needed,
+ * such as when a drink water event is completed or cancelled.
+ */
 export async function unregisterConfirmEvent(payload: events.DrinkWaterLaunchPayload) {
   if (!eventCenter) return
   const confirmEvent = eventCenter.getRegisteredEvent<events.DrinkWaterConfirmPayload>(`drink-water-confirm-${payload.id}`)
