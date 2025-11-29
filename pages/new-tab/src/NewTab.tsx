@@ -2,7 +2,7 @@ import '@src/NewTab.css'
 import { Center, Input, Text, Heading, Stack } from '@extension/ui'
 import { Search, ArrowRight } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { CommandModule, SettingPanel, ScrollLinkCardPage } from './components'
+import { CommandModule, SettingPanel, ScrollLinkCardPage, TodoCard } from './components'
 
 import '@/src/style/placeholder.css'
 import { HistoryArea } from './components/history-area'
@@ -155,6 +155,7 @@ const NewTab = () => {
         }}
       />
       <SettingPanel className="fixed top-2 right-2" />
+      <TodoCard className="fixed top-20 right-4 w-80" />
       <DrinkWaterEventMountComponent />
     </>
   )
