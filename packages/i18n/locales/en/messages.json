@@ -162,5 +162,17 @@
   "noResultsFound": {
     "description": "No results found message",
     "message": "No results found."
+  },
+  "wallpaperTab": {
+    "description": "Wallpaper settings tab",
+    "message": "Wallpaper"
+  },
+  "wallpaperSettingsDescription": {
+    "description": "Wallpaper settings description",
+    "message": "Select a wallpaper from Wallhaven toplist."
+  },
+  "wallpaperFetchError": {
+    "description": "Wallpaper fetch error message",
+    "message": "Failed to load wallpapers. Please try again."
   }
 }

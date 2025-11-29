@@ -162,5 +162,17 @@
   "noResultsFound": {
     "description": "No results found message",
     "message": "未找到结果。"
+  },
+  "wallpaperTab": {
+    "description": "Wallpaper settings tab",
+    "message": "壁纸"
+  },
+  "wallpaperSettingsDescription": {
+    "description": "Wallpaper settings description",
+    "message": "从 Wallhaven 热门榜单中选择壁纸。"
+  },
+  "wallpaperFetchError": {
+    "description": "Wallpaper fetch error message",
+    "message": "加载壁纸失败，请重试。"
   }
 }
