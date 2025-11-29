@@ -111,6 +111,15 @@ export const WallpaperSettings: FC = () => {
   }, [fetchWallpapers])
 
   const handleSelectWallpaper = useCallback(async (url: string) => {
+    // Validate URL format before saving
+    try {
+      const urlObj = new URL(url)
+      if (!['http:', 'https:'].includes(urlObj.protocol)) {
+        return
+      }
+    } catch {
+      return
+    }
     await settingStorage.update({ wallpaperUrl: url })
   }, [])
 
