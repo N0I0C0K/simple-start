@@ -44,19 +44,19 @@ export const LinkCardItem = forwardRef<HTMLDivElement, LinkCardProps & CustomGri
             setDragAreaVisible(opened)
           }}>
           <ContextMenu>
-            <TooltipTrigger asChild>
-              <div
-                style={style}
-                className={cn(
-                  `relative min-w-[4.5rem] group flex flex-col items-center justify-center overflow-hidden p-2 gap-1
-                  rounded-md duration-200 cursor-default`,
-                  className,
-                )}
-                key={id}
-                ref={ref}
-                onMouseDown={onMouseDown}
-                onMouseUp={onMouseUp}
-                onTouchEnd={onTouchEnd}>
+            <div
+              style={style}
+              className={cn(
+                `relative min-w-[4.5rem] group flex flex-col items-center justify-center overflow-hidden p-2 gap-1
+                rounded-md duration-200 cursor-default`,
+                className,
+              )}
+              key={id}
+              ref={ref}
+              onMouseDown={onMouseDown}
+              onMouseUp={onMouseUp}
+              onTouchEnd={onTouchEnd}>
+              <TooltipTrigger asChild>
                 <ContextMenuTrigger asChild>
                   <div
                     className={cn(
@@ -77,11 +77,11 @@ export const LinkCardItem = forwardRef<HTMLDivElement, LinkCardProps & CustomGri
                     <img src={getDefaultIconUrl(url)} alt="img" className="size-8 rounded-md select-none" />
                   </div>
                 </ContextMenuTrigger>
-                <Text level="s" className="select-none line-clamp-1">
-                  {title}
-                </Text>
-              </div>
-            </TooltipTrigger>
+              </TooltipTrigger>
+              <Text level="s" className="select-none line-clamp-1">
+                {title}
+              </Text>
+            </div>
             <TooltipContent asChild>
               <Stack direction={'column'}>
                 <Text>{title}</Text>
@@ -142,4 +142,4 @@ export const LinkCardItem = forwardRef<HTMLDivElement, LinkCardProps & CustomGri
 
 LinkCardItem.displayName = 'LinkCardItem'
 
-export const SortabelLinkCardItem = MakeSortableItem(LinkCardItem)
+export const SortableLinkCardItem = MakeSortableItem(LinkCardItem)

@@ -1,9 +1,11 @@
 import { DragDropProvider, PointerSensor } from '@dnd-kit/react'
+import { isSortable } from '@dnd-kit/react/sortable'
+import { arrayMove } from '@dnd-kit/helpers'
 import { useStorage } from '@extension/shared'
 import { quickUrlItemsStorage } from '@extension/storage'
-import type { FC } from 'react'
+import { useEffect, type FC } from 'react'
 
-import { SortabelLinkCardItem } from '@/src/components/link-card/link-card-item'
+import { SortableLinkCardItem } from '@/src/components/link-card/link-card-item'
 import { cn } from '@/lib/utils'
 
 export const DndLinkCardPage: FC<{
@@ -13,18 +15,30 @@ export const DndLinkCardPage: FC<{
 
   return (
     <DragDropProvider
-      sensors={[PointerSensor]}
-      onDragEnd={event => {
-        const { source, target } = event.operation
-        if (target && source && source.id !== target.id) {
-          quickUrlItemsStorage.moveItemById(source.id as string, target.id as string)
+      sensors={[
+        PointerSensor.configure({
+          activationConstraints: {
+            delay: {
+              tolerance: 4,
+              value: 100,
+            },
+          },
+        }),
+      ]}
+      onDragEnd={async event => {
+        const { source } = event.operation
+        if (isSortable(source)) {
+          const { initialIndex, index } = source.sortable
+          if (initialIndex !== index) {
+            await quickUrlItemsStorage.set(pre => {
+              return arrayMove(pre, initialIndex, index)
+            })
+          }
         }
       }}>
-      <div
-        className={cn('grid', className)}
-        style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(6.5rem, 1fr))' }}>
+      <div className={cn('grid', className)} style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(6.5rem, 1fr))' }}>
         {userStorageItems.map((val, index) => (
-          <SortabelLinkCardItem {...val} key={val.id} index={index} />
+          <SortableLinkCardItem {...val} key={val.id} index={index} />
         ))}
       </div>
     </DragDropProvider>

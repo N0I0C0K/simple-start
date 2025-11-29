@@ -193,7 +193,7 @@ const MqttSettings: FC = () => {
 const CommonSettings: FC = () => {
   const settings = useStorage(settingStorage)
   const fileInputRef = React.useRef<HTMLInputElement>(null)
-  
+
   const handleExport = async () => {
     try {
       await exportAllData()
@@ -202,11 +202,11 @@ const CommonSettings: FC = () => {
       alert('Failed to export settings. Please try again.')
     }
   }
-  
+
   const handleImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (!file) return
-    
+
     try {
       await importAllData(file)
       alert('Settings imported successfully!')
@@ -223,13 +223,18 @@ const CommonSettings: FC = () => {
       }
     }
   }
-  
+
   return (
     <Stack direction={'column'} className={'gap-2 w-full'}>
       <Text gray level="s">
         {t('configureGeneralSettings')}
       </Text>
-      <SettingItem IconClass={SunMoon} title={t('theme')} description={t('themeDescription')} control={<ThemeToggle />} />
+      <SettingItem
+        IconClass={SunMoon}
+        title={t('theme')}
+        description={t('themeDescription')}
+        control={<ThemeToggle />}
+      />
       <SettingItem
         IconClass={History}
         title={t('historySuggestion')}
@@ -281,13 +286,7 @@ const CommonSettings: FC = () => {
         description="Import settings and quick URLs from JSON file."
         control={
           <>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".json"
-              onChange={handleImport}
-              style={{ display: 'none' }}
-            />
+            <input ref={fileInputRef} type="file" accept=".json" onChange={handleImport} style={{ display: 'none' }} />
             <Button variant={'outline'} onClick={() => fileInputRef.current?.click()}>
               Import
             </Button>
@@ -363,6 +362,7 @@ const DrinkWaterButton: FC<{ className?: string }> = ({ className }) => {
       tooltip={t('drinkWater')}
       variant={'ghost'}
       className={cn('rounded-full', className)}
+      side="left"
       onClick={async () => {
         await drinkWaterState.launchEvent()
       }}>
