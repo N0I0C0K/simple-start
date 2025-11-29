@@ -1,38 +1,37 @@
 import type { ComponentType, FC, ReactNode } from 'react'
 
-import { useSortable } from '@dnd-kit/sortable'
+import { useSortable } from '@dnd-kit/react/sortable'
+import { DragOverlay, useDragOperation } from '@dnd-kit/react'
 
-import { CSS } from '@dnd-kit/utilities'
-import { DragOverlay, useDndContext } from '@dnd-kit/core'
-import { createPortal } from 'react-dom'
+export function SortableItem({
+  id,
+  index,
+  children,
+}: {
+  id: string | number
+  index: number
+  children: ReactNode
+}) {
+  const { ref } = useSortable({ id, index })
 
-export function SortableItem({ id, children }: { id: string | number; children: ReactNode }) {
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id })
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  }
-  return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      {children}
-    </div>
-  )
+  return <div ref={ref}>{children}</div>
 }
 
-export function MakeSortableItem<P>(Component: ComponentType<P>): FC<P & { id: string | number }> {
-  const WarpSortableItem: FC<P & { id: string | number }> = props => {
+export function MakeSortableItem<P>(
+  Component: ComponentType<P>,
+): FC<P & { id: string | number; index: number }> {
+  const WrapSortableItem: FC<P & { id: string | number; index: number }> = props => {
     return (
-      <SortableItem id={props.id}>
+      <SortableItem id={props.id} index={props.index}>
         <Component {...props} />
       </SortableItem>
     )
   }
-  return WarpSortableItem
+  return WrapSortableItem
 }
 
 export function DraggableOverlay() {
-  const { active } = useDndContext()
+  const { source } = useDragOperation()
 
-  return createPortal(<DragOverlay>{active ? <p>temp</p> : null}</DragOverlay>, document.body)
+  return <DragOverlay>{source ? <p>temp</p> : null}</DragOverlay>
 }
