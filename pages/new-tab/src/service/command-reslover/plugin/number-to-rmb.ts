@@ -52,6 +52,8 @@ export function numberToChineseUppercase(num: number): string {
     result += DIGITS[fen] + '分'
   } else if (jiao > 0 && fen === 0) {
     // Has jiao but no fen
+    // Note: For amounts < 1 yuan with only jiao (e.g., 0.50), we output "伍角" not "零元伍角"
+    // This follows common financial document practices
     result += DIGITS[jiao] + '角'
   } else {
     // Has both jiao and fen
