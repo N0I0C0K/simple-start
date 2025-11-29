@@ -20,7 +20,7 @@ const MATH_FUNCTIONS = [
   'random', 'fac', 'pyt', 'length', 'if', 'gamma', 'roundTo', 'map',
   'E', 'PI'
 ]
-const MATH_FUNCTIONS_REGEX = new RegExp(`\\b(${MATH_FUNCTIONS.join('|')})\\b`, 'gi')
+const MATH_FUNCTIONS_REGEX = new RegExp(`\\b(${MATH_FUNCTIONS.join('|')})\\b`, 'i')
 
 interface CalculatorHistoryItem {
   expression: string
@@ -221,17 +221,6 @@ export const calculatorResolver: ICommandReslover = {
       },
     })
 
-    // Add copy option
-    results.push({
-      id: 'calc-copy',
-      title: result,
-      description: t('calculatorCopyResult'),
-      IconType: Copy,
-      onSelect: () => {
-        copyToClipboard(result)
-        addToHistory(query, result)
-      },
-    })
 
     return results
   },
