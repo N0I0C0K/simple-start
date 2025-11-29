@@ -49,6 +49,7 @@ import {
   Dot,
   Download,
   Upload,
+  CloudSun,
 } from 'lucide-react'
 import { nanoid } from 'nanoid'
 import React, { type ElementType, type FC, type ReactElement, type ReactNode } from 'react'
@@ -249,6 +250,17 @@ const CommonSettings: FC = () => {
           <Switch
             checked={settings.autoFocusCommandInput}
             onCheckedChange={val => settingStorage.update({ autoFocusCommandInput: val })}
+          />
+        }
+      />
+      <SettingItem
+        IconClass={CloudSun}
+        title={t('weatherCard')}
+        description={t('weatherCardDescription')}
+        control={
+          <Switch
+            checked={settings.showWeatherCard}
+            onCheckedChange={val => settingStorage.update({ showWeatherCard: val })}
           />
         }
       />

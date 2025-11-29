@@ -18,6 +18,7 @@ export type SettingProps = {
   autoFocusCommandInput: boolean
   wallpaperUrl: string | null
   mqttSettings: MqttSetting
+  showWeatherCard: boolean
 }
 
 type DeepPartial<T> = T extends object
@@ -41,6 +42,7 @@ const defaultSetting: SettingProps = {
     secretKey: 'ABCDEF',
     username: 'MomoBoss',
   },
+  showWeatherCard: true,
 }
 
 const storage = createStorage<SettingProps>('settings-storage', defaultSetting, {

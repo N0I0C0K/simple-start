@@ -162,5 +162,37 @@
   "noResultsFound": {
     "description": "No results found message",
     "message": "未找到结果。"
+  },
+  "weatherLoading": {
+    "description": "Weather loading message",
+    "message": "加载天气中..."
+  },
+  "weatherError": {
+    "description": "Weather error message",
+    "message": "无法加载天气"
+  },
+  "weatherLocationError": {
+    "description": "Weather location error message",
+    "message": "位置访问被拒绝"
+  },
+  "feelsLike": {
+    "description": "Feels like temperature label",
+    "message": "体感"
+  },
+  "humidity": {
+    "description": "Humidity label",
+    "message": "湿度"
+  },
+  "windSpeed": {
+    "description": "Wind speed label",
+    "message": "风速"
+  },
+  "weatherCard": {
+    "description": "Weather card setting title",
+    "message": "天气卡片"
+  },
+  "weatherCardDescription": {
+    "description": "Weather card setting description",
+    "message": "在新标签页显示天气信息。"
   }
 }
