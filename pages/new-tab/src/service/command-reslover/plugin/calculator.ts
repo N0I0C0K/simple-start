@@ -1,9 +1,26 @@
 import type { ICommandReslover, ICommandResult } from './protocol'
 import { Calculator, History, Copy, Trash2 } from 'lucide-react'
 import { t } from '@extension/i18n'
+import { Parser } from 'expr-eval'
 
 const CALCULATOR_HISTORY_KEY = 'calculator_history'
 const MAX_HISTORY_ITEMS = 20
+const FLOATING_POINT_PRECISION = 15
+
+// Create a parser instance
+const parser = new Parser()
+
+// List of math functions supported by expr-eval for expression validation
+const MATH_FUNCTIONS = [
+  'sin', 'cos', 'tan', 'asin', 'acos', 'atan', 'atan2',
+  'sinh', 'cosh', 'tanh', 'asinh', 'acosh', 'atanh',
+  'sqrt', 'cbrt', 'log', 'ln', 'lg', 'log2', 'log10', 'log1p', 'expm1',
+  'abs', 'ceil', 'floor', 'round', 'trunc', 'sign',
+  'exp', 'pow', 'min', 'max', 'hypot',
+  'random', 'fac', 'pyt', 'length', 'if', 'gamma', 'roundTo', 'map',
+  'E', 'PI'
+]
+const MATH_FUNCTIONS_REGEX = new RegExp(`\\b(${MATH_FUNCTIONS.join('|')})\\b`, 'gi')
 
 interface CalculatorHistoryItem {
   expression: string
@@ -60,269 +77,30 @@ async function copyToClipboard(text: string): Promise<void> {
     await navigator.clipboard.writeText(text)
   } catch {
     // Fallback for older browsers
-    const textArea = document.createElement('textarea')
-    textArea.value = text
-    document.body.appendChild(textArea)
-    textArea.select()
-    document.execCommand('copy')
-    document.body.removeChild(textArea)
+    try {
+      const textArea = document.createElement('textarea')
+      textArea.value = text
+      document.body.appendChild(textArea)
+      textArea.select()
+      document.execCommand('copy')
+      document.body.removeChild(textArea)
+    } catch {
+      // Final fallback: show prompt for manual copy
+      window.prompt('Copy to clipboard: Ctrl+C, Enter', text)
+    }
   }
 }
 
-// Token types for the expression parser
-type TokenType = 'number' | 'operator' | 'lparen' | 'rparen'
-
-interface Token {
-  type: TokenType
-  value: string
-}
-
-// Tokenize the expression
-function tokenize(expression: string): Token[] {
-  const tokens: Token[] = []
-  let i = 0
-  const expr = expression.replace(/\s+/g, '') // Remove all whitespace
-
-  while (i < expr.length) {
-    const char = expr[i]
-
-    // Handle numbers (including decimals)
-    if (/[\d.]/.test(char)) {
-      let num = ''
-      while (i < expr.length && /[\d.]/.test(expr[i])) {
-        num += expr[i]
-        i++
-      }
-      tokens.push({ type: 'number', value: num })
-      continue
-    }
-
-    // Handle operators
-    if (['+', '-', '*', '/', '%', '^'].includes(char)) {
-      // Handle negative numbers at the start or after an operator/open paren
-      if (
-        char === '-' &&
-        (tokens.length === 0 || tokens[tokens.length - 1].type === 'operator' || tokens[tokens.length - 1].type === 'lparen')
-      ) {
-        let num = '-'
-        i++
-        while (i < expr.length && /[\d.]/.test(expr[i])) {
-          num += expr[i]
-          i++
-        }
-        if (num !== '-') {
-          tokens.push({ type: 'number', value: num })
-          continue
-        } else {
-          // Just a standalone minus, treat as operator
-          i-- // Go back
-        }
-      }
-      tokens.push({ type: 'operator', value: char })
-      i++
-      continue
-    }
-
-    // Handle parentheses
-    if (char === '(' || char === '[' || char === '{') {
-      tokens.push({ type: 'lparen', value: '(' })
-      i++
-      continue
-    }
-
-    if (char === ')' || char === ']' || char === '}') {
-      tokens.push({ type: 'rparen', value: ')' })
-      i++
-      continue
-    }
-
-    // Handle Chinese operators
-    if (char === '×' || char === '✕') {
-      tokens.push({ type: 'operator', value: '*' })
-      i++
-      continue
-    }
-
-    if (char === '÷') {
-      tokens.push({ type: 'operator', value: '/' })
-      i++
-      continue
-    }
-
-    // Skip unknown characters
-    i++
-  }
-
-  return tokens
-}
-
-// Check if a string contains only integer values (for BigInt optimization)
-function isIntegerExpression(tokens: Token[]): boolean {
-  return tokens.every(token => {
-    if (token.type === 'number') {
-      return !token.value.includes('.') && !token.value.includes('e') && !token.value.includes('E')
-    }
-    // Division can produce non-integers
-    if (token.type === 'operator' && token.value === '/') {
-      return false
-    }
-    return true
-  })
-}
-
-// BigInt constants
-const BIGINT_ZERO = BigInt(0)
-const BIGINT_ONE = BigInt(1)
-const BIGINT_TWO = BigInt(2)
-
-// BigInt power function (to avoid ES2016 requirement)
-function bigPow(base: bigint, exponent: bigint): bigint {
-  if (exponent < BIGINT_ZERO) {
-    return BIGINT_ZERO // BigInt doesn't support negative exponents, return 0
-  }
-  if (exponent === BIGINT_ZERO) {
-    return BIGINT_ONE
-  }
-  let result = BIGINT_ONE
-  let b = base
-  let e = exponent
-  while (e > BIGINT_ZERO) {
-    if (e % BIGINT_TWO === BIGINT_ONE) {
-      result *= b
-    }
-    b *= b
-    e = e / BIGINT_TWO
-  }
-  return result
-}
-
-// Parse and evaluate expression using shunting-yard algorithm
-function evaluate(tokens: Token[], useBigInt: boolean): string {
-  const outputQueue: Token[] = []
-  const operatorStack: Token[] = []
-
-  const precedence: Record<string, number> = {
-    '+': 1,
-    '-': 1,
-    '*': 2,
-    '/': 2,
-    '%': 2,
-    '^': 3,
-  }
-
-  const rightAssociative = new Set(['^'])
-
-  for (const token of tokens) {
-    if (token.type === 'number') {
-      outputQueue.push(token)
-    } else if (token.type === 'operator') {
-      while (
-        operatorStack.length > 0 &&
-        operatorStack[operatorStack.length - 1].type === 'operator' &&
-        ((rightAssociative.has(token.value) &&
-          precedence[operatorStack[operatorStack.length - 1].value] > precedence[token.value]) ||
-          (!rightAssociative.has(token.value) &&
-            precedence[operatorStack[operatorStack.length - 1].value] >= precedence[token.value]))
-      ) {
-        outputQueue.push(operatorStack.pop()!)
-      }
-      operatorStack.push(token)
-    } else if (token.type === 'lparen') {
-      operatorStack.push(token)
-    } else if (token.type === 'rparen') {
-      while (operatorStack.length > 0 && operatorStack[operatorStack.length - 1].type !== 'lparen') {
-        outputQueue.push(operatorStack.pop()!)
-      }
-      if (operatorStack.length > 0 && operatorStack[operatorStack.length - 1].type === 'lparen') {
-        operatorStack.pop()
-      }
-    }
-  }
-
-  while (operatorStack.length > 0) {
-    outputQueue.push(operatorStack.pop()!)
-  }
-
-  // Evaluate the RPN expression
-  const evalStack: (number | bigint)[] = []
-
-  for (const token of outputQueue) {
-    if (token.type === 'number') {
-      if (useBigInt) {
-        evalStack.push(BigInt(token.value))
-      } else {
-        evalStack.push(parseFloat(token.value))
-      }
-    } else if (token.type === 'operator') {
-      const b = evalStack.pop()!
-      const a = evalStack.pop()!
-
-      if (useBigInt) {
-        const bigA = a as bigint
-        const bigB = b as bigint
-        switch (token.value) {
-          case '+':
-            evalStack.push(bigA + bigB)
-            break
-          case '-':
-            evalStack.push(bigA - bigB)
-            break
-          case '*':
-            evalStack.push(bigA * bigB)
-            break
-          case '/':
-            evalStack.push(bigA / bigB)
-            break
-          case '%':
-            evalStack.push(bigA % bigB)
-            break
-          case '^':
-            evalStack.push(bigPow(bigA, bigB))
-            break
-        }
-      } else {
-        const numA = a as number
-        const numB = b as number
-        switch (token.value) {
-          case '+':
-            evalStack.push(numA + numB)
-            break
-          case '-':
-            evalStack.push(numA - numB)
-            break
-          case '*':
-            evalStack.push(numA * numB)
-            break
-          case '/':
-            evalStack.push(numA / numB)
-            break
-          case '%':
-            evalStack.push(numA % numB)
-            break
-          case '^':
-            evalStack.push(Math.pow(numA, numB))
-            break
-        }
-      }
-    }
-  }
-
-  const result = evalStack[0]
-  if (useBigInt) {
-    return result.toString()
-  }
-
-  // Format the result for display
-  const numResult = result as number
-  if (Number.isInteger(numResult) && Math.abs(numResult) < Number.MAX_SAFE_INTEGER) {
-    return numResult.toString()
-  }
-  // Handle very large or very small numbers
-  if (Math.abs(numResult) > 1e15 || (Math.abs(numResult) < 1e-15 && numResult !== 0)) {
-    return numResult.toExponential(10)
-  }
-  // Round to avoid floating point errors
-  return parseFloat(numResult.toPrecision(15)).toString()
+// Normalize expression for parsing
+function normalizeExpression(expression: string): string {
+  return expression
+    .replace(/×/g, '*')
+    .replace(/✕/g, '*')
+    .replace(/÷/g, '/')
+    .replace(/\[/g, '(')
+    .replace(/\]/g, ')')
+    .replace(/\{/g, '(')
+    .replace(/\}/g, ')')
 }
 
 // Check if a string looks like a math expression
@@ -330,25 +108,38 @@ function isMathExpression(query: string): boolean {
   // Must contain at least one digit and one operator
   const hasDigit = /\d/.test(query)
   const hasOperator = /[+\-*/%^×÷]/.test(query)
-  // Should not contain letters (except for some edge cases)
-  const hasLetters = /[a-zA-Z]/.test(query)
-  // Require at least one operator to be considered a math expression
-  return hasDigit && hasOperator && !hasLetters
+  // Should not contain letters that aren't math functions
+  const cleanedQuery = query.replace(MATH_FUNCTIONS_REGEX, '')
+  const hasInvalidLetters = /[a-zA-Z]/.test(cleanedQuery)
+  // Require at least one operator or function to be considered a math expression
+  return hasDigit && (hasOperator || MATH_FUNCTIONS_REGEX.test(query)) && !hasInvalidLetters
 }
 
-// Calculate the expression
+// Format the result for display
+function formatResult(result: number): string {
+  if (!Number.isFinite(result)) {
+    return result.toString()
+  }
+  if (Number.isInteger(result) && Math.abs(result) < Number.MAX_SAFE_INTEGER) {
+    return result.toString()
+  }
+  // Handle very large or very small numbers
+  if (Math.abs(result) > 1e15 || (Math.abs(result) < 1e-15 && result !== 0)) {
+    return result.toExponential(10)
+  }
+  // Round to avoid floating point errors
+  return parseFloat(result.toPrecision(FLOATING_POINT_PRECISION)).toString()
+}
+
+// Calculate the expression using expr-eval
 function calculate(expression: string): string | null {
   try {
-    const tokens = tokenize(expression)
-    if (tokens.length === 0) return null
-
-    // Check if we have at least one number
-    const hasNumber = tokens.some(t => t.type === 'number')
-    if (!hasNumber) return null
-
-    // Use BigInt for integer-only expressions to handle large numbers
-    const useBigInt = isIntegerExpression(tokens)
-    return evaluate(tokens, useBigInt)
+    const normalizedExpr = normalizeExpression(expression)
+    const result = parser.evaluate(normalizedExpr)
+    if (typeof result !== 'number' || !Number.isFinite(result)) {
+      return null
+    }
+    return formatResult(result)
   } catch {
     return null
   }
