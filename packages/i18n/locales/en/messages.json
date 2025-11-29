@@ -162,5 +162,25 @@
   "noResultsFound": {
     "description": "No results found message",
     "message": "No results found."
+  },
+  "calculator": {
+    "description": "Calculator plugin name",
+    "message": "Calculator"
+  },
+  "calculatorClickToCopy": {
+    "description": "Calculator click to copy hint",
+    "message": "Click to copy result"
+  },
+  "calculatorCopyResult": {
+    "description": "Calculator copy result description",
+    "message": "Copy result to clipboard"
+  },
+  "calculatorClearHistory": {
+    "description": "Calculator clear history title",
+    "message": "Clear History"
+  },
+  "calculatorClearHistoryDesc": {
+    "description": "Calculator clear history description",
+    "message": "Clear all calculation history"
   }
 }
