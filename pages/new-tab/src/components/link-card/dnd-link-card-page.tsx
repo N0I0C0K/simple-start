@@ -15,7 +15,6 @@ export const DndLinkCardPage: FC<{
     <DragDropProvider
       sensors={[PointerSensor]}
       onDragEnd={event => {
-        console.log(event)
         const { source, target } = event.operation
         if (target && source && source.id !== target.id) {
           quickUrlItemsStorage.moveItemById(source.id as string, target.id as string)

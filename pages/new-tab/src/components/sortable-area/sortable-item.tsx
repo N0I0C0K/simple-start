@@ -20,14 +20,14 @@ export function SortableItem({
 export function MakeSortableItem<P>(
   Component: ComponentType<P>,
 ): FC<P & { id: string | number; index: number }> {
-  const WarpSortableItem: FC<P & { id: string | number; index: number }> = props => {
+  const WrapSortableItem: FC<P & { id: string | number; index: number }> = props => {
     return (
       <SortableItem id={props.id} index={props.index}>
         <Component {...props} />
       </SortableItem>
     )
   }
-  return WarpSortableItem
+  return WrapSortableItem
 }
 
 export function DraggableOverlay() {
