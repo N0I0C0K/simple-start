@@ -174,5 +174,13 @@
   "wallpaperFetchError": {
     "description": "Wallpaper fetch error message",
     "message": "加载壁纸失败，请重试。"
+  },
+  "historyWallpapers": {
+    "description": "History wallpapers section title",
+    "message": "历史壁纸"
+  },
+  "noMoreWallpapers": {
+    "description": "No more wallpapers message",
+    "message": "没有更多壁纸了。"
   }
 }

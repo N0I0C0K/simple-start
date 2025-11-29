@@ -1,9 +1,9 @@
 import { cn } from '@/lib/utils'
 import { useStorage } from '@extension/shared'
-import { settingStorage } from '@extension/storage'
-import { Button, Stack, Text, ScrollArea } from '@extension/ui'
-import { Check, Loader2, Image as ImageIcon, RefreshCw } from 'lucide-react'
-import { type FC, useCallback, useEffect, useState } from 'react'
+import { settingStorage, wallpaperHistoryStorage } from '@extension/storage'
+import { Button, Stack, Text, Separator } from '@extension/ui'
+import { Check, Loader2, Image as ImageIcon, RefreshCw, History, Trash2 } from 'lucide-react'
+import { type FC, useCallback, useEffect, useState, useRef } from 'react'
 import { t } from '@extension/i18n'
 
 interface WallhavenThumb {
@@ -33,7 +33,7 @@ interface WallhavenResponse {
 const WallpaperCard: FC<{
   wallpaper: WallhavenWallpaper
   isSelected: boolean
-  onSelect: (url: string) => void
+  onSelect: (url: string, thumbnailUrl: string) => void
 }> = ({ wallpaper, isSelected, onSelect }) => {
   const [isLoading, setIsLoading] = useState(true)
   const [hasError, setHasError] = useState(false)
@@ -45,7 +45,7 @@ const WallpaperCard: FC<{
         'relative cursor-pointer overflow-hidden rounded-lg border-2 transition-all hover:scale-[1.02] w-full',
         isSelected ? 'border-primary ring-2 ring-primary/50' : 'border-transparent hover:border-muted-foreground/30',
       )}
-      onClick={() => onSelect(wallpaper.path)}>
+      onClick={() => onSelect(wallpaper.path, wallpaper.thumbs.small)}>
       {isLoading && (
         <div className="absolute inset-0 flex items-center justify-center bg-muted">
           <Loader2 className="size-6 animate-spin text-muted-foreground" />
@@ -81,36 +81,127 @@ const WallpaperCard: FC<{
   )
 }
 
+const HistoryWallpaperCard: FC<{
+  url: string
+  thumbnailUrl: string
+  isSelected: boolean
+  onSelect: (url: string, thumbnailUrl: string) => void
+}> = ({ url, thumbnailUrl, isSelected, onSelect }) => {
+  const [isLoading, setIsLoading] = useState(true)
+  const [hasError, setHasError] = useState(false)
+
+  return (
+    <button
+      type="button"
+      className={cn(
+        'relative cursor-pointer overflow-hidden rounded-lg border-2 transition-all hover:scale-[1.02] w-full',
+        isSelected ? 'border-primary ring-2 ring-primary/50' : 'border-transparent hover:border-muted-foreground/30',
+      )}
+      onClick={() => onSelect(url, thumbnailUrl)}>
+      {isLoading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-muted">
+          <Loader2 className="size-6 animate-spin text-muted-foreground" />
+        </div>
+      )}
+      {hasError && (
+        <div className="absolute inset-0 flex items-center justify-center bg-muted">
+          <ImageIcon className="size-6 text-muted-foreground" />
+        </div>
+      )}
+      <img
+        src={thumbnailUrl}
+        alt="History wallpaper"
+        className={cn('aspect-video w-full object-cover', isLoading || hasError ? 'invisible' : 'visible')}
+        loading="lazy"
+        onLoad={() => setIsLoading(false)}
+        onError={() => {
+          setIsLoading(false)
+          setHasError(true)
+        }}
+      />
+      {isSelected && (
+        <div className="absolute right-1 top-1 rounded-full bg-primary p-1">
+          <Check className="size-3 text-primary-foreground" />
+        </div>
+      )}
+    </button>
+  )
+}
+
 export const WallpaperSettings: FC = () => {
   const settings = useStorage(settingStorage)
+  const historyData = useStorage(wallpaperHistoryStorage)
   const [wallpapers, setWallpapers] = useState<WallhavenWallpaper[]>([])
   const [isLoading, setIsLoading] = useState(false)
+  const [isLoadingMore, setIsLoadingMore] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [hasMore, setHasMore] = useState(true)
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
 
-  const fetchWallpapers = useCallback(async () => {
-    setIsLoading(true)
+  const fetchWallpapers = useCallback(async (page: number, append = false) => {
+    if (page === 1) {
+      setIsLoading(true)
+    } else {
+      setIsLoadingMore(true)
+    }
     setError(null)
     try {
       // Wallhaven API for toplist wallpapers (SFW only with purity=100)
-      const response = await fetch('https://wallhaven.cc/api/v1/search?topRange=1M&sorting=toplist&purity=100')
+      const response = await fetch(`https://wallhaven.cc/api/v1/search?topRange=1M&sorting=toplist&purity=100&page=${page}`)
       if (!response.ok) {
         throw new Error(`Failed to fetch wallpapers: ${response.statusText}`)
       }
       const data: WallhavenResponse = await response.json()
-      setWallpapers(data.data)
+      if (append) {
+        setWallpapers(prev => [...prev, ...data.data])
+      } else {
+        setWallpapers(data.data)
+      }
+      setCurrentPage(data.meta.current_page)
+      setHasMore(data.meta.current_page < data.meta.last_page)
     } catch (err) {
       console.error('Failed to fetch wallpapers:', err)
       setError(t('wallpaperFetchError'))
     } finally {
       setIsLoading(false)
+      setIsLoadingMore(false)
     }
   }, [])
 
   useEffect(() => {
-    fetchWallpapers()
+    fetchWallpapers(1)
   }, [fetchWallpapers])
 
-  const handleSelectWallpaper = useCallback(async (url: string) => {
+  const handleScroll = useCallback(() => {
+    if (!scrollContainerRef.current || isLoadingMore || !hasMore) return
+    
+    const container = scrollContainerRef.current
+    const scrollTop = container.scrollTop
+    const scrollHeight = container.scrollHeight
+    const clientHeight = container.clientHeight
+    
+    // Load more when within 100px of the bottom
+    if (scrollHeight - scrollTop - clientHeight < 100) {
+      fetchWallpapers(currentPage + 1, true)
+    }
+  }, [currentPage, fetchWallpapers, hasMore, isLoadingMore])
+
+  useEffect(() => {
+    const container = scrollContainerRef.current
+    if (!container) return
+    
+    container.addEventListener('scroll', handleScroll)
+    return () => container.removeEventListener('scroll', handleScroll)
+  }, [handleScroll])
+
+  const handleRefresh = useCallback(() => {
+    setCurrentPage(1)
+    setHasMore(true)
+    fetchWallpapers(1)
+  }, [fetchWallpapers])
+
+  const handleSelectWallpaper = useCallback(async (url: string, thumbnailUrl: string) => {
     // Validate URL format before saving
     try {
       const urlObj = new URL(url)
@@ -121,6 +212,11 @@ export const WallpaperSettings: FC = () => {
       return
     }
     await settingStorage.update({ wallpaperUrl: url })
+    await wallpaperHistoryStorage.addToHistory(url, thumbnailUrl)
+  }, [])
+
+  const handleClearHistory = useCallback(async () => {
+    await wallpaperHistoryStorage.clearHistory()
   }, [])
 
   return (
@@ -129,7 +225,7 @@ export const WallpaperSettings: FC = () => {
         <Text gray level="s">
           {t('wallpaperSettingsDescription')}
         </Text>
-        <Button variant="ghost" size="sm" onClick={fetchWallpapers} disabled={isLoading}>
+        <Button variant="ghost" size="sm" onClick={handleRefresh} disabled={isLoading}>
           <RefreshCw className={cn('size-4', isLoading && 'animate-spin')} />
         </Button>
       </Stack>
@@ -147,7 +243,10 @@ export const WallpaperSettings: FC = () => {
           <Loader2 className="size-8 animate-spin text-muted-foreground" />
         </div>
       ) : (
-        <ScrollArea className="h-[300px] pr-2">
+        <div 
+          ref={scrollContainerRef}
+          className="h-[300px] overflow-y-auto pr-2"
+        >
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
             {wallpapers.map(wallpaper => (
               <WallpaperCard
@@ -158,7 +257,46 @@ export const WallpaperSettings: FC = () => {
               />
             ))}
           </div>
-        </ScrollArea>
+          {isLoadingMore && (
+            <div className="flex items-center justify-center py-4">
+              <Loader2 className="size-6 animate-spin text-muted-foreground" />
+            </div>
+          )}
+          {!hasMore && wallpapers.length > 0 && (
+            <div className="py-4 text-center">
+              <Text gray level="xs">{t('noMoreWallpapers')}</Text>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* History Wallpapers Section */}
+      {historyData.history.length > 0 && (
+        <>
+          <Separator className="my-2" />
+          <Stack direction={'row'} className="items-center justify-between">
+            <Stack direction={'row'} className="items-center gap-1">
+              <History className="size-4 text-muted-foreground" />
+              <Text gray level="s">
+                {t('historyWallpapers')}
+              </Text>
+            </Stack>
+            <Button variant="ghost" size="sm" onClick={handleClearHistory}>
+              <Trash2 className="size-4" />
+            </Button>
+          </Stack>
+          <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
+            {historyData.history.map(item => (
+              <HistoryWallpaperCard
+                key={item.url}
+                url={item.url}
+                thumbnailUrl={item.thumbnailUrl}
+                isSelected={settings.wallpaperUrl === item.url}
+                onSelect={handleSelectWallpaper}
+              />
+            ))}
+          </div>
+        </>
       )}
     </Stack>
   )
