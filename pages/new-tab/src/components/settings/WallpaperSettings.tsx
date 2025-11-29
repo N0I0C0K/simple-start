@@ -6,6 +6,9 @@ import { Check, Loader2, Image as ImageIcon, RefreshCw, History, Trash2 } from '
 import { type FC, useCallback, useEffect, useState, useRef } from 'react'
 import { t } from '@extension/i18n'
 
+// Scroll threshold in pixels to trigger loading more wallpapers
+const SCROLL_THRESHOLD = 100
+
 interface WallhavenThumb {
   large: string
   original: string
@@ -181,8 +184,8 @@ export const WallpaperSettings: FC = () => {
     const scrollHeight = container.scrollHeight
     const clientHeight = container.clientHeight
     
-    // Load more when within 100px of the bottom
-    if (scrollHeight - scrollTop - clientHeight < 100) {
+    // Load more when within threshold of the bottom
+    if (scrollHeight - scrollTop - clientHeight < SCROLL_THRESHOLD) {
       fetchWallpapers(currentPage + 1, true)
     }
   }, [currentPage, fetchWallpapers, hasMore, isLoadingMore])
