@@ -2,7 +2,7 @@ import { cn } from '@/lib/utils'
 import { useStorage } from '@extension/shared'
 import { settingStorage, wallpaperHistoryStorage } from '@extension/storage'
 import { Button, Stack, Text, Separator } from '@extension/ui'
-import { Check, Loader2, Image as ImageIcon, RefreshCw, History, Trash2 } from 'lucide-react'
+import { Check, Loader2, Image as ImageIcon, RefreshCw, History, Trash2, X } from 'lucide-react'
 import { type FC, useCallback, useEffect, useState, useRef } from 'react'
 import { t } from '@extension/i18n'
 
@@ -89,15 +89,21 @@ const HistoryWallpaperCard: FC<{
   thumbnailUrl: string
   isSelected: boolean
   onSelect: (url: string, thumbnailUrl: string) => void
-}> = ({ url, thumbnailUrl, isSelected, onSelect }) => {
+  onDelete: (url: string) => void
+}> = ({ url, thumbnailUrl, isSelected, onSelect, onDelete }) => {
   const [isLoading, setIsLoading] = useState(true)
   const [hasError, setHasError] = useState(false)
+
+  const handleDelete = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation()
+    onDelete(url)
+  }, [onDelete, url])
 
   return (
     <button
       type="button"
       className={cn(
-        'relative cursor-pointer overflow-hidden rounded-lg border-2 transition-all hover:scale-[1.02] w-full',
+        'relative cursor-pointer overflow-hidden rounded-lg border-2 transition-all hover:scale-[1.02] w-full group',
         isSelected ? 'border-primary ring-2 ring-primary/50' : 'border-transparent hover:border-muted-foreground/30',
       )}
       onClick={() => onSelect(url, thumbnailUrl)}>
@@ -127,6 +133,15 @@ const HistoryWallpaperCard: FC<{
           <Check className="size-3 text-primary-foreground" />
         </div>
       )}
+      <div
+        className="absolute left-1 top-1 rounded-full bg-destructive/80 p-1 opacity-0 transition-opacity group-hover:opacity-100"
+        onClick={handleDelete}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleDelete(e as unknown as React.MouseEvent) }}
+      >
+        <X className="size-3 text-destructive-foreground" />
+      </div>
     </button>
   )
 }
@@ -222,6 +237,10 @@ export const WallpaperSettings: FC = () => {
     await wallpaperHistoryStorage.clearHistory()
   }, [])
 
+  const handleDeleteHistoryItem = useCallback(async (url: string) => {
+    await wallpaperHistoryStorage.removeFromHistory(url)
+  }, [])
+
   return (
     <Stack direction={'column'} className={'gap-2 w-full'}>
       <Stack direction={'row'} className="items-center justify-between">
@@ -296,6 +315,7 @@ export const WallpaperSettings: FC = () => {
                 thumbnailUrl={item.thumbnailUrl}
                 isSelected={settings.wallpaperUrl === item.url}
                 onSelect={handleSelectWallpaper}
+                onDelete={handleDeleteHistoryItem}
               />
             ))}
           </div>

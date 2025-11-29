@@ -16,6 +16,7 @@ export type WallpaperHistoryProps = {
 
 type WallpaperHistoryStorage = BaseStorage<WallpaperHistoryProps> & {
   addToHistory: (url: string, thumbnailUrl: string) => Promise<void>
+  removeFromHistory: (url: string) => Promise<void>
   clearHistory: () => Promise<void>
 }
 
@@ -40,6 +41,11 @@ export const wallpaperHistoryStorage: WallpaperHistoryStorage = {
       ...filtered,
     ].slice(0, MAX_HISTORY_SIZE)
     await storage.set({ history: newHistory })
+  },
+  removeFromHistory: async (url: string) => {
+    const current = await storage.get()
+    const filtered = current.history.filter(item => item.url !== url)
+    await storage.set({ history: filtered })
   },
   clearHistory: async () => {
     await storage.set({ history: [] })
