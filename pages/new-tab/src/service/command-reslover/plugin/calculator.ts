@@ -191,7 +191,7 @@ function bigPow(base: bigint, exponent: bigint): bigint {
       result *= b
     }
     b *= b
-    e /= BIGINT_TWO
+    e = e / BIGINT_TWO
   }
   return result
 }
@@ -332,7 +332,8 @@ function isMathExpression(query: string): boolean {
   const hasOperator = /[+\-*/%^×÷]/.test(query)
   // Should not contain letters (except for some edge cases)
   const hasLetters = /[a-zA-Z]/.test(query)
-  return hasDigit && (hasOperator || /^[\d.\s()[\]{}]+$/.test(query)) && !hasLetters
+  // Require at least one operator to be considered a math expression
+  return hasDigit && hasOperator && !hasLetters
 }
 
 // Calculate the expression
