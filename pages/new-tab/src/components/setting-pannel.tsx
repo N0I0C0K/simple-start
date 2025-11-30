@@ -6,7 +6,15 @@ import {
   useStorage,
 } from '@extension/shared'
 import { useDrinkWaterEventManager } from '@extension/shared/lib/state/events'
-import { mqttStateManager, settingStorage, exportAllData, importAllData } from '@extension/storage'
+import {
+  mqttStateManager,
+  settingStorage,
+  exportAllData,
+  importAllData,
+  commandSettingsStorage,
+  defaultCommandSettings,
+} from '@extension/storage'
+import type { CommandPluginSettings } from '@extension/storage'
 import deepmerge from 'deepmerge'
 import {
   Button,
@@ -49,6 +57,13 @@ import {
   Dot,
   Download,
   Upload,
+  Terminal,
+  Search,
+  Calculator,
+  Layers,
+  Hash,
+  Globe,
+  LayoutGrid,
 } from 'lucide-react'
 import { nanoid } from 'nanoid'
 import React, { type ElementType, type FC, type ReactElement, type ReactNode } from 'react'
@@ -273,27 +288,143 @@ const CommonSettings: FC = () => {
       <Separator className="my-2" />
       <SettingItem
         IconClass={Download}
-        title="Export Settings"
-        description="Export all settings and quick URLs as JSON."
+        title={t('exportSettings')}
+        description={t('exportSettingsDescription')}
         control={
           <Button variant={'outline'} onClick={handleExport}>
-            Export
+            {t('export')}
           </Button>
         }
       />
       <SettingItem
         IconClass={Upload}
-        title="Import Settings"
-        description="Import settings and quick URLs from JSON file."
+        title={t('importSettings')}
+        description={t('importSettingsDescription')}
         control={
           <>
             <input ref={fileInputRef} type="file" accept=".json" onChange={handleImport} style={{ display: 'none' }} />
             <Button variant={'outline'} onClick={() => fileInputRef.current?.click()}>
-              Import
+              {t('import')}
             </Button>
           </>
         }
       />
+    </Stack>
+  )
+}
+
+interface CommandPluginConfig {
+  name: string
+  labelKey: string
+  descriptionKey: string
+  IconClass: ElementType<LucideProps>
+}
+
+const COMMAND_PLUGINS: CommandPluginConfig[] = [
+  {
+    name: 'history',
+    labelKey: 'commandPluginHistory',
+    descriptionKey: 'commandPluginHistoryDescription',
+    IconClass: History,
+  },
+  {
+    name: 'tabs',
+    labelKey: 'commandPluginTabs',
+    descriptionKey: 'commandPluginTabsDescription',
+    IconClass: Layers,
+  },
+  {
+    name: 'web-search',
+    labelKey: 'commandPluginWebSearch',
+    descriptionKey: 'commandPluginWebSearchDescription',
+    IconClass: Globe,
+  },
+  {
+    name: 'calculator',
+    labelKey: 'commandPluginCalculator',
+    descriptionKey: 'commandPluginCalculatorDescription',
+    IconClass: Calculator,
+  },
+]
+
+const CommandPluginSettingItem: FC<{
+  config: CommandPluginConfig
+  settings: CommandPluginSettings
+  onUpdate: (settings: Partial<CommandPluginSettings>) => void
+}> = ({ config, settings, onUpdate }) => {
+  return (
+    <Stack direction={'column'} className="gap-2 p-3 rounded-md bg-muted">
+      <Stack direction={'row'} center className="gap-2">
+        <config.IconClass className="size-5 text-muted-foreground" />
+        <Text className="font-medium" level="md">
+          {t(config.labelKey as never)}
+        </Text>
+      </Stack>
+      <Text gray level="xs" className="-mt-1">
+        {t(config.descriptionKey as never)}
+      </Text>
+      <Separator className="my-1" />
+      <Stack direction={'row'} className="gap-4 flex-wrap">
+        <Stack direction={'row'} center className="gap-2 min-w-[140px]">
+          <Text level="s">{t('commandPluginActive')}</Text>
+          <Switch checked={settings.active} onCheckedChange={val => onUpdate({ active: val })} />
+        </Stack>
+        <Stack direction={'row'} center className="gap-2 min-w-[140px]">
+          <Text level="s">{t('commandPluginIncludeInGlobal')}</Text>
+          <Switch checked={settings.includeInGlobal} onCheckedChange={val => onUpdate({ includeInGlobal: val })} />
+        </Stack>
+      </Stack>
+      <Stack direction={'row'} className="gap-4 flex-wrap">
+        <Stack direction={'row'} center className="gap-2 flex-1 min-w-[140px]">
+          <Text level="s" className="whitespace-nowrap">
+            {t('commandPluginActiveKey')}
+          </Text>
+          <Input
+            placeholder={t('commandPluginActiveKeyPlaceholder')}
+            value={settings.activeKey}
+            onChange={e => onUpdate({ activeKey: e.target.value })}
+            className="w-20"
+          />
+        </Stack>
+        <Stack direction={'row'} center className="gap-2 flex-1 min-w-[140px]">
+          <Text level="s" className="whitespace-nowrap">
+            {t('commandPluginPriority')}
+          </Text>
+          <Input
+            type="number"
+            value={settings.priority}
+            onChange={e => onUpdate({ priority: parseInt(e.target.value, 10) || 0 })}
+            className="w-20"
+          />
+        </Stack>
+      </Stack>
+    </Stack>
+  )
+}
+
+const CommandSettings: FC = () => {
+  const commandSettings = useStorage(commandSettingsStorage)
+
+  const handlePluginUpdate = (pluginName: string, updates: Partial<CommandPluginSettings>) => {
+    commandSettingsStorage.setPluginSettings(pluginName, updates)
+  }
+
+  return (
+    <Stack direction={'column'} className={'gap-2 w-full'}>
+      <Text gray level="s">
+        {t('configureCommandSettings')}
+      </Text>
+      {COMMAND_PLUGINS.map(config => {
+        const pluginSettings = commandSettings[config.name] || defaultCommandSettings[config.name]
+        return (
+          <CommandPluginSettingItem
+            key={config.name}
+            config={config}
+            settings={pluginSettings}
+            onUpdate={updates => handlePluginUpdate(config.name, updates)}
+          />
+        )
+      })}
     </Stack>
   )
 }
@@ -304,6 +435,7 @@ const SettingTabs: FC = () => {
       <TabsList>
         <TabsTrigger value="common-settings">{t('commonTab')}</TabsTrigger>
         <TabsTrigger value="wallpaper-settings">{t('wallpaperTab')}</TabsTrigger>
+        <TabsTrigger value="command-settings">{t('commandTab')}</TabsTrigger>
         <TabsTrigger value="mqtt-settings">{t('serverTab')}</TabsTrigger>
       </TabsList>
       <TabsContent value="common-settings">
@@ -311,6 +443,9 @@ const SettingTabs: FC = () => {
       </TabsContent>
       <TabsContent value="wallpaper-settings">
         <WallpaperSettings />
+      </TabsContent>
+      <TabsContent value="command-settings">
+        <CommandSettings />
       </TabsContent>
       <TabsContent value="mqtt-settings">
         <MqttSettings />

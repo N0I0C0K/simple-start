@@ -9,6 +9,8 @@ import {
   historyReslover, tabSearchReslover, webSearchReslover, calculatorResolver, numberToRmbReslover
 } from './plugin'
 import { WarpDefaultObject } from '@extension/shared'
+import { commandSettingsStorage, defaultCommandSettings } from '@extension/storage'
+import type { CommandSettingsData, CommandPluginSettings } from '@extension/storage'
 
 export type IDisposable = {
   dispose: () => void
@@ -21,34 +23,86 @@ const defaultSettings: CommandSettings = {
   activeKey: '',
 }
 
-interface ICommandResloverWithDefaultSettings extends ICommandReslover {
-  settings: CommandSettings
+interface ICommandResloverWithSettings extends ICommandReslover {
+  getSettings: () => CommandSettings
 }
 
-function WarpDefaultSetting(resolver: ICommandReslover): ICommandResloverWithDefaultSettings {
+function createResolverWithSettings(
+  resolver: ICommandReslover,
+  getStorageSettings: () => CommandSettingsData | null,
+): ICommandResloverWithSettings {
   return {
     ...resolver,
-    settings: WarpDefaultObject(resolver.settings, defaultSettings)
+    getSettings(): CommandSettings {
+      const storageSettings = getStorageSettings()
+      const pluginStorageSettings = storageSettings?.[resolver.name]
+      if (pluginStorageSettings) {
+        return pluginStorageSettings
+      }
+      // Fallback to default command settings or plugin defaults
+      const defaultPluginSettings = defaultCommandSettings[resolver.name]
+      if (defaultPluginSettings) {
+        return defaultPluginSettings
+      }
+      return WarpDefaultObject(resolver.settings, defaultSettings)
+    },
+    get settings(): CommandSettings {
+      return this.getSettings()
+    },
   }
 }
 
-export const commandResolverService = {
-  resolvers: [] as ICommandResloverWithDefaultSettings[],
-  _queryTimes: 0 as number,
-  register(resolver: ICommandReslover) {
-    this.resolvers.push(WarpDefaultSetting(resolver))
-    this.resolvers.sort((a, b) => {
-      return a.settings.priority - b.settings.priority
+class CommandResolverService {
+  resolvers: ICommandResloverWithSettings[] = []
+  _queryTimes = 0
+  private _storageSettings: CommandSettingsData | null = null
+  private _initialized = false
+
+  constructor() {
+    this.initStorage()
+  }
+
+  private async initStorage() {
+    // Get initial settings
+    this._storageSettings = await commandSettingsStorage.get()
+    this._initialized = true
+    
+    // Subscribe to storage changes
+    commandSettingsStorage.subscribe(() => {
+      const snapshot = commandSettingsStorage.getSnapshot()
+      if (snapshot) {
+        this._storageSettings = snapshot
+      }
     })
-  },
-  choosePlugins(params: CommandQueryParams): ICommandReslover[] {
-    const availablePlugins = this.resolvers.filter(it => it.settings.active)
+  }
+
+  private getStorageSettings = (): CommandSettingsData | null => {
+    return this._storageSettings
+  }
+
+  register(resolver: ICommandReslover) {
+    this.resolvers.push(createResolverWithSettings(resolver, this.getStorageSettings))
+    this.sortResolvers()
+  }
+
+  private sortResolvers() {
+    this.resolvers.sort((a, b) => {
+      return a.getSettings().priority - b.getSettings().priority
+    })
+  }
+
+  choosePlugins(params: CommandQueryParams): ICommandResloverWithSettings[] {
+    const availablePlugins = this.resolvers.filter(it => it.getSettings().active)
     const matchedPlugins = availablePlugins.filter(
-      it => it.settings.activeKey && params.query.startsWith(it.settings.activeKey),
+      it => {
+        const settings = it.getSettings()
+        return settings.activeKey && params.query.startsWith(settings.activeKey)
+      },
     )
     if (matchedPlugins.length > 0) return matchedPlugins
-    return this.resolvers.filter(it => it.settings.includeInGlobal)
-  },
+    return this.resolvers.filter(it => it.getSettings().includeInGlobal)
+  }
+
   resolve(params: CommandQueryParams, onGroupResolve: (group: ICommandResultGroup) => void) {
     const _tick = ++this._queryTimes
     const warpOnGroupResolve = (group: ICommandResultGroup) => {
@@ -57,9 +111,16 @@ export const commandResolverService = {
       }
       onGroupResolve(group)
     }
+    
+    // Sort resolvers before resolving (in case priorities changed)
+    this.sortResolvers()
+    
     Promise.all(
       this.resolvers
-        .filter(it => it.settings.active && it.settings.includeInGlobal)
+        .filter(it => {
+          const settings = it.getSettings()
+          return settings.active && settings.includeInGlobal
+        })
         .map(it => {
           return new Promise((reslove, reject) => {
             it.resolve(params)
@@ -78,8 +139,10 @@ export const commandResolverService = {
           })
         }),
     )
-  },
+  }
 }
+
+export const commandResolverService = new CommandResolverService()
 
 commandResolverService.register(historyReslover)
 commandResolverService.register(tabSearchReslover)

@@ -59,6 +59,10 @@
     "description": "Server settings tab",
     "message": "服务器"
   },
+  "commandTab": {
+    "description": "Command settings tab",
+    "message": "命令"
+  },
   "theme": {
     "description": "Theme setting title",
     "message": "主题"
@@ -102,6 +106,10 @@
   "configureGeneralSettings": {
     "description": "General settings description",
     "message": "配置您的通用设置。"
+  },
+  "configureCommandSettings": {
+    "description": "Command settings description",
+    "message": "配置命令插件及其设置。"
   },
   "enable": {
     "description": "Enable setting title",
@@ -210,5 +218,97 @@
   "wallpaperInvalidUrlError": {
     "description": "Wallpaper invalid URL error message",
     "message": "无效的壁纸链接，请选择其他壁纸。"
+  },
+  "commandPluginActive": {
+    "description": "Command plugin active setting title",
+    "message": "启用"
+  },
+  "commandPluginActiveDescription": {
+    "description": "Command plugin active setting description",
+    "message": "启用或禁用此命令插件。"
+  },
+  "commandPluginActiveKey": {
+    "description": "Command plugin active key setting title",
+    "message": "触发键"
+  },
+  "commandPluginActiveKeyDescription": {
+    "description": "Command plugin active key setting description",
+    "message": "直接触发此插件的前缀键。"
+  },
+  "commandPluginActiveKeyPlaceholder": {
+    "description": "Command plugin active key input placeholder",
+    "message": "例如：h, g, ="
+  },
+  "commandPluginPriority": {
+    "description": "Command plugin priority setting title",
+    "message": "优先级"
+  },
+  "commandPluginPriorityDescription": {
+    "description": "Command plugin priority setting description",
+    "message": "数字越小优先级越高。"
+  },
+  "commandPluginIncludeInGlobal": {
+    "description": "Command plugin include in global setting title",
+    "message": "全局搜索中显示"
+  },
+  "commandPluginIncludeInGlobalDescription": {
+    "description": "Command plugin include in global setting description",
+    "message": "在全局搜索结果中显示。"
+  },
+  "commandPluginHistory": {
+    "description": "History command plugin name",
+    "message": "历史记录"
+  },
+  "commandPluginHistoryDescription": {
+    "description": "History command plugin description",
+    "message": "搜索浏览器历史记录。"
+  },
+  "commandPluginTabs": {
+    "description": "Tabs command plugin name",
+    "message": "标签页"
+  },
+  "commandPluginTabsDescription": {
+    "description": "Tabs command plugin description",
+    "message": "搜索打开的标签页。"
+  },
+  "commandPluginWebSearch": {
+    "description": "Web Search command plugin name",
+    "message": "网页搜索"
+  },
+  "commandPluginWebSearchDescription": {
+    "description": "Web Search command plugin description",
+    "message": "使用默认搜索引擎搜索网页。"
+  },
+  "commandPluginCalculator": {
+    "description": "Calculator command plugin name",
+    "message": "计算器"
+  },
+  "commandPluginCalculatorDescription": {
+    "description": "Calculator command plugin description",
+    "message": "执行数学计算。"
+  },
+  "exportSettings": {
+    "description": "Export settings button title",
+    "message": "导出设置"
+  },
+  "exportSettingsDescription": {
+    "description": "Export settings description",
+    "message": "将所有设置和快捷链接导出为 JSON 文件。"
+  },
+  "export": {
+    "description": "Export button text",
+    "message": "导出"
+  },
+  "importSettings": {
+    "description": "Import settings button title",
+    "message": "导入设置"
+  },
+  "importSettingsDescription": {
+    "description": "Import settings description",
+    "message": "从 JSON 文件导入设置和快捷链接。"
+  },
+  "import": {
+    "description": "Import button text",
+    "message": "导入"
   }
 }
