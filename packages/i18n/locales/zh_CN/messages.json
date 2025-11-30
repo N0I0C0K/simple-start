@@ -287,6 +287,18 @@
     "description": "Calculator command plugin description",
     "message": "执行数学计算。"
   },
+  "commandPluginNumberToRmb": {
+    "description": "Number to RMB command plugin name",
+    "message": "人民币大写转换"
+  },
+  "commandPluginNumberToRmbDescription": {
+    "description": "Number to RMB command plugin description",
+    "message": "将数字转换为人民币大写格式。"
+  },
+  "numberToRmbClickToCopy": {
+    "description": "Number to RMB click to copy hint",
+    "message": "点击复制结果"
+  },
   "exportSettings": {
     "description": "Export settings button title",
     "message": "导出设置"

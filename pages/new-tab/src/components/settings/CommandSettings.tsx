@@ -14,7 +14,7 @@ import {
   AccordionContent,
 } from '@extension/ui'
 import type { LucideProps } from 'lucide-react'
-import { History, Layers, Globe, Calculator } from 'lucide-react'
+import { History, Layers, Globe, Calculator, Coins } from 'lucide-react'
 import { type ElementType, type FC } from 'react'
 import { t } from '@extension/i18n'
 
@@ -49,6 +49,12 @@ const COMMAND_PLUGINS: CommandPluginConfig[] = [
     labelKey: 'commandPluginCalculator',
     descriptionKey: 'commandPluginCalculatorDescription',
     IconClass: Calculator,
+  },
+  {
+    name: 'numberToRmb',
+    labelKey: 'commandPluginNumberToRmb',
+    descriptionKey: 'commandPluginNumberToRmbDescription',
+    IconClass: Coins,
   },
 ]
 

@@ -60,6 +60,12 @@ export const defaultCommandSettings: CommandSettingsData = {
     activeKey: '=',
     includeInGlobal: true,
   },
+  numberToRmb: {
+    priority: 50,
+    active: true,
+    activeKey: 'rmb',
+    includeInGlobal: true,
+  },
 }
 
 const storage = createStorage<CommandSettingsData>('command-settings-storage', defaultCommandSettings, {
