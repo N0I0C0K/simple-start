@@ -57,13 +57,9 @@ import {
   Dot,
   Download,
   Upload,
-  Terminal,
-  Search,
   Calculator,
   Layers,
-  Hash,
   Globe,
-  LayoutGrid,
 } from 'lucide-react'
 import { nanoid } from 'nanoid'
 import React, { type ElementType, type FC, type ReactElement, type ReactNode } from 'react'
@@ -334,7 +330,7 @@ const COMMAND_PLUGINS: CommandPluginConfig[] = [
     IconClass: Layers,
   },
   {
-    name: 'web-search',
+    name: 'webSearch',
     labelKey: 'commandPluginWebSearch',
     descriptionKey: 'commandPluginWebSearchDescription',
     IconClass: Globe,
@@ -411,7 +407,7 @@ const CommandSettings: FC = () => {
   const commandSettings = useStorage(commandSettingsStorage)
 
   const handlePluginUpdate = (pluginName: string, updates: Partial<CommandPluginSettings>) => {
-    commandSettingsStorage.setPluginSettings(pluginName, updates)
+    void commandSettingsStorage.setPluginSettings(pluginName, updates)
   }
 
   return (

@@ -109,6 +109,9 @@ function parseAndValidateImportFile(file: File): Promise<ExportedData> {
         
         // Validate command settings if present
         if (data.commandSettings) {
+          if (typeof data.commandSettings !== 'object' || Array.isArray(data.commandSettings) || data.commandSettings === null) {
+            throw new Error('Invalid command settings format: must be an object')
+          }
           for (const pluginSettings of Object.values(data.commandSettings)) {
             if (typeof pluginSettings.priority !== 'number' ||
                 typeof pluginSettings.active !== 'boolean' ||

@@ -57,12 +57,17 @@ class CommandResolverService {
   private _storageSettings: CommandSettingsData | null = null
 
   constructor() {
+    // Try to get initial settings synchronously from snapshot
+    this._storageSettings = commandSettingsStorage.getSnapshot()
+    // Initialize async to ensure storage is properly loaded and subscribed to changes
     this.initStorage()
   }
 
   private async initStorage() {
-    // Get initial settings
-    this._storageSettings = await commandSettingsStorage.get()
+    // Get initial settings if not already loaded from snapshot
+    if (!this._storageSettings) {
+      this._storageSettings = await commandSettingsStorage.get()
+    }
 
     // Subscribe to storage changes
     commandSettingsStorage.subscribe(() => {
@@ -95,7 +100,10 @@ class CommandResolverService {
       return settings.activeKey && params.query.startsWith(settings.activeKey)
     })
     if (matchedPlugins.length > 0) return matchedPlugins
-    return this.resolvers.filter(it => it.getSettings().includeInGlobal)
+    return this.resolvers.filter(it => {
+      const settings = it.getSettings()
+      return settings.active && settings.includeInGlobal
+    })
   }
 
   resolve(params: CommandQueryParams, onGroupResolve: (group: ICommandResultGroup) => void) {

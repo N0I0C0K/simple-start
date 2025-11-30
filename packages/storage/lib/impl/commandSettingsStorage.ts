@@ -48,7 +48,7 @@ export const defaultCommandSettings: CommandSettingsData = {
     activeKey: '',
     includeInGlobal: true,
   },
-  'web-search': {
+  webSearch: {
     priority: 100,
     active: true,
     activeKey: 'g',

@@ -2,7 +2,7 @@ import type { ICommandResolver } from './protocol'
 import { Search } from 'lucide-react'
 
 export const webSearchResolver: ICommandResolver = {
-  name: 'web-search',
+  name: 'webSearch',
   settings: {
     priority: 100,
     active: true,
