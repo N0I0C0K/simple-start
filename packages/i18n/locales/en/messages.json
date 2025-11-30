@@ -330,5 +330,25 @@
   "import": {
     "description": "Import button text",
     "message": "Import"
+  },
+  "localWallpaper": {
+    "description": "Local wallpaper section title",
+    "message": "Local Wallpaper"
+  },
+  "uploadLocalWallpaper": {
+    "description": "Upload local wallpaper button",
+    "message": "Upload"
+  },
+  "localWallpaperInvalidType": {
+    "description": "Local wallpaper invalid file type error",
+    "message": "Invalid file type. Please select a JPEG, PNG, GIF, or WebP image."
+  },
+  "localWallpaperTooLarge": {
+    "description": "Local wallpaper file too large error",
+    "message": "File too large. Please select an image under 5MB."
+  },
+  "localWallpaperReadError": {
+    "description": "Local wallpaper read error",
+    "message": "Failed to read the image file. Please try again."
   }
 }

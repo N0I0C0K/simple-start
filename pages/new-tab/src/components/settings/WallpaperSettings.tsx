@@ -1,10 +1,17 @@
 import { cn } from '@/lib/utils'
 import { useStorage } from '@extension/shared'
 import { settingStorage, wallpaperHistoryStorage } from '@extension/storage'
+import type { WallpaperType } from '@extension/storage'
 import { Button, Stack, Text, Separator } from '@extension/ui'
-import { Check, Loader2, Image as ImageIcon, RefreshCw, History, Trash2, X } from 'lucide-react'
+import { Check, Loader2, Image as ImageIcon, RefreshCw, History, Trash2, X, Upload } from 'lucide-react'
 import { type FC, useCallback, useEffect, useState, useRef } from 'react'
 import { t } from '@extension/i18n'
+
+// Maximum file size in bytes (5MB)
+const MAX_FILE_SIZE = 5 * 1024 * 1024
+
+// Allowed image MIME types
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
 
 // Scroll threshold in pixels to trigger loading more wallpapers
 const SCROLL_THRESHOLD = 100
@@ -279,8 +286,59 @@ export const WallpaperSettings: FC = () => {
       setError(t('wallpaperInvalidUrlError'))
       return
     }
-    await settingStorage.update({ wallpaperUrl: url })
+    await settingStorage.update({ wallpaperUrl: url, wallpaperType: 'url' as WallpaperType })
     await wallpaperHistoryStorage.addToHistory(url, thumbnailUrl)
+  }, [])
+
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const handleLocalFileSelect = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    // Validate file type
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+      setError(t('localWallpaperInvalidType'))
+      return
+    }
+
+    // Validate file size
+    if (file.size > MAX_FILE_SIZE) {
+      setError(t('localWallpaperTooLarge'))
+      return
+    }
+
+    setError(null)
+
+    // Read file as base64
+    const reader = new FileReader()
+    reader.onload = async (e) => {
+      const base64Data = e.target?.result as string
+      if (base64Data) {
+        await settingStorage.update({
+          localWallpaperData: base64Data,
+          wallpaperType: 'local' as WallpaperType,
+        })
+      }
+    }
+    reader.onerror = () => {
+      setError(t('localWallpaperReadError'))
+    }
+    reader.readAsDataURL(file)
+
+    // Reset input value to allow selecting the same file again
+    event.target.value = ''
+  }, [])
+
+  const handleUploadClick = useCallback(() => {
+    fileInputRef.current?.click()
+  }, [])
+
+  const handleClearLocalWallpaper = useCallback(async () => {
+    await settingStorage.update({
+      localWallpaperData: null,
+      wallpaperType: 'url' as WallpaperType,
+    })
   }, [])
 
   const handleClearHistory = useCallback(async () => {
@@ -293,6 +351,60 @@ export const WallpaperSettings: FC = () => {
 
   return (
     <Stack direction={'column'} className={'gap-2 w-full'}>
+      {/* Local Wallpaper Section */}
+      <Stack direction={'row'} className="items-center justify-between">
+        <Stack direction={'row'} className="items-center gap-1">
+          <Upload className="size-4 text-muted-foreground" />
+          <Text gray level="s">
+            {t('localWallpaper')}
+          </Text>
+        </Stack>
+        <Stack direction={'row'} className="items-center gap-1">
+          {settings.localWallpaperData && (
+            <Button variant="ghost" size="sm" onClick={handleClearLocalWallpaper}>
+              <Trash2 className="size-4" />
+            </Button>
+          )}
+          <Button variant="outline" size="sm" onClick={handleUploadClick}>
+            <Upload className="size-4 mr-1" />
+            {t('uploadLocalWallpaper')}
+          </Button>
+        </Stack>
+      </Stack>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept={ALLOWED_IMAGE_TYPES.join(',')}
+        className="hidden"
+        onChange={handleLocalFileSelect}
+      />
+      {settings.localWallpaperData && (
+        <div
+          className={cn(
+            'relative cursor-pointer overflow-hidden rounded-lg border-2 transition-all hover:scale-[1.02] w-full max-w-[200px]',
+            settings.wallpaperType === 'local' ? 'border-primary ring-2 ring-primary/50' : 'border-transparent hover:border-muted-foreground/30',
+          )}
+          role="button"
+          tabIndex={0}
+          onClick={async () => {
+            await settingStorage.update({ wallpaperType: 'local' as WallpaperType })
+          }}
+          onKeyDown={async (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              await settingStorage.update({ wallpaperType: 'local' as WallpaperType })
+            }
+          }}>
+          <WallpaperImage src={settings.localWallpaperData} alt="Local wallpaper" />
+          {settings.wallpaperType === 'local' && (
+            <div className="absolute right-1 top-1 rounded-full bg-primary p-1">
+              <Check className="size-3 text-primary-foreground" />
+            </div>
+          )}
+        </div>
+      )}
+
+      <Separator className="my-2" />
+
       <Stack direction={'row'} className="items-center justify-between">
         <Text gray level="s">
           {t('wallpaperSettingsDescription')}
@@ -321,7 +433,7 @@ export const WallpaperSettings: FC = () => {
               <WallpaperCard
                 key={wallpaper.id}
                 wallpaper={wallpaper}
-                isSelected={settings.wallpaperUrl === wallpaper.path}
+                isSelected={settings.wallpaperType === 'url' && settings.wallpaperUrl === wallpaper.path}
                 onSelect={handleSelectWallpaper}
               />
             ))}
@@ -362,7 +474,7 @@ export const WallpaperSettings: FC = () => {
                 key={item.url}
                 url={item.url}
                 thumbnailUrl={item.thumbnailUrl}
-                isSelected={settings.wallpaperUrl === item.url}
+                isSelected={settings.wallpaperType === 'url' && settings.wallpaperUrl === item.url}
                 onSelect={handleSelectWallpaper}
                 onDelete={handleDeleteHistoryItem}
               />

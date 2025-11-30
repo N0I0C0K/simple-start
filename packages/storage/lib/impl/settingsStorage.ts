@@ -13,10 +13,14 @@ export type MqttSetting = {
   username: string
 }
 
+export type WallpaperType = 'url' | 'local'
+
 export type SettingProps = {
   useHistorySuggestion: boolean
   autoFocusCommandInput: boolean
   wallpaperUrl: string | null
+  wallpaperType: WallpaperType
+  localWallpaperData: string | null
   mqttSettings: MqttSetting
 }
 
@@ -35,6 +39,8 @@ const defaultSetting: SettingProps = {
   useHistorySuggestion: true,
   autoFocusCommandInput: true,
   wallpaperUrl: null,
+  wallpaperType: 'url',
+  localWallpaperData: null,
   mqttSettings: {
     enabled: false,
     mqttBrokerUrl: DEFAULT_MQTT_BROKER_URL,

@@ -330,5 +330,25 @@
   "import": {
     "description": "Import button text",
     "message": "导入"
+  },
+  "localWallpaper": {
+    "description": "Local wallpaper section title",
+    "message": "本地壁纸"
+  },
+  "uploadLocalWallpaper": {
+    "description": "Upload local wallpaper button",
+    "message": "上传"
+  },
+  "localWallpaperInvalidType": {
+    "description": "Local wallpaper invalid file type error",
+    "message": "无效的文件类型。请选择 JPEG、PNG、GIF 或 WebP 图片。"
+  },
+  "localWallpaperTooLarge": {
+    "description": "Local wallpaper file too large error",
+    "message": "文件过大。请选择小于 5MB 的图片。"
+  },
+  "localWallpaperReadError": {
+    "description": "Local wallpaper read error",
+    "message": "读取图片文件失败，请重试。"
   }
 }
