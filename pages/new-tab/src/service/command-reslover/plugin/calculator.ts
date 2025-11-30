@@ -101,6 +101,8 @@ function normalizeExpression(expression: string): string {
     .replace(/\]/g, ')')
     .replace(/\{/g, '(')
     .replace(/\}/g, ')')
+    .replace(/（/g, '(')
+    .replace(/）/g, ')')
 }
 
 // Check if a string looks like a math expression
