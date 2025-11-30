@@ -183,16 +183,32 @@
     "description": "Calculator clear history description",
     "message": "清除所有计算历史"
   },
-  "numberToRmb": {
-    "description": "Number to RMB plugin name",
-    "message": "人民币大写"
+  "wallpaperTab": {
+    "description": "Wallpaper settings tab",
+    "message": "壁纸"
   },
-  "numberToRmbLabel": {
-    "description": "Number to RMB plugin label",
-    "message": "人民币大写"
+  "wallpaperSettingsDescription": {
+    "description": "Wallpaper settings description",
+    "message": "从 Wallhaven 热门榜单中选择壁纸。"
   },
-  "numberToRmbClickToCopy": {
-    "description": "Number to RMB click to copy hint",
-    "message": "点击复制结果"
+  "wallpaperFetchError": {
+    "description": "Wallpaper fetch error message",
+    "message": "加载壁纸失败，请重试。"
+  },
+  "historyWallpapers": {
+    "description": "History wallpapers section title",
+    "message": "历史壁纸"
+  },
+  "noMoreWallpapers": {
+    "description": "No more wallpapers message",
+    "message": "没有更多壁纸了。"
+  },
+  "wallpaperRateLimitError": {
+    "description": "Wallpaper rate limit error message",
+    "message": "请求过于频繁，请稍后再试。"
+  },
+  "wallpaperInvalidUrlError": {
+    "description": "Wallpaper invalid URL error message",
+    "message": "无效的壁纸链接，请选择其他壁纸。"
   }
 }

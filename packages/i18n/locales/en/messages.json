@@ -183,16 +183,32 @@
     "description": "Calculator clear history description",
     "message": "Clear all calculation history"
   },
-  "numberToRmb": {
-    "description": "Number to RMB plugin name",
-    "message": "RMB Uppercase"
+  "wallpaperTab": {
+    "description": "Wallpaper settings tab",
+    "message": "Wallpaper"
   },
-  "numberToRmbLabel": {
-    "description": "Number to RMB plugin label",
-    "message": "RMB Uppercase"
+  "wallpaperSettingsDescription": {
+    "description": "Wallpaper settings description",
+    "message": "Select a wallpaper from Wallhaven toplist."
   },
-  "numberToRmbClickToCopy": {
-    "description": "Number to RMB click to copy hint",
-    "message": "Click to copy result"
+  "wallpaperFetchError": {
+    "description": "Wallpaper fetch error message",
+    "message": "Failed to load wallpapers. Please try again."
+  },
+  "historyWallpapers": {
+    "description": "History wallpapers section title",
+    "message": "History Wallpapers"
+  },
+  "noMoreWallpapers": {
+    "description": "No more wallpapers message",
+    "message": "No more wallpapers."
+  },
+  "wallpaperRateLimitError": {
+    "description": "Wallpaper rate limit error message",
+    "message": "Too many requests. Please wait a moment and try again."
+  },
+  "wallpaperInvalidUrlError": {
+    "description": "Wallpaper invalid URL error message",
+    "message": "Invalid wallpaper URL. Please select a different wallpaper."
   }
 }
