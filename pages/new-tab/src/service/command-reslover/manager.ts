@@ -6,7 +6,7 @@ import type {
 } from './plugin'
 
 import {
-  historyReslover, tabSearchReslover, webSearchReslover, numberToRmbReslover
+  historyReslover, tabSearchReslover, webSearchReslover, calculatorResolver, numberToRmbReslover
 } from './plugin'
 import { WarpDefaultObject } from '@extension/shared'
 
@@ -84,4 +84,5 @@ export const commandResolverService = {
 commandResolverService.register(historyReslover)
 commandResolverService.register(tabSearchReslover)
 commandResolverService.register(webSearchReslover)
+commandResolverService.register(calculatorResolver)
 commandResolverService.register(numberToRmbReslover)

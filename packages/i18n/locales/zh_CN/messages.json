@@ -162,5 +162,25 @@
   "noResultsFound": {
     "description": "No results found message",
     "message": "未找到结果。"
+  },
+  "calculator": {
+    "description": "Calculator plugin name",
+    "message": "计算器"
+  },
+  "calculatorClickToCopy": {
+    "description": "Calculator click to copy hint",
+    "message": "点击复制结果"
+  },
+  "calculatorCopyResult": {
+    "description": "Calculator copy result description",
+    "message": "复制结果到剪贴板"
+  },
+  "calculatorClearHistory": {
+    "description": "Calculator clear history title",
+    "message": "清除历史"
+  },
+  "calculatorClearHistoryDesc": {
+    "description": "Calculator clear history description",
+    "message": "清除所有计算历史"
   }
 }
