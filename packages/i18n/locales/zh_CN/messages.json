@@ -182,5 +182,17 @@
   "calculatorClearHistoryDesc": {
     "description": "Calculator clear history description",
     "message": "清除所有计算历史"
+  },
+  "numberToRmb": {
+    "description": "Number to RMB plugin name",
+    "message": "人民币大写"
+  },
+  "numberToRmbLabel": {
+    "description": "Number to RMB plugin label",
+    "message": "人民币大写"
+  },
+  "numberToRmbClickToCopy": {
+    "description": "Number to RMB click to copy hint",
+    "message": "点击复制结果"
   }
 }
