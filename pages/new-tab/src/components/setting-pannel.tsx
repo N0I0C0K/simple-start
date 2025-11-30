@@ -1,13 +1,7 @@
 import { cn } from '@/lib/utils'
-import {
-  closeMqttClientMessage,
-  receiveDrinkWaterLaunchMessage,
-  openMqttClientMessage,
-  useStorage,
-} from '@extension/shared'
+import { closeMqttClientMessage, openMqttClientMessage, useStorage } from '@extension/shared'
 import { useDrinkWaterEventManager } from '@extension/shared/lib/state/events'
 import { mqttStateManager, settingStorage, exportAllData, importAllData } from '@extension/storage'
-import deepmerge from 'deepmerge'
 import {
   Button,
   Space,
@@ -34,7 +28,6 @@ import {
 import type { LucideProps } from 'lucide-react'
 import {
   AlignJustify,
-  Send,
   SunMoon,
   History,
   HardDriveUpload,
@@ -44,17 +37,16 @@ import {
   KeyRound,
   ToggleRight,
   User,
-  RefreshCcw,
   Activity,
   Dot,
   Download,
   Upload,
 } from 'lucide-react'
-import { nanoid } from 'nanoid'
 import React, { type ElementType, type FC, type ReactElement, type ReactNode } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@extension/ui/lib/components/ui/tabs'
 import { t } from '@extension/i18n'
 import { WallpaperSettings } from './settings/WallpaperSettings'
+import { CommandSettings } from './settings/CommandSettings'
 
 const SettingItem: FC<{
   className?: string
@@ -194,7 +186,7 @@ const MqttSettings: FC = () => {
 const CommonSettings: FC = () => {
   const settings = useStorage(settingStorage)
   const fileInputRef = React.useRef<HTMLInputElement>(null)
-  
+
   const handleExport = async () => {
     try {
       await exportAllData()
@@ -203,11 +195,11 @@ const CommonSettings: FC = () => {
       alert('Failed to export settings. Please try again.')
     }
   }
-  
+
   const handleImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (!file) return
-    
+
     try {
       await importAllData(file)
       alert('Settings imported successfully!')
@@ -224,13 +216,18 @@ const CommonSettings: FC = () => {
       }
     }
   }
-  
+
   return (
     <Stack direction={'column'} className={'gap-2 w-full'}>
       <Text gray level="s">
         {t('configureGeneralSettings')}
       </Text>
-      <SettingItem IconClass={SunMoon} title={t('theme')} description={t('themeDescription')} control={<ThemeToggle />} />
+      <SettingItem
+        IconClass={SunMoon}
+        title={t('theme')}
+        description={t('themeDescription')}
+        control={<ThemeToggle />}
+      />
       <SettingItem
         IconClass={History}
         title={t('historySuggestion')}
@@ -268,29 +265,23 @@ const CommonSettings: FC = () => {
       <Separator className="my-2" />
       <SettingItem
         IconClass={Download}
-        title="Export Settings"
-        description="Export all settings and quick URLs as JSON."
+        title={t('exportSettings')}
+        description={t('exportSettingsDescription')}
         control={
           <Button variant={'outline'} onClick={handleExport}>
-            Export
+            {t('export')}
           </Button>
         }
       />
       <SettingItem
         IconClass={Upload}
-        title="Import Settings"
-        description="Import settings and quick URLs from JSON file."
+        title={t('importSettings')}
+        description={t('importSettingsDescription')}
         control={
           <>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".json"
-              onChange={handleImport}
-              style={{ display: 'none' }}
-            />
+            <input ref={fileInputRef} type="file" accept=".json" onChange={handleImport} style={{ display: 'none' }} />
             <Button variant={'outline'} onClick={() => fileInputRef.current?.click()}>
-              Import
+              {t('import')}
             </Button>
           </>
         }
@@ -305,6 +296,7 @@ const SettingTabs: FC = () => {
       <TabsList>
         <TabsTrigger value="common-settings">{t('commonTab')}</TabsTrigger>
         <TabsTrigger value="wallpaper-settings">{t('wallpaperTab')}</TabsTrigger>
+        <TabsTrigger value="command-settings">{t('commandTab')}</TabsTrigger>
         <TabsTrigger value="mqtt-settings">{t('serverTab')}</TabsTrigger>
       </TabsList>
       <TabsContent value="common-settings">
@@ -312,6 +304,9 @@ const SettingTabs: FC = () => {
       </TabsContent>
       <TabsContent value="wallpaper-settings">
         <WallpaperSettings />
+      </TabsContent>
+      <TabsContent value="command-settings">
+        <CommandSettings />
       </TabsContent>
       <TabsContent value="mqtt-settings">
         <MqttSettings />
@@ -342,7 +337,7 @@ const SidebarButton: FC<{
             <DialogTitle>{label}</DialogTitle>
             <DialogDescription>{description}</DialogDescription>
           </DialogHeader>
-          {children}
+          <ScrollArea className="max-h-[70vh]">{children}</ScrollArea>
         </DialogContent>
         <TooltipContent side="left">
           <Text>{label}</Text>
@@ -368,6 +363,7 @@ const DrinkWaterButton: FC<{ className?: string }> = ({ className }) => {
       tooltip={t('drinkWater')}
       variant={'ghost'}
       className={cn('rounded-full', className)}
+      side="left"
       onClick={async () => {
         await drinkWaterState.launchEvent()
       }}>

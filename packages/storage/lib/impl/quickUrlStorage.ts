@@ -12,7 +12,7 @@ export interface BasicUrlItemsStorageFunc<T extends { id: string }> {
   sortItemsByIds: (ids: string[]) => Promise<void>
   putById: (id: string, val: T) => Promise<void>
   updatePart: (startIndex: number, vals: T[]) => Promise<void>
-  moveItem: (oldIndex: number, newIndex: never) => Promise<void>
+  moveItem: (oldIndex: number, newIndex: number) => Promise<void>
   moveItemById: (id: string, overId: string) => Promise<void>
 }
 
@@ -52,7 +52,7 @@ export function generateBasicUrlItemStorage<T extends QuickUrlItem>(
       items.splice(startIndex, vals.length, ...vals)
       targetStorage.set(items)
     },
-    moveItem: async (oldIdx: number, newIdx: never) => {
+    moveItem: async (oldIdx: number, newIdx: number) => {
       if (oldIdx === newIdx) {
         return
       }
@@ -72,7 +72,7 @@ export function generateBasicUrlItemStorage<T extends QuickUrlItem>(
       if (oldIdx === newIdx) {
         return
       }
-      await targetStorage.set((items)=>{
+      await targetStorage.set(items => {
         const moveItems = items.splice(oldIdx, 1)
         if (oldIdx < newIdx) {
           items.splice(newIdx, 0, ...moveItems)

@@ -1,5 +1,5 @@
 import { getDefaultIconUrl } from '@/lib/url'
-import type { ICommandReslover, ICommandResult } from './protocol'
+import type { ICommandResolver, ICommandResult } from './protocol'
 import moment from 'moment'
 
 import { historySuggestStorage } from '@extension/storage'
@@ -17,7 +17,7 @@ function convertHistoryItemToCommandResult(item: chrome.history.HistoryItem): IC
   }
 }
 
-export const historyReslover: ICommandReslover = {
+export const historyResolver: ICommandResolver = {
   name: 'history',
   settings: {
     active: true,

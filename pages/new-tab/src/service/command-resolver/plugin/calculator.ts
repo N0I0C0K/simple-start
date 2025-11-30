@@ -1,4 +1,4 @@
-import type { ICommandReslover, ICommandResult } from './protocol'
+import type { ICommandResolver, ICommandResult } from './protocol'
 import { Calculator, History, Copy, Trash2 } from 'lucide-react'
 import { t } from '@extension/i18n'
 import { Parser } from 'expr-eval'
@@ -12,13 +12,49 @@ const parser = new Parser()
 
 // List of math functions supported by expr-eval for expression validation
 const MATH_FUNCTIONS = [
-  'sin', 'cos', 'tan', 'asin', 'acos', 'atan', 'atan2',
-  'sinh', 'cosh', 'tanh', 'asinh', 'acosh', 'atanh',
-  'sqrt', 'cbrt', 'log', 'ln', 'lg', 'log2', 'log10', 'log1p', 'expm1',
-  'abs', 'ceil', 'floor', 'round', 'trunc', 'sign',
-  'exp', 'pow', 'min', 'max', 'hypot',
-  'random', 'fac', 'pyt', 'length', 'if', 'gamma', 'roundTo', 'map',
-  'E', 'PI'
+  'sin',
+  'cos',
+  'tan',
+  'asin',
+  'acos',
+  'atan',
+  'atan2',
+  'sinh',
+  'cosh',
+  'tanh',
+  'asinh',
+  'acosh',
+  'atanh',
+  'sqrt',
+  'cbrt',
+  'log',
+  'ln',
+  'lg',
+  'log2',
+  'log10',
+  'log1p',
+  'expm1',
+  'abs',
+  'ceil',
+  'floor',
+  'round',
+  'trunc',
+  'sign',
+  'exp',
+  'pow',
+  'min',
+  'max',
+  'hypot',
+  'random',
+  'fac',
+  'pyt',
+  'length',
+  'if',
+  'gamma',
+  'roundTo',
+  'map',
+  'E',
+  'PI',
 ]
 const MATH_FUNCTIONS_REGEX = new RegExp(`\\b(${MATH_FUNCTIONS.join('|')})\\b`, 'i')
 
@@ -147,7 +183,7 @@ function calculate(expression: string): string | null {
   }
 }
 
-export const calculatorResolver: ICommandReslover = {
+export const calculatorResolver: ICommandResolver = {
   name: t('calculator'),
   settings: {
     priority: -10, // High priority for quick math
@@ -222,7 +258,6 @@ export const calculatorResolver: ICommandReslover = {
         addToHistory(query, result)
       },
     })
-
 
     return results
   },

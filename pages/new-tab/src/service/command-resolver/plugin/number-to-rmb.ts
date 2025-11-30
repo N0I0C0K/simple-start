@@ -1,4 +1,4 @@
-import type { ICommandReslover } from './protocol'
+import type { ICommandResolver } from './protocol'
 import { Coins } from 'lucide-react'
 import { t } from '@extension/i18n'
 
@@ -127,12 +127,7 @@ function convertIntegerPart(num: number): string {
 function convertFourDigits(num: number): string {
   if (num === 0) return ''
 
-  const digits = [
-    Math.floor(num / 1000),
-    Math.floor((num % 1000) / 100),
-    Math.floor((num % 100) / 10),
-    num % 10,
-  ]
+  const digits = [Math.floor(num / 1000), Math.floor((num % 1000) / 100), Math.floor((num % 100) / 10), num % 10]
 
   let result = ''
   let prevZero = false
@@ -170,7 +165,7 @@ function parseInput(input: string): number | null {
   return num
 }
 
-export const numberToRmbReslover: ICommandReslover = {
+export const numberToRmbResolver: ICommandResolver = {
   name: t('numberToRmb'),
   settings: {
     priority: 50,
