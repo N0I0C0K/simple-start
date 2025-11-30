@@ -182,5 +182,17 @@
   "calculatorClearHistoryDesc": {
     "description": "Calculator clear history description",
     "message": "Clear all calculation history"
+  },
+  "numberToRmb": {
+    "description": "Number to RMB plugin name",
+    "message": "RMB Uppercase"
+  },
+  "numberToRmbLabel": {
+    "description": "Number to RMB plugin label",
+    "message": "RMB Uppercase"
+  },
+  "numberToRmbClickToCopy": {
+    "description": "Number to RMB click to copy hint",
+    "message": "Click to copy result"
   }
 }

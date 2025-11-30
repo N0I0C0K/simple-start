@@ -1,10 +1,34 @@
 import type { ICommandReslover } from './protocol'
 import { Coins } from 'lucide-react'
+import { t } from '@extension/i18n'
 
 // Chinese uppercase digits
 const DIGITS = ['零', '壹', '贰', '叁', '肆', '伍', '陆', '柒', '捌', '玖']
 const UNITS = ['', '拾', '佰', '仟']
 const BIG_UNITS = ['', '万', '亿', '万亿']
+
+// Maximum supported number (10^16 - 1) to prevent array out-of-bounds
+const MAX_SUPPORTED_NUMBER = 1e16 - 1
+
+// Copy to clipboard with fallback for older browsers
+async function copyToClipboard(text: string): Promise<void> {
+  try {
+    await navigator.clipboard.writeText(text)
+  } catch {
+    // Fallback for older browsers
+    try {
+      const textArea = document.createElement('textarea')
+      textArea.value = text
+      document.body.appendChild(textArea)
+      textArea.select()
+      document.execCommand('copy')
+      document.body.removeChild(textArea)
+    } catch {
+      // Final fallback: show prompt for manual copy
+      window.prompt('Copy to clipboard: Ctrl+C, Enter', text)
+    }
+  }
+}
 
 /**
  * Convert a number to Chinese uppercase currency (人民币大写)
@@ -15,7 +39,7 @@ const BIG_UNITS = ['', '万', '亿', '万亿']
  * 4. Do not add "整" after "分"
  */
 export function numberToChineseUppercase(num: number): string {
-  if (!Number.isFinite(num) || num < 0) {
+  if (!Number.isFinite(num) || num < 0 || num > MAX_SUPPORTED_NUMBER) {
     return ''
   }
 
@@ -133,9 +157,9 @@ function convertFourDigits(num: number): string {
  * Parse input to extract number
  */
 function parseInput(input: string): number | null {
-  // Remove activeKey prefix if present
+  // Remove activeKey prefix if present (with or without space)
   const trimmed = input.trim()
-  const numStr = trimmed.startsWith('rmb ') ? trimmed.slice(4) : trimmed
+  const numStr = trimmed.startsWith('rmb') ? trimmed.slice(3).trim() : trimmed
 
   // Parse the number
   const num = parseFloat(numStr)
@@ -147,7 +171,7 @@ function parseInput(input: string): number | null {
 }
 
 export const numberToRmbReslover: ICommandReslover = {
-  name: 'number-to-rmb',
+  name: t('numberToRmb'),
   settings: {
     priority: 50,
     active: true,
@@ -155,7 +179,7 @@ export const numberToRmbReslover: ICommandReslover = {
     activeKey: 'rmb',
   },
   properties: {
-    label: '人民币大写',
+    label: t('numberToRmbLabel'),
   },
   resolve: async params => {
     const num = parseInput(params.query)
@@ -173,10 +197,10 @@ export const numberToRmbReslover: ICommandReslover = {
       {
         id: 'number-to-rmb-result',
         title: result,
-        description: `${num} → 人民币大写`,
+        description: t('numberToRmbClickToCopy'),
         IconType: Coins,
         onSelect: () => {
-          navigator.clipboard.writeText(result)
+          copyToClipboard(result)
         },
       },
     ]
