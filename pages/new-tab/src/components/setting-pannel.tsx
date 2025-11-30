@@ -1,21 +1,7 @@
 import { cn } from '@/lib/utils'
-import {
-  closeMqttClientMessage,
-  receiveDrinkWaterLaunchMessage,
-  openMqttClientMessage,
-  useStorage,
-} from '@extension/shared'
+import { closeMqttClientMessage, openMqttClientMessage, useStorage } from '@extension/shared'
 import { useDrinkWaterEventManager } from '@extension/shared/lib/state/events'
-import {
-  mqttStateManager,
-  settingStorage,
-  exportAllData,
-  importAllData,
-  commandSettingsStorage,
-  defaultCommandSettings,
-} from '@extension/storage'
-import type { CommandPluginSettings } from '@extension/storage'
-import deepmerge from 'deepmerge'
+import { mqttStateManager, settingStorage, exportAllData, importAllData } from '@extension/storage'
 import {
   Button,
   Space,
@@ -42,7 +28,6 @@ import {
 import type { LucideProps } from 'lucide-react'
 import {
   AlignJustify,
-  Send,
   SunMoon,
   History,
   HardDriveUpload,
@@ -52,13 +37,11 @@ import {
   KeyRound,
   ToggleRight,
   User,
-  RefreshCcw,
   Activity,
   Dot,
   Download,
   Upload,
 } from 'lucide-react'
-import { nanoid } from 'nanoid'
 import React, { type ElementType, type FC, type ReactElement, type ReactNode } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@extension/ui/lib/components/ui/tabs'
 import { t } from '@extension/i18n'
@@ -354,7 +337,7 @@ const SidebarButton: FC<{
             <DialogTitle>{label}</DialogTitle>
             <DialogDescription>{description}</DialogDescription>
           </DialogHeader>
-          {children}
+          <ScrollArea className="max-h-[70vh]">{children}</ScrollArea>
         </DialogContent>
         <TooltipContent side="left">
           <Text>{label}</Text>
