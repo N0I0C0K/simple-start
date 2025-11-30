@@ -61,7 +61,7 @@ pnpm update-version 1.2.3 # Update version in all packages
 
 - **Tailwind CSS** with custom config via `@extension/tailwindcss-config`
 - **Class merging**: Use `cn()` utility from `@extension/ui` (combines `clsx` and `twMerge`)
-- **VS Code setup**: `.vscode/settings.json` configures Tailwind IntelliSense for `cn`, `cx`, `cva`, `clsx`
+- **VS Code setup**: `.vscode/settings.json` configures Tailwind IntelliSense for `cn`, `cva`, `clsx`
 - **Prettier config**: Single quotes, no semicolons, 120 char width, trailing commas
 - **shadcn/ui integration**: See `packages/ui/README.md` for adding components
 
@@ -70,7 +70,7 @@ pnpm update-version 1.2.3 # Update version in all packages
 All storage uses custom wrappers from `@extension/storage`:
 
 ```typescript
-import { settingStorage, quickUrlStorage, historyStorage } from '@extension/storage'
+import { settingStorage, quickUrlStorage, historySuggestStorage } from '@extension/storage'
 import { useStorage } from '@extension/shared'
 
 // In React components
@@ -101,7 +101,7 @@ Background script manages MQTT connection for cross-device notifications:
 - **Chrome i18n API wrapper** with type safety
 - **Translation files**: `packages/i18n/locales/{locale}/messages.json`
 - **Usage**: `import { t } from '@extension/i18n'` then `t('translationKey')`
-- **Auto-generation**: Run `pnpm generate-i18n` after adding/removing locales
+- **Auto-generation**: i18n types are generated automatically during `pnpm dev` and `pnpm build`
 - **Types**: Ensures all locales have matching keys (compile-time check)
 
 ### Component Structure
