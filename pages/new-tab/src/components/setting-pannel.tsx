@@ -393,7 +393,12 @@ const CommandPluginSettingItem: FC<{
           <Input
             type="number"
             value={settings.priority}
-            onChange={e => onUpdate({ priority: parseInt(e.target.value, 10) || 0 })}
+            onChange={e => {
+              const parsed = parseInt(e.target.value, 10)
+              if (!isNaN(parsed)) {
+                onUpdate({ priority: parsed })
+              }
+            }}
             className="w-20"
           />
         </Stack>

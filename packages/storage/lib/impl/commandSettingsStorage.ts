@@ -70,7 +70,7 @@ const storage = createStorage<CommandSettingsData>('command-settings-storage', d
 export const commandSettingsStorage: CommandSettingsStorage = {
   ...storage,
   update: async data => {
-    storage.set(preVal => deepmerge(preVal, data) as CommandSettingsData)
+    await storage.set(preVal => deepmerge(preVal, data) as CommandSettingsData)
   },
   getPluginSettings: async pluginName => {
     const settings = await storage.get()

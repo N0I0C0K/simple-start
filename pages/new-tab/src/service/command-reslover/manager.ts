@@ -56,7 +56,6 @@ class CommandResolverService {
   resolvers: ICommandResloverWithSettings[] = []
   _queryTimes = 0
   private _storageSettings: CommandSettingsData | null = null
-  private _initialized = false
 
   constructor() {
     this.initStorage()
@@ -65,7 +64,6 @@ class CommandResolverService {
   private async initStorage() {
     // Get initial settings
     this._storageSettings = await commandSettingsStorage.get()
-    this._initialized = true
     
     // Subscribe to storage changes
     commandSettingsStorage.subscribe(() => {
