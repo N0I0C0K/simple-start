@@ -109,7 +109,7 @@ class CommandResolverService {
   resolve(params: CommandQueryParams, onGroupResolve: (group: ICommandResultGroup) => void) {
     const _tick = ++this._queryTimes
     const warpOnGroupResolve = (group: ICommandResultGroup) => {
-      if (_tick != this._queryTimes) {
+      if (_tick !== this._queryTimes) {
         return
       }
       onGroupResolve(group)
