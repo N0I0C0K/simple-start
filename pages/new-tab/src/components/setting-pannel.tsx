@@ -38,6 +38,10 @@ import {
   DialogDescription,
   Badge,
   ScrollArea,
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
 } from '@extension/ui'
 import type { LucideProps } from 'lucide-react'
 import {
@@ -349,57 +353,69 @@ const CommandPluginSettingItem: FC<{
   onUpdate: (settings: Partial<CommandPluginSettings>) => void
 }> = ({ config, settings, onUpdate }) => {
   return (
-    <Stack direction={'column'} className="gap-2 p-3 rounded-md bg-muted">
-      <Stack direction={'row'} center className="gap-2">
-        <config.IconClass className="size-5 text-muted-foreground" />
-        <Text className="font-medium" level="md">
-          {t(config.labelKey as never)}
-        </Text>
-      </Stack>
-      <Text gray level="xs" className="-mt-1">
-        {t(config.descriptionKey as never)}
-      </Text>
-      <Separator className="my-1" />
-      <Stack direction={'row'} className="gap-4 flex-wrap">
-        <Stack direction={'row'} center className="gap-2 min-w-[140px]">
-          <Text level="s">{t('commandPluginActive')}</Text>
-          <Switch checked={settings.active} onCheckedChange={val => onUpdate({ active: val })} />
-        </Stack>
-        <Stack direction={'row'} center className="gap-2 min-w-[140px]">
-          <Text level="s">{t('commandPluginIncludeInGlobal')}</Text>
-          <Switch checked={settings.includeInGlobal} onCheckedChange={val => onUpdate({ includeInGlobal: val })} />
-        </Stack>
-      </Stack>
-      <Stack direction={'row'} className="gap-4 flex-wrap">
-        <Stack direction={'row'} center className="gap-2 flex-1 min-w-[140px]">
-          <Text level="s" className="whitespace-nowrap">
-            {t('commandPluginActiveKey')}
+    <AccordionItem value={config.name} className="rounded-md bg-muted px-3">
+      <AccordionTrigger className="hover:no-underline py-3">
+        <Stack direction={'row'} center className="gap-2 flex-1">
+          <config.IconClass className="size-5 text-muted-foreground" />
+          <Text className="font-medium" level="md">
+            {t(config.labelKey as never)}
           </Text>
-          <Input
-            placeholder={t('commandPluginActiveKeyPlaceholder')}
-            value={settings.activeKey}
-            onChange={e => onUpdate({ activeKey: e.target.value })}
-            className="w-20"
-          />
+          <Space className="flex-1" />
+          <Stack
+            direction={'row'}
+            center
+            className="gap-2"
+            onClick={e => e.stopPropagation()}>
+            <Text level="s" gray>
+              {t('commandPluginActive')}
+            </Text>
+            <Switch checked={settings.active} onCheckedChange={val => onUpdate({ active: val })} />
+          </Stack>
         </Stack>
-        <Stack direction={'row'} center className="gap-2 flex-1 min-w-[140px]">
-          <Text level="s" className="whitespace-nowrap">
-            {t('commandPluginPriority')}
+      </AccordionTrigger>
+      <AccordionContent className="pb-3">
+        <Stack direction={'column'} className="gap-3">
+          <Text gray level="xs">
+            {t(config.descriptionKey as never)}
           </Text>
-          <Input
-            type="number"
-            value={settings.priority}
-            onChange={e => {
-              const parsed = parseInt(e.target.value, 10)
-              if (!isNaN(parsed)) {
-                onUpdate({ priority: parsed })
-              }
-            }}
-            className="w-20"
-          />
+          <Separator />
+          <Stack direction={'row'} center className="gap-2">
+            <Text level="s">{t('commandPluginIncludeInGlobal')}</Text>
+            <Space className="flex-1" />
+            <Switch checked={settings.includeInGlobal} onCheckedChange={val => onUpdate({ includeInGlobal: val })} />
+          </Stack>
+          <Stack direction={'row'} center className="gap-2">
+            <Text level="s" className="whitespace-nowrap">
+              {t('commandPluginActiveKey')}
+            </Text>
+            <Space className="flex-1" />
+            <Input
+              placeholder={t('commandPluginActiveKeyPlaceholder')}
+              value={settings.activeKey}
+              onChange={e => onUpdate({ activeKey: e.target.value })}
+              className="w-24"
+            />
+          </Stack>
+          <Stack direction={'row'} center className="gap-2">
+            <Text level="s" className="whitespace-nowrap">
+              {t('commandPluginPriority')}
+            </Text>
+            <Space className="flex-1" />
+            <Input
+              type="number"
+              value={settings.priority}
+              onChange={e => {
+                const parsed = parseInt(e.target.value, 10)
+                if (!isNaN(parsed)) {
+                  onUpdate({ priority: parsed })
+                }
+              }}
+              className="w-24"
+            />
+          </Stack>
         </Stack>
-      </Stack>
-    </Stack>
+      </AccordionContent>
+    </AccordionItem>
   )
 }
 
@@ -415,17 +431,19 @@ const CommandSettings: FC = () => {
       <Text gray level="s">
         {t('configureCommandSettings')}
       </Text>
-      {COMMAND_PLUGINS.map(config => {
-        const pluginSettings = commandSettings[config.name] || defaultCommandSettings[config.name]
-        return (
-          <CommandPluginSettingItem
-            key={config.name}
-            config={config}
-            settings={pluginSettings}
-            onUpdate={updates => handlePluginUpdate(config.name, updates)}
-          />
-        )
-      })}
+      <Accordion type="multiple" className="flex flex-col gap-2">
+        {COMMAND_PLUGINS.map(config => {
+          const pluginSettings = commandSettings[config.name] || defaultCommandSettings[config.name]
+          return (
+            <CommandPluginSettingItem
+              key={config.name}
+              config={config}
+              settings={pluginSettings}
+              onUpdate={updates => handlePluginUpdate(config.name, updates)}
+            />
+          )
+        })}
+      </Accordion>
     </Stack>
   )
 }
