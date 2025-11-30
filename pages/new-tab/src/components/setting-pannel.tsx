@@ -54,6 +54,7 @@ import { nanoid } from 'nanoid'
 import React, { type ElementType, type FC, type ReactElement, type ReactNode } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@extension/ui/lib/components/ui/tabs'
 import { t } from '@extension/i18n'
+import { WallpaperSettings } from './settings/WallpaperSettings'
 
 const SettingItem: FC<{
   className?: string
@@ -302,10 +303,14 @@ const SettingTabs: FC = () => {
     <Tabs defaultValue="common-settings">
       <TabsList>
         <TabsTrigger value="common-settings">{t('commonTab')}</TabsTrigger>
+        <TabsTrigger value="wallpaper-settings">{t('wallpaperTab')}</TabsTrigger>
         <TabsTrigger value="mqtt-settings">{t('serverTab')}</TabsTrigger>
       </TabsList>
       <TabsContent value="common-settings">
         <CommonSettings />
+      </TabsContent>
+      <TabsContent value="wallpaper-settings">
+        <WallpaperSettings />
       </TabsContent>
       <TabsContent value="mqtt-settings">
         <MqttSettings />

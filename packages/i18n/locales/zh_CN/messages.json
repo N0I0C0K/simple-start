@@ -162,5 +162,53 @@
   "noResultsFound": {
     "description": "No results found message",
     "message": "未找到结果。"
+  },
+  "calculator": {
+    "description": "Calculator plugin name",
+    "message": "计算器"
+  },
+  "calculatorClickToCopy": {
+    "description": "Calculator click to copy hint",
+    "message": "点击复制结果"
+  },
+  "calculatorCopyResult": {
+    "description": "Calculator copy result description",
+    "message": "复制结果到剪贴板"
+  },
+  "calculatorClearHistory": {
+    "description": "Calculator clear history title",
+    "message": "清除历史"
+  },
+  "calculatorClearHistoryDesc": {
+    "description": "Calculator clear history description",
+    "message": "清除所有计算历史"
+  },
+  "wallpaperTab": {
+    "description": "Wallpaper settings tab",
+    "message": "壁纸"
+  },
+  "wallpaperSettingsDescription": {
+    "description": "Wallpaper settings description",
+    "message": "从 Wallhaven 热门榜单中选择壁纸。"
+  },
+  "wallpaperFetchError": {
+    "description": "Wallpaper fetch error message",
+    "message": "加载壁纸失败，请重试。"
+  },
+  "historyWallpapers": {
+    "description": "History wallpapers section title",
+    "message": "历史壁纸"
+  },
+  "noMoreWallpapers": {
+    "description": "No more wallpapers message",
+    "message": "没有更多壁纸了。"
+  },
+  "wallpaperRateLimitError": {
+    "description": "Wallpaper rate limit error message",
+    "message": "请求过于频繁，请稍后再试。"
+  },
+  "wallpaperInvalidUrlError": {
+    "description": "Wallpaper invalid URL error message",
+    "message": "无效的壁纸链接，请选择其他壁纸。"
   }
 }
