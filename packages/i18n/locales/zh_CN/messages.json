@@ -182,5 +182,13 @@
   "noMoreWallpapers": {
     "description": "No more wallpapers message",
     "message": "没有更多壁纸了。"
+  },
+  "wallpaperRateLimitError": {
+    "description": "Wallpaper rate limit error message",
+    "message": "请求过于频繁，请稍后再试。"
+  },
+  "wallpaperInvalidUrlError": {
+    "description": "Wallpaper invalid URL error message",
+    "message": "无效的壁纸链接，请选择其他壁纸。"
   }
 }
