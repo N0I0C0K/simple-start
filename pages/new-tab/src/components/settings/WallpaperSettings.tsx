@@ -313,10 +313,10 @@ export const WallpaperSettings: FC = () => {
     // Read file as base64
     const reader = new FileReader()
     reader.onload = async (e) => {
-      const base64Data = e.target?.result as string
-      if (base64Data) {
+      const result = e.target?.result
+      if (result && typeof result === 'string') {
         await settingStorage.update({
-          localWallpaperData: base64Data,
+          localWallpaperData: result,
           wallpaperType: 'local' as WallpaperType,
         })
       }
@@ -325,13 +325,18 @@ export const WallpaperSettings: FC = () => {
       setError(t('localWallpaperReadError'))
     }
     reader.readAsDataURL(file)
-
-    // Reset input value to allow selecting the same file again
-    event.target.value = ''
   }, [])
 
   const handleUploadClick = useCallback(() => {
+    // Reset input value to allow selecting the same file again
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
     fileInputRef.current?.click()
+  }, [])
+
+  const handleSelectLocalWallpaper = useCallback(async () => {
+    await settingStorage.update({ wallpaperType: 'local' as WallpaperType })
   }, [])
 
   const handleClearLocalWallpaper = useCallback(async () => {
@@ -386,12 +391,10 @@ export const WallpaperSettings: FC = () => {
           )}
           role="button"
           tabIndex={0}
-          onClick={async () => {
-            await settingStorage.update({ wallpaperType: 'local' as WallpaperType })
-          }}
-          onKeyDown={async (e) => {
+          onClick={handleSelectLocalWallpaper}
+          onKeyDown={(e) => {
             if (e.key === 'Enter' || e.key === ' ') {
-              await settingStorage.update({ wallpaperType: 'local' as WallpaperType })
+              handleSelectLocalWallpaper()
             }
           }}>
           <WallpaperImage src={settings.localWallpaperData} alt="Local wallpaper" />

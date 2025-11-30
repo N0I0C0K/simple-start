@@ -109,13 +109,7 @@ const TimeDisplay = () => {
 
 const NewTab = () => {
   const settings = useStorage(settingStorage)
-  const [wallpaperSrc, setWallpaperSrc] = useState<string>(() => {
-    // Determine initial wallpaper source based on wallpaperType
-    if (settings.wallpaperType === 'local' && settings.localWallpaperData) {
-      return settings.localWallpaperData
-    }
-    return settings.wallpaperUrl ?? DEFAULT_WALLPAPER_URL
-  })
+  const [wallpaperSrc, setWallpaperSrc] = useState<string>(DEFAULT_WALLPAPER_URL)
 
   useEffect(() => {
     // Update wallpaper source when settings change

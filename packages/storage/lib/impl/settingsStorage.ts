@@ -13,13 +13,20 @@ export type MqttSetting = {
   username: string
 }
 
+/**
+ * Represents the source type for wallpaper display.
+ * - 'url': Uses a remote URL (wallpaperUrl) to fetch the wallpaper image
+ * - 'local': Uses a locally uploaded image stored as base64 data (localWallpaperData)
+ */
 export type WallpaperType = 'url' | 'local'
 
 export type SettingProps = {
   useHistorySuggestion: boolean
   autoFocusCommandInput: boolean
   wallpaperUrl: string | null
+  /** The source type for the wallpaper (remote URL or local file) */
   wallpaperType: WallpaperType
+  /** Base64-encoded local wallpaper image data */
   localWallpaperData: string | null
   mqttSettings: MqttSetting
 }
