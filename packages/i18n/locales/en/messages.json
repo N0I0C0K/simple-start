@@ -59,6 +59,10 @@
     "description": "Server settings tab",
     "message": "Server"
   },
+  "commandTab": {
+    "description": "Command settings tab",
+    "message": "Command"
+  },
   "theme": {
     "description": "Theme setting title",
     "message": "Theme"
@@ -102,6 +106,10 @@
   "configureGeneralSettings": {
     "description": "General settings description",
     "message": "Configure your general settings."
+  },
+  "configureCommandSettings": {
+    "description": "Command settings description",
+    "message": "Configure command plugins and their settings."
   },
   "enable": {
     "description": "Enable setting title",
@@ -210,5 +218,117 @@
   "wallpaperInvalidUrlError": {
     "description": "Wallpaper invalid URL error message",
     "message": "Invalid wallpaper URL. Please select a different wallpaper."
+  },
+  "commandPluginActive": {
+    "description": "Command plugin active setting title",
+    "message": "Active"
+  },
+  "commandPluginActiveDescription": {
+    "description": "Command plugin active setting description",
+    "message": "Enable or disable this command plugin."
+  },
+  "commandPluginActiveKey": {
+    "description": "Command plugin active key setting title",
+    "message": "Trigger Key"
+  },
+  "commandPluginActiveKeyDescription": {
+    "description": "Command plugin active key setting description",
+    "message": "Prefix key to trigger this plugin directly."
+  },
+  "commandPluginActiveKeyPlaceholder": {
+    "description": "Command plugin active key input placeholder",
+    "message": "e.g., h, g, ="
+  },
+  "commandPluginPriority": {
+    "description": "Command plugin priority setting title",
+    "message": "Priority"
+  },
+  "commandPluginPriorityDescription": {
+    "description": "Command plugin priority setting description",
+    "message": "Lower number = higher priority."
+  },
+  "commandPluginIncludeInGlobal": {
+    "description": "Command plugin include in global setting title",
+    "message": "Include in Global"
+  },
+  "commandPluginIncludeInGlobalDescription": {
+    "description": "Command plugin include in global setting description",
+    "message": "Show results in global search."
+  },
+  "commandPluginHistory": {
+    "description": "History command plugin name",
+    "message": "History"
+  },
+  "commandPluginHistoryDescription": {
+    "description": "History command plugin description",
+    "message": "Search browser history."
+  },
+  "commandPluginTabs": {
+    "description": "Tabs command plugin name",
+    "message": "Tabs"
+  },
+  "commandPluginTabsDescription": {
+    "description": "Tabs command plugin description",
+    "message": "Search open tabs."
+  },
+  "commandPluginWebSearch": {
+    "description": "Web Search command plugin name",
+    "message": "Web Search"
+  },
+  "commandPluginWebSearchDescription": {
+    "description": "Web Search command plugin description",
+    "message": "Search the web using default search engine."
+  },
+  "commandPluginCalculator": {
+    "description": "Calculator command plugin name",
+    "message": "Calculator"
+  },
+  "commandPluginCalculatorDescription": {
+    "description": "Calculator command plugin description",
+    "message": "Perform mathematical calculations."
+  },
+  "commandPluginNumberToRmb": {
+    "description": "Number to RMB command plugin name",
+    "message": "Number to RMB"
+  },
+  "commandPluginNumberToRmbDescription": {
+    "description": "Number to RMB command plugin description",
+    "message": "Convert numbers to Chinese uppercase currency."
+  },
+  "numberToRmb": {
+    "description": "Number to RMB plugin name",
+    "message": "RMB Uppercase"
+  },
+  "numberToRmbLabel": {
+    "description": "Number to RMB plugin label",
+    "message": "RMB Uppercase"
+  },
+  "numberToRmbClickToCopy": {
+    "description": "Number to RMB click to copy hint",
+    "message": "Click to copy result"
+  },
+  "exportSettings": {
+    "description": "Export settings button title",
+    "message": "Export Settings"
+  },
+  "exportSettingsDescription": {
+    "description": "Export settings description",
+    "message": "Export all settings and quick URLs as JSON."
+  },
+  "export": {
+    "description": "Export button text",
+    "message": "Export"
+  },
+  "importSettings": {
+    "description": "Import settings button title",
+    "message": "Import Settings"
+  },
+  "importSettingsDescription": {
+    "description": "Import settings description",
+    "message": "Import settings and quick URLs from JSON file."
+  },
+  "import": {
+    "description": "Import button text",
+    "message": "Import"
   }
 }

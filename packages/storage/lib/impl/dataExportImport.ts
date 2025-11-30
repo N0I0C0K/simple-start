@@ -4,9 +4,11 @@
 
 import type { QuickUrlItem } from '../base/types'
 import type { SettingProps } from './settingsStorage'
+import type { CommandSettingsData } from './commandSettingsStorage'
 import { settingStorage } from './settingsStorage'
 import { quickUrlItemsStorage } from './quickUrlStorage'
 import { exampleThemeStorage } from './exampleThemeStorage'
+import { commandSettingsStorage } from './commandSettingsStorage'
 
 // Import types from existing implementations
 type Theme = 'light' | 'dark' | 'system'
@@ -17,6 +19,7 @@ export interface ExportedData {
   theme?: Theme
   settings: SettingProps
   quickUrls: QuickUrlItem[]
+  commandSettings?: CommandSettingsData
 }
 
 /**
@@ -26,6 +29,7 @@ export async function exportAllData(): Promise<void> {
   const settings = await settingStorage.get()
   const quickUrls = await quickUrlItemsStorage.get()
   const theme = await exampleThemeStorage.get()
+  const commandSettings = await commandSettingsStorage.get()
   
   const exportData: ExportedData = {
     version: '1.0.0',
@@ -33,6 +37,7 @@ export async function exportAllData(): Promise<void> {
     theme,
     settings,
     quickUrls,
+    commandSettings,
   }
   
   const jsonString = JSON.stringify(exportData, null, 2)
@@ -64,6 +69,11 @@ export async function importAllData(file: File): Promise<void> {
   if (data.theme) {
     await exampleThemeStorage.set(data.theme)
   }
+  
+  // Import command settings if present
+  if (data.commandSettings) {
+    await commandSettingsStorage.set(data.commandSettings)
+  }
 }
 
 /**
@@ -94,6 +104,21 @@ function parseAndValidateImportFile(file: File): Promise<ExportedData> {
         for (const item of data.quickUrls) {
           if (!item.id || !item.title || !item.url) {
             throw new Error('Invalid quick URL item: missing required fields')
+          }
+        }
+        
+        // Validate command settings if present
+        if (data.commandSettings) {
+          if (typeof data.commandSettings !== 'object' || Array.isArray(data.commandSettings) || data.commandSettings === null) {
+            throw new Error('Invalid command settings format: must be an object')
+          }
+          for (const pluginSettings of Object.values(data.commandSettings)) {
+            if (typeof pluginSettings.priority !== 'number' ||
+                typeof pluginSettings.active !== 'boolean' ||
+                typeof pluginSettings.activeKey !== 'string' ||
+                typeof pluginSettings.includeInGlobal !== 'boolean') {
+              throw new Error('Invalid command settings format')
+            }
           }
         }
         

@@ -29,7 +29,7 @@ export interface CommandProperties {
   label?: string
 }
 
-export interface ICommandReslover {
+export interface ICommandResolver {
   name: string
   properties: CommandProperties
   settings: PartialCommandSettings

@@ -109,19 +109,25 @@ const HistoryWallpaperCard: FC<{
   onSelect: (url: string, thumbnailUrl: string) => void
   onDelete: (url: string) => void
 }> = ({ url, thumbnailUrl, isSelected, onSelect, onDelete }) => {
-  const handleDelete = useCallback((e: React.MouseEvent | React.KeyboardEvent) => {
-    e.stopPropagation()
-    onDelete(url)
-  }, [onDelete, url])
+  const handleDelete = useCallback(
+    (e: React.MouseEvent | React.KeyboardEvent) => {
+      e.stopPropagation()
+      onDelete(url)
+    },
+    [onDelete, url],
+  )
 
-  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleDelete(e)
-    } else if (e.key === ' ') {
-      e.preventDefault()
-      handleDelete(e)
-    }
-  }, [handleDelete])
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        handleDelete(e)
+      } else if (e.key === ' ') {
+        e.preventDefault()
+        handleDelete(e)
+      }
+    },
+    [handleDelete],
+  )
 
   return (
     <div
@@ -132,7 +138,9 @@ const HistoryWallpaperCard: FC<{
       role="button"
       tabIndex={0}
       onClick={() => onSelect(url, thumbnailUrl)}
-      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onSelect(url, thumbnailUrl) }}>
+      onKeyDown={e => {
+        if (e.key === 'Enter' || e.key === ' ') onSelect(url, thumbnailUrl)
+      }}>
       <WallpaperImage src={thumbnailUrl} alt="History wallpaper" />
       {isSelected && (
         <div className="absolute right-1 top-1 rounded-full bg-primary p-1">
@@ -141,11 +149,11 @@ const HistoryWallpaperCard: FC<{
       )}
       <button
         type="button"
-        className="absolute left-1 top-1 rounded-full bg-destructive/80 p-1 opacity-0 transition-opacity group-hover:opacity-100"
+        className="absolute left-1 top-1 rounded-full bg-destructive/80 p-1 opacity-0 transition-opacity
+          group-hover:opacity-100"
         onClick={handleDelete}
         onKeyDown={handleKeyDown}
-        aria-label="Delete from history"
-      >
+        aria-label="Delete from history">
         <X className="size-3 text-destructive-foreground" />
       </button>
     </div>
@@ -162,7 +170,7 @@ export const WallpaperSettings: FC = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const [hasMore, setHasMore] = useState(true)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
-  
+
   // Use refs to track loading state and last request time to prevent race conditions
   const isLoadingRef = useRef(false)
   const lastRequestTimeRef = useRef(0)
@@ -170,31 +178,33 @@ export const WallpaperSettings: FC = () => {
   const fetchWallpapers = useCallback(async (page: number, append = false) => {
     // Prevent duplicate requests using ref
     if (isLoadingRef.current) return
-    
+
     // Throttle requests to avoid rate limiting
     const now = Date.now()
     if (now - lastRequestTimeRef.current < API_REQUEST_THROTTLE) return
-    
+
     isLoadingRef.current = true
     lastRequestTimeRef.current = now
-    
+
     if (page === 1) {
       setIsLoading(true)
     } else {
       setIsLoadingMore(true)
     }
     setError(null)
-    
+
     try {
       // Wallhaven API for toplist wallpapers (SFW only with purity=100)
-      const response = await fetch(`https://wallhaven.cc/api/v1/search?topRange=1M&sorting=toplist&purity=100&page=${page}`)
-      
+      const response = await fetch(
+        `https://wallhaven.cc/api/v1/search?topRange=1M&sorting=toplist&purity=100&page=${page}`,
+      )
+
       // Handle rate limiting (429 status)
       if (response.status === 429) {
         setError(t('wallpaperRateLimitError'))
         return
       }
-      
+
       if (!response.ok) {
         throw new Error(`Failed to fetch wallpapers: ${response.statusText}`)
       }
@@ -223,18 +233,18 @@ export const WallpaperSettings: FC = () => {
   // Use ref for current page to avoid recreating scroll handler
   const currentPageRef = useRef(currentPage)
   currentPageRef.current = currentPage
-  
+
   const hasMoreRef = useRef(hasMore)
   hasMoreRef.current = hasMore
 
   const handleScroll = useCallback(() => {
     if (!scrollContainerRef.current || isLoadingRef.current || !hasMoreRef.current) return
-    
+
     const container = scrollContainerRef.current
     const scrollTop = container.scrollTop
     const scrollHeight = container.scrollHeight
     const clientHeight = container.clientHeight
-    
+
     // Load more when within threshold of the bottom
     if (scrollHeight - scrollTop - clientHeight < SCROLL_THRESHOLD) {
       fetchWallpapers(currentPageRef.current + 1, true)
@@ -244,7 +254,7 @@ export const WallpaperSettings: FC = () => {
   useEffect(() => {
     const container = scrollContainerRef.current
     if (!container) return
-    
+
     container.addEventListener('scroll', handleScroll)
     return () => container.removeEventListener('scroll', handleScroll)
   }, [handleScroll])
@@ -305,10 +315,7 @@ export const WallpaperSettings: FC = () => {
           <Loader2 className="size-8 animate-spin text-muted-foreground" />
         </div>
       ) : (
-        <div 
-          ref={scrollContainerRef}
-          className="h-[300px] overflow-y-auto pr-2"
-        >
+        <div ref={scrollContainerRef} className="h-[300px] overflow-y-auto pr-2">
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
             {wallpapers.map(wallpaper => (
               <WallpaperCard
@@ -326,7 +333,9 @@ export const WallpaperSettings: FC = () => {
           )}
           {!hasMore && wallpapers.length > 0 && (
             <div className="py-4 text-center">
-              <Text gray level="xs">{t('noMoreWallpapers')}</Text>
+              <Text gray level="xs">
+                {t('noMoreWallpapers')}
+              </Text>
             </div>
           )}
         </div>

@@ -11,7 +11,7 @@
   "module": "dist/index.js",
   "types": "index.ts",
   "scripts": {
-    "clean:bundle": "rimraf dist && pnpx rimraf build",
+    "clean:bundle": "rimraf dist build",
     "clean:node_modules": "pnpx rimraf node_modules",
     "clean:turbo": "rimraf .turbo",
     "clean": "pnpm clean:bundle && pnpm clean:node_modules && pnpm clean:turbo",
