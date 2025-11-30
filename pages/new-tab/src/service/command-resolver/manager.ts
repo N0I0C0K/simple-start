@@ -119,28 +119,23 @@ class CommandResolverService {
     this.sortResolvers()
 
     Promise.all(
-      this.resolvers
-        .filter(it => {
-          const settings = it.getSettings()
-          return settings.active && settings.includeInGlobal
-        })
-        .map(it => {
-          return new Promise((resolve, reject) => {
-            it.resolve(params)
-              .then(res => {
-                if (res === null) {
-                  resolve(null)
-                  return
-                }
-                warpOnGroupResolve({
-                  groupName: it.name,
-                  result: res,
-                })
+      this.choosePlugins(params).map(it => {
+        return new Promise((resolve, reject) => {
+          it.resolve(params)
+            .then(res => {
+              if (res === null) {
                 resolve(null)
+                return
+              }
+              warpOnGroupResolve({
+                groupName: it.name,
+                result: res,
               })
-              .catch(err => reject(err))
-          })
-        }),
+              resolve(null)
+            })
+            .catch(err => reject(err))
+        })
+      }),
     )
   }
 }
