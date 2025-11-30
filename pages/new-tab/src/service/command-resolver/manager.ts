@@ -1,12 +1,11 @@
-import type {
-  ICommandReslover,
-  ICommandResultGroup,
-  CommandQueryParams,
-  CommandSettings,
-} from './plugin'
+import type { ICommandResolver, ICommandResultGroup, CommandQueryParams, CommandSettings } from './plugin'
 
 import {
-  historyReslover, tabSearchReslover, webSearchReslover, calculatorResolver, numberToRmbReslover
+  historyResolver,
+  tabSearchResolver,
+  webSearchResolver,
+  calculatorResolver,
+  numberToRmbResolver,
 } from './plugin'
 import { WarpDefaultObject } from '@extension/shared'
 import { commandSettingsStorage, defaultCommandSettings } from '@extension/storage'
@@ -23,14 +22,14 @@ const defaultSettings: CommandSettings = {
   activeKey: '',
 }
 
-interface ICommandResloverWithSettings extends ICommandReslover {
+interface ICommandResolverWithSettings extends ICommandResolver {
   getSettings: () => CommandSettings
 }
 
 function createResolverWithSettings(
-  resolver: ICommandReslover,
+  resolver: ICommandResolver,
   getStorageSettings: () => CommandSettingsData | null,
-): ICommandResloverWithSettings {
+): ICommandResolverWithSettings {
   return {
     ...resolver,
     getSettings(): CommandSettings {
@@ -53,7 +52,7 @@ function createResolverWithSettings(
 }
 
 class CommandResolverService {
-  resolvers: ICommandResloverWithSettings[] = []
+  resolvers: ICommandResolverWithSettings[] = []
   _queryTimes = 0
   private _storageSettings: CommandSettingsData | null = null
 
@@ -64,7 +63,7 @@ class CommandResolverService {
   private async initStorage() {
     // Get initial settings
     this._storageSettings = await commandSettingsStorage.get()
-    
+
     // Subscribe to storage changes
     commandSettingsStorage.subscribe(() => {
       const snapshot = commandSettingsStorage.getSnapshot()
@@ -78,7 +77,7 @@ class CommandResolverService {
     return this._storageSettings
   }
 
-  register(resolver: ICommandReslover) {
+  register(resolver: ICommandResolver) {
     this.resolvers.push(createResolverWithSettings(resolver, this.getStorageSettings))
     this.sortResolvers()
   }
@@ -89,14 +88,12 @@ class CommandResolverService {
     })
   }
 
-  choosePlugins(params: CommandQueryParams): ICommandResloverWithSettings[] {
+  choosePlugins(params: CommandQueryParams): ICommandResolverWithSettings[] {
     const availablePlugins = this.resolvers.filter(it => it.getSettings().active)
-    const matchedPlugins = availablePlugins.filter(
-      it => {
-        const settings = it.getSettings()
-        return settings.activeKey && params.query.startsWith(settings.activeKey)
-      },
-    )
+    const matchedPlugins = availablePlugins.filter(it => {
+      const settings = it.getSettings()
+      return settings.activeKey && params.query.startsWith(settings.activeKey)
+    })
     if (matchedPlugins.length > 0) return matchedPlugins
     return this.resolvers.filter(it => it.getSettings().includeInGlobal)
   }
@@ -109,10 +106,10 @@ class CommandResolverService {
       }
       onGroupResolve(group)
     }
-    
+
     // Sort resolvers before resolving (in case priorities changed)
     this.sortResolvers()
-    
+
     Promise.all(
       this.resolvers
         .filter(it => {
@@ -120,18 +117,18 @@ class CommandResolverService {
           return settings.active && settings.includeInGlobal
         })
         .map(it => {
-          return new Promise((reslove, reject) => {
+          return new Promise((resolve, reject) => {
             it.resolve(params)
               .then(res => {
                 if (res === null) {
-                  reslove(null)
+                  resolve(null)
                   return
                 }
                 warpOnGroupResolve({
                   groupName: it.name,
                   result: res,
                 })
-                reslove(null)
+                resolve(null)
               })
               .catch(err => reject(err))
           })
@@ -142,8 +139,8 @@ class CommandResolverService {
 
 export const commandResolverService = new CommandResolverService()
 
-commandResolverService.register(historyReslover)
-commandResolverService.register(tabSearchReslover)
-commandResolverService.register(webSearchReslover)
+commandResolverService.register(historyResolver)
+commandResolverService.register(tabSearchResolver)
+commandResolverService.register(webSearchResolver)
 commandResolverService.register(calculatorResolver)
-commandResolverService.register(numberToRmbReslover)
+commandResolverService.register(numberToRmbResolver)

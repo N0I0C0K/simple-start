@@ -2,8 +2,8 @@ import { cn, useBoolean } from '@/lib/utils'
 import { useDebounce, useStorage } from '@extension/shared'
 import { settingStorage } from '@extension/storage'
 import { command, Stack, Text } from '@extension/ui'
-import { commandResolverService } from '@src/service/command-reslover'
-import type { CommandQueryParams, ICommandResultGroup } from '@src/service/command-reslover'
+import { commandResolverService } from '@src/service/command-resolver'
+import type { CommandQueryParams, ICommandResultGroup } from '@src/service/command-resolver'
 import { useEffect, useRef, useState, type FC } from 'react'
 import { t } from '@extension/i18n'
 
@@ -23,7 +23,7 @@ export const CommandModule: FC<{
   const inputRef = useRef<HTMLInputElement>(null)
   const [inputVal, setInputVal] = useState('')
   const [result, setResult] = useState<ICommandResultGroup[]>([])
-  const inputDelay = useDebounce(inputVal, 600)
+  const inputDelay = useDebounce(inputVal, 200)
   const [isWindows] = useState(() => {
     return navigator.userAgent.toLowerCase().includes('windows')
   })
@@ -99,7 +99,7 @@ export const CommandModule: FC<{
                       key={res.id}
                       value={res.id}
                       onSelect={() => {
-                        res.onSelect()
+                        res.onSelect?.()
                         // Hide the panel after selection
                         focusFunc.setFalse()
                         inputRef.current?.blur()

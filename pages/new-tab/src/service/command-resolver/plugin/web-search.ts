@@ -1,9 +1,7 @@
-import type { ICommandReslover } from './protocol'
-import {
-  Search
-} from 'lucide-react'
+import type { ICommandResolver } from './protocol'
+import { Search } from 'lucide-react'
 
-export const webSearchReslover: ICommandReslover = {
+export const webSearchResolver: ICommandResolver = {
   name: 'web-search',
   settings: {
     priority: 100,

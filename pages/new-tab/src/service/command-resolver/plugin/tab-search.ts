@@ -1,6 +1,6 @@
-import type { ICommandReslover } from './protocol'
+import type { ICommandResolver } from './protocol'
 
-export const tabSearchReslover: ICommandReslover = {
+export const tabSearchResolver: ICommandResolver = {
   name: 'tabs',
   settings: {
     priority: 0,
