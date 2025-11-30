@@ -109,7 +109,7 @@ function parseAndValidateImportFile(file: File): Promise<ExportedData> {
         
         // Validate command settings if present
         if (data.commandSettings) {
-          for (const [, pluginSettings] of Object.entries(data.commandSettings)) {
+          for (const pluginSettings of Object.values(data.commandSettings)) {
             if (typeof pluginSettings.priority !== 'number' ||
                 typeof pluginSettings.active !== 'boolean' ||
                 typeof pluginSettings.activeKey !== 'string' ||
