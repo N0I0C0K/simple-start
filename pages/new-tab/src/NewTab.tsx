@@ -121,13 +121,13 @@ const NewTab = () => {
         </Center>
         <Stack direction={'column'} className="flex-1">
           <Center className="mb-8 h-10">
-            <CommandModule className="w-[40%] min-w-[20rem] max-w-[40rem] h-auto absolute z-10" />
+            <CommandModule className="w-[40%] min-w-[20rem] max-w-[40rem] h-auto absolute z-[1]" />
           </Center>
           <Center>
-            <div className="relative min-w-[20rem] w-[50%]">
+            <div className="relative min-w-[20rem] w-[50%] z-0">
               <ScrollLinkCardPage
                 className="relative backdrop-blur-2xl rounded-2xl shadow-md dark:backdrop-brightness-75 w-full
-                  overflow-hidden bg-slate-50/15 dark:bg-slate-700/5"
+                  overflow-hidden bg-slate-50/15 dark:bg-slate-700/5 z-0"
               />
               {/* <DndLinkCardPage className="relative backdrop-blur-2xl rounded-2xl shadow-md dark:backdrop-brightness-75 w-full overflow-hidden bg-slate-50/20 dark:bg-slate-700/20" /> */}
             </div>

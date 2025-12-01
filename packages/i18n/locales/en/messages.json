@@ -133,7 +133,7 @@
   },
   "secretKeyDescription": {
     "description": "Secret key setting description",
-    "message": "Use the same secret key under same group."
+    "message": "Small signals will communicate under the same key, please ensure your key is complex and only shared with trusted people."
   },
   "enterSecretKey": {
     "description": "Secret key input placeholder",

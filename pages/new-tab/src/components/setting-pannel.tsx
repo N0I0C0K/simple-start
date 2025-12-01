@@ -60,12 +60,12 @@ const SettingItem: FC<{
     <Stack
       direction={'row'}
       className={cn(
-        'items-center overflow-hidden relative rounded-md p-3 bg-slate-200/20 border-slate-400/20',
-        'bg-muted',
+        'items-center overflow-hidden relative rounded-md p-3 border-slate-400/20',
+        'bg-muted gap-2',
         className,
       )}>
-      <IconClass strokeWidth={1} className="size-16 mr-2 absolute -left-6 text-slate-400" />
-      <Stack direction={'column'} className="ml-10">
+      <IconClass className="min-w-8 size-8 text-muted-foreground" />
+      <Stack direction={'column'} className="gap-0.5">
         <Text className="font-medium" level="md">
           {title}
         </Text>
@@ -77,24 +77,6 @@ const SettingItem: FC<{
       <div className="max-w-[50%]">{control}</div>
       {additionalControl}
     </Stack>
-  )
-}
-
-const ConnectedBadge: FC = () => {
-  return (
-    <Badge className="bg-green-500">
-      <Link2 />
-      {t('connected')}
-    </Badge>
-  )
-}
-
-const DisconnectedBadge: FC = () => {
-  return (
-    <Badge className="bg-red-500">
-      <Link2 />
-      {t('disconnected')}
-    </Badge>
   )
 }
 
@@ -337,7 +319,7 @@ const SidebarButton: FC<{
             <DialogTitle>{label}</DialogTitle>
             <DialogDescription>{description}</DialogDescription>
           </DialogHeader>
-          <ScrollArea className="max-h-[70vh]">{children}</ScrollArea>
+          <ScrollArea className="max-h-[70vh] pr-3">{children}</ScrollArea>
         </DialogContent>
         <TooltipContent side="left">
           <Text>{label}</Text>

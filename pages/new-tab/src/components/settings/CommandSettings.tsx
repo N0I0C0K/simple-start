@@ -68,25 +68,23 @@ const CommandPluginSettingItem: FC<{
       <AccordionTrigger className="hover:no-underline py-3">
         <Stack direction={'column'} className="gap-1 flex-1 items-start">
           <Stack direction={'row'} center className="gap-2 w-full">
-            <config.IconClass className="size-5 text-muted-foreground" />
-            <Text className="font-medium" level="md">
-              {t(config.labelKey as never)}
-            </Text>
+            <config.IconClass className="size-8 text-muted-foreground" />
+            <Stack direction={'column'} className="gap-0.5 items-start">
+              <Text className="font-medium" level="md">
+                {t(config.labelKey as never)}
+              </Text>
+              <Text gray level="xs" className="">
+                {t(config.descriptionKey as never)}
+              </Text>
+            </Stack>
             <Space className="flex-1" />
-            <Stack
-              direction={'row'}
-              center
-              className="gap-2"
-              onClick={e => e.stopPropagation()}>
+            <Stack direction={'row'} center className="gap-2" onClick={e => e.stopPropagation()}>
               <Text level="s" gray>
                 {t('commandPluginActive')}
               </Text>
               <Switch checked={settings.active} onCheckedChange={val => onUpdate({ active: val })} />
             </Stack>
           </Stack>
-          <Text gray level="xs" className="text-left">
-            {t(config.descriptionKey as never)}
-          </Text>
         </Stack>
       </AccordionTrigger>
       <AccordionContent className="pb-3">

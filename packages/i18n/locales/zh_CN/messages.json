@@ -133,7 +133,7 @@
   },
   "secretKeyDescription": {
     "description": "Secret key setting description",
-    "message": "在同一组下使用相同的密钥。"
+    "message": "小信号将会在同一个密钥下进行通信，请确保您的密钥复杂且仅与信任的人共享。"
   },
   "enterSecretKey": {
     "description": "Secret key input placeholder",
