@@ -330,5 +330,13 @@
   "import": {
     "description": "Import button text",
     "message": "导入"
+  },
+  "commandPluginBookmarks": {
+    "description": "Bookmarks command plugin name",
+    "message": "收藏夹"
+  },
+  "commandPluginBookmarksDescription": {
+    "description": "Bookmarks command plugin description",
+    "message": "搜索浏览器收藏夹。"
   }
 }

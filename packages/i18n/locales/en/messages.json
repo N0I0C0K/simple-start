@@ -330,5 +330,13 @@
   "import": {
     "description": "Import button text",
     "message": "Import"
+  },
+  "commandPluginBookmarks": {
+    "description": "Bookmarks command plugin name",
+    "message": "Bookmarks"
+  },
+  "commandPluginBookmarksDescription": {
+    "description": "Bookmarks command plugin description",
+    "message": "Search browser bookmarks."
   }
 }
