@@ -2,8 +2,8 @@ import { cn } from '@/lib/utils'
 import { useStorage } from '@extension/shared'
 import { settingStorage, wallpaperHistoryStorage } from '@extension/storage'
 import type { WallpaperType } from '@extension/storage'
-import { Button, Stack, Text, Separator } from '@extension/ui'
-import { Check, Loader2, Image as ImageIcon, RefreshCw, History, Trash2, X, Upload } from 'lucide-react'
+import { Button, Stack, Text, Separator, Input } from '@extension/ui'
+import { Check, Loader2, Image as ImageIcon, RefreshCw, History, Trash2, X, Upload, Link } from 'lucide-react'
 import { type FC, useCallback, useEffect, useState, useRef } from 'react'
 import { t } from '@extension/i18n'
 
@@ -286,7 +286,7 @@ export const WallpaperSettings: FC = () => {
       setError(t('wallpaperInvalidUrlError'))
       return
     }
-    await settingStorage.update({ wallpaperUrl: url, wallpaperType: 'url' as WallpaperType })
+    await settingStorage.update({ wallpaperUrl: url, wallpaperType: 'url' })
     await wallpaperHistoryStorage.addToHistory(url, thumbnailUrl)
   }, [])
 
@@ -299,12 +299,18 @@ export const WallpaperSettings: FC = () => {
     // Validate file type
     if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
       setError(t('localWallpaperInvalidType'))
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
+      }
       return
     }
 
     // Validate file size
     if (file.size > MAX_FILE_SIZE) {
       setError(t('localWallpaperTooLarge'))
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
+      }
       return
     }
 
@@ -315,14 +321,25 @@ export const WallpaperSettings: FC = () => {
     reader.onload = async (e) => {
       const result = e.target?.result
       if (result && typeof result === 'string') {
-        await settingStorage.update({
-          localWallpaperData: result,
-          wallpaperType: 'local' as WallpaperType,
-        })
+        try {
+          await settingStorage.update({
+            localWallpaperData: result,
+            wallpaperType: 'local',
+          })
+        } catch (error) {
+          console.error('Failed to save wallpaper:', error)
+          setError(t('localWallpaperStorageError'))
+          if (fileInputRef.current) {
+            fileInputRef.current.value = ''
+          }
+        }
       }
     }
     reader.onerror = () => {
       setError(t('localWallpaperReadError'))
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
+      }
     }
     reader.readAsDataURL(file)
   }, [])
@@ -336,13 +353,13 @@ export const WallpaperSettings: FC = () => {
   }, [])
 
   const handleSelectLocalWallpaper = useCallback(async () => {
-    await settingStorage.update({ wallpaperType: 'local' as WallpaperType })
+    await settingStorage.update({ wallpaperType: 'local' })
   }, [])
 
   const handleClearLocalWallpaper = useCallback(async () => {
     await settingStorage.update({
       localWallpaperData: null,
-      wallpaperType: 'url' as WallpaperType,
+      wallpaperType: 'url',
     })
   }, [])
 
@@ -356,58 +373,22 @@ export const WallpaperSettings: FC = () => {
 
   return (
     <Stack direction={'column'} className={'gap-2 w-full'}>
-      {/* Local Wallpaper Section */}
-      <Stack direction={'row'} className="items-center justify-between">
-        <Stack direction={'row'} className="items-center gap-1">
-          <Upload className="size-4 text-muted-foreground" />
-          <Text gray level="s">
-            {t('localWallpaper')}
-          </Text>
-        </Stack>
-        <Stack direction={'row'} className="items-center gap-1">
-          {settings.localWallpaperData && (
-            <Button variant="ghost" size="sm" onClick={handleClearLocalWallpaper}>
-              <Trash2 className="size-4" />
-            </Button>
-          )}
-          <Button variant="outline" size="sm" onClick={handleUploadClick}>
-            <Upload className="size-4 mr-1" />
-            {t('uploadLocalWallpaper')}
-          </Button>
-        </Stack>
+      {/* Custom Wallpaper URL Section */}
+      <Stack direction={'row'} className="items-center gap-2">
+        <Link className="size-4 text-muted-foreground" />
+        <Text gray level="s">
+          {t('customWallpaperUrl')}
+        </Text>
       </Stack>
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept={ALLOWED_IMAGE_TYPES.join(',')}
-        className="hidden"
-        onChange={handleLocalFileSelect}
+      <Input
+        placeholder={t('enterWallpaperUrl')}
+        value={settings.wallpaperUrl || ''}
+        onChange={e => settingStorage.update({ wallpaperUrl: e.target.value })}
       />
-      {settings.localWallpaperData && (
-        <div
-          className={cn(
-            'relative cursor-pointer overflow-hidden rounded-lg border-2 transition-all hover:scale-[1.02] w-full max-w-[200px]',
-            settings.wallpaperType === 'local' ? 'border-primary ring-2 ring-primary/50' : 'border-transparent hover:border-muted-foreground/30',
-          )}
-          role="button"
-          tabIndex={0}
-          onClick={handleSelectLocalWallpaper}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              handleSelectLocalWallpaper()
-            }
-          }}>
-          <WallpaperImage src={settings.localWallpaperData} alt="Local wallpaper" />
-          {settings.wallpaperType === 'local' && (
-            <div className="absolute right-1 top-1 rounded-full bg-primary p-1">
-              <Check className="size-3 text-primary-foreground" />
-            </div>
-          )}
-        </div>
-      )}
 
       <Separator className="my-2" />
 
+      {/* Wallhaven Gallery Section */}
       <Stack direction={'row'} className="items-center justify-between">
         <Text gray level="s">
           {t('wallpaperSettingsDescription')}
@@ -484,6 +465,64 @@ export const WallpaperSettings: FC = () => {
             ))}
           </div>
         </>
+      )}
+
+      {/* Local Wallpaper Section */}
+      <Separator className="my-2" />
+      <Stack direction={'row'} className="items-center justify-between">
+        <Stack direction={'row'} className="items-center gap-1">
+          <Upload className="size-4 text-muted-foreground" />
+          <Text gray level="s">
+            {t('localWallpaper')}
+          </Text>
+        </Stack>
+        <Stack direction={'row'} className="items-center gap-1">
+          {settings.localWallpaperData && (
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={handleClearLocalWallpaper}
+              aria-label={t('clearLocalWallpaper')}
+            >
+              <Trash2 className="size-4" />
+            </Button>
+          )}
+          <Button variant="outline" size="sm" onClick={handleUploadClick}>
+            <Upload className="size-4 mr-1" />
+            {t('uploadLocalWallpaper')}
+          </Button>
+        </Stack>
+      </Stack>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept={ALLOWED_IMAGE_TYPES.join(',')}
+        className="hidden"
+        onChange={handleLocalFileSelect}
+      />
+      {settings.localWallpaperData && (
+        <div
+          className={cn(
+            'relative cursor-pointer overflow-hidden rounded-lg border-2 transition-all hover:scale-[1.02] w-full max-w-[200px]',
+            settings.wallpaperType === 'local' ? 'border-primary ring-2 ring-primary/50' : 'border-transparent hover:border-muted-foreground/30',
+          )}
+          role="button"
+          tabIndex={0}
+          aria-label={t('selectLocalWallpaper')}
+          onClick={handleSelectLocalWallpaper}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault()
+              handleSelectLocalWallpaper()
+            }
+          }}>
+          <WallpaperImage src={settings.localWallpaperData} alt="Local wallpaper" />
+          {settings.wallpaperType === 'local' && (
+            <div className="absolute right-1 top-1 rounded-full bg-primary p-1">
+              <Check className="size-3 text-primary-foreground" />
+            </div>
+          )}
+        </div>
       )}
     </Stack>
   )

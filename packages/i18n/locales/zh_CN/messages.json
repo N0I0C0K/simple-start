@@ -350,5 +350,21 @@
   "localWallpaperReadError": {
     "description": "Local wallpaper read error",
     "message": "读取图片文件失败，请重试。"
+  },
+  "localWallpaperStorageError": {
+    "description": "Local wallpaper storage error",
+    "message": "保存壁纸失败。可能超出存储配额。"
+  },
+  "clearLocalWallpaper": {
+    "description": "Clear local wallpaper button aria label",
+    "message": "清除本地壁纸"
+  },
+  "selectLocalWallpaper": {
+    "description": "Select local wallpaper button aria label",
+    "message": "选择本地壁纸"
+  },
+  "customWallpaperUrl": {
+    "description": "Custom wallpaper URL section title",
+    "message": "自定义壁纸 URL"
   }
 }

@@ -17,7 +17,7 @@ export interface ExportedData {
   version: string
   exportDate: string
   theme?: Theme
-  settings: SettingProps
+  settings: Omit<SettingProps, 'localWallpaperData'>
   quickUrls: QuickUrlItem[]
   commandSettings?: CommandSettingsData
 }
@@ -31,11 +31,15 @@ export async function exportAllData(): Promise<void> {
   const theme = await exampleThemeStorage.get()
   const commandSettings = await commandSettingsStorage.get()
   
+  // Exclude localWallpaperData from export to reduce file size
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { localWallpaperData, ...settingsToExport } = settings
+  
   const exportData: ExportedData = {
     version: '1.0.0',
     exportDate: new Date().toISOString(),
     theme,
-    settings,
+    settings: settingsToExport,
     quickUrls,
     commandSettings,
   }
@@ -59,8 +63,12 @@ export async function exportAllData(): Promise<void> {
 export async function importAllData(file: File): Promise<void> {
   const data = await parseAndValidateImportFile(file)
   
-  // Import settings
-  await settingStorage.set(data.settings)
+  // Import settings - preserve localWallpaperData from current settings
+  const currentSettings = await settingStorage.get()
+  await settingStorage.set({
+    ...data.settings,
+    localWallpaperData: currentSettings.localWallpaperData,
+  })
   
   // Import quick URLs
   await quickUrlItemsStorage.set(data.quickUrls)
