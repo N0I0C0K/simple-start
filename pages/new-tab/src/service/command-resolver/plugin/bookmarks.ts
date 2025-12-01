@@ -46,11 +46,13 @@ function searchBookmarks(
   )
 }
 
+const ACTIVE_KEY = 'b'
+
 export const bookmarksResolver: ICommandResolver = {
   name: 'bookmarks',
   settings: {
     active: true,
-    activeKey: 'b',
+    activeKey: ACTIVE_KEY,
     priority: 5,
     includeInGlobal: true,
   },
@@ -60,18 +62,14 @@ export const bookmarksResolver: ICommandResolver = {
   resolve: async params => {
     const tree = await chrome.bookmarks.getTree()
 
-    if (params.query.length === 0) {
-      // Return recent bookmarks when no query
-      const allBookmarks = flattenBookmarks(tree)
-      return allBookmarks.slice(0, 10).map(convertBookmarkToCommandResult)
-    }
-
     // Strip the activeKey prefix if present
     let query = params.query
-    if (query.startsWith('b ')) {
-      query = query.slice(2).trim()
+    const activeKeyPrefix = `${ACTIVE_KEY} `
+    if (query.startsWith(activeKeyPrefix)) {
+      query = query.slice(activeKeyPrefix.length).trim()
     }
 
+    // Return recent bookmarks when no query
     if (query.length === 0) {
       const allBookmarks = flattenBookmarks(tree)
       return allBookmarks.slice(0, 10).map(convertBookmarkToCommandResult)
