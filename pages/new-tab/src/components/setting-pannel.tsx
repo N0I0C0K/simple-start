@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils'
 import { closeMqttClientMessage, openMqttClientMessage, useStorage } from '@extension/shared'
 import { useDrinkWaterEventManager } from '@extension/shared/lib/state/events'
-import { mqttStateManager, settingStorage, exportAllData, importAllData } from '@extension/storage'
+import { mqttStateManager, settingStorage, exportAllData, importAllData, type TimeDisplaySize } from '@extension/storage'
 import {
   Button,
   Space,
@@ -24,6 +24,7 @@ import {
   DialogDescription,
   Badge,
   ScrollArea,
+  Slider,
 } from '@extension/ui'
 import type { LucideProps } from 'lucide-react'
 import {
@@ -41,6 +42,7 @@ import {
   Dot,
   Download,
   Upload,
+  Clock,
 } from 'lucide-react'
 import React, { type ElementType, type FC, type ReactElement, type ReactNode } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@extension/ui/lib/components/ui/tabs'
@@ -217,6 +219,18 @@ const CommonSettings: FC = () => {
     }
   }
 
+  const timeDisplaySizeValue = settings.timeDisplaySize === 'small' ? 0 : settings.timeDisplaySize === 'medium' ? 1 : 2
+  const timeDisplaySizeLabels: Record<TimeDisplaySize, string> = {
+    small: t('timeDisplaySizeSmall'),
+    medium: t('timeDisplaySizeMedium'),
+    large: t('timeDisplaySizeLarge'),
+  }
+
+  const handleTimeDisplaySizeChange = (value: number[]) => {
+    const sizes: TimeDisplaySize[] = ['small', 'medium', 'large']
+    settingStorage.update({ timeDisplaySize: sizes[value[0]] })
+  }
+
   return (
     <Stack direction={'column'} className={'gap-2 w-full'}>
       <Text gray level="s">
@@ -260,6 +274,25 @@ const CommonSettings: FC = () => {
             value={settings.wallpaperUrl || ''}
             onChange={e => settingStorage.update({ wallpaperUrl: e.target.value })}
           />
+        }
+      />
+      <SettingItem
+        IconClass={Clock}
+        title={t('timeDisplaySize')}
+        description={t('timeDisplaySizeDescription')}
+        control={
+          <Stack direction="column" className="w-32 gap-1">
+            <Slider
+              value={[timeDisplaySizeValue]}
+              onValueChange={handleTimeDisplaySizeChange}
+              min={0}
+              max={2}
+              step={1}
+            />
+            <Text level="xs" gray className="text-center">
+              {timeDisplaySizeLabels[settings.timeDisplaySize || 'large']}
+            </Text>
+          </Stack>
         }
       />
       <Separator className="my-2" />
