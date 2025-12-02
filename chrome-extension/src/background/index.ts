@@ -33,6 +33,9 @@ chrome.runtime.onSuspendCanceled.addListener(() => {
 let mqttProvider: MqttProvider | null = null
 let eventCenter: EventCenter | null = null
 let drinkWaterLaunchEvent: Event<events.DrinkWaterLaunchPayload> | null = null
+let heartbeatEvent: Event<events.HeartbeatPayload> | null = null
+let heartbeatInterval: ReturnType<typeof setInterval> | null = null
+let heartbeatStartTime: number | null = null
 
 async function onReceiveDrinkWaterConfirm(payload: events.DrinkWaterConfirmPayload) {
   await receiveDrinkWaterConfirmMessage.emit(payload)
@@ -78,14 +81,51 @@ async function onReceiveDrinkWaterLaunch(payload: events.DrinkWaterLaunchPayload
   await registerConfirmEvent(payload)
 }
 
+function startHeartbeat() {
+  // Clear any existing heartbeat
+  if (heartbeatInterval) {
+    clearInterval(heartbeatInterval)
+  }
+  
+  // Record the first heartbeat time
+  heartbeatStartTime = Date.now()
+  
+  // Start heartbeat every 10 seconds
+  heartbeatInterval = setInterval(async () => {
+    if (heartbeatEvent && mqttProvider?.client.connected && heartbeatStartTime !== null) {
+      const heartbeatPayload: events.HeartbeatPayload = {
+        timestamp: Date.now(),
+        sinceTimestamp: heartbeatStartTime
+      }
+      try {
+        await heartbeatEvent.emit(heartbeatPayload)
+        console.log('MQTT heartbeat sent:', heartbeatPayload.timestamp)
+      } catch (error) {
+        console.error('Failed to send MQTT heartbeat:', error)
+      }
+    }
+  }, 10 * 1000) // 10 seconds
+}
+
+function stopHeartbeat() {
+  if (heartbeatInterval) {
+    clearInterval(heartbeatInterval)
+    heartbeatInterval = null
+    heartbeatStartTime = null
+    console.log('MQTT heartbeat stopped')
+  }
+}
+
 async function _initMqttClientEvent(client: MqttClient) {
   client.on('close', async () => {
     console.log('MQTT connection closed')
+    stopHeartbeat()
     await mqttStateManager.setConnected(false)
   })
   client.on('connect', async () => {
     console.log('MQTT connected')
     await mqttStateManager.setConnected(true)
+    startHeartbeat()
   })
 }
 
@@ -105,11 +145,21 @@ async function setupMqtt() {
   await mqttStateManager.setConnected(true)
 
   eventCenter = await generateEventCenter(mqttProvider)
+  
+  // Register heartbeat event
+  heartbeatEvent = eventCenter.getOrRegisterEvent<events.HeartbeatPayload>({
+    eventName: 'heartbeat',
+    topic: `${settings.mqttSettings.secretKey}/heartbeat`,
+  })
+  
   drinkWaterLaunchEvent = eventCenter.getOrRegisterEvent<events.DrinkWaterLaunchPayload>({
     eventName: 'drink-water-launch',
     topic: `${settings.mqttSettings.secretKey}/drink-water/launch`,
   })
   drinkWaterLaunchEvent.registerReceiveCallback(onReceiveDrinkWaterLaunch)
+  
+  // Start heartbeat after events are registered
+  startHeartbeat()
 }
 
 // receiveDrinkWaterLaunchMessage.registerListener(async payload => {
@@ -129,6 +179,7 @@ sendDrinkWaterConfirmMessage.registerListener(async payload => {
 
 closeMqttClientMessage.registerListener(async () => {
   if (!mqttProvider) return
+  stopHeartbeat()
   await mqttProvider.client.endAsync()
 })
 
