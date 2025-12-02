@@ -366,5 +366,13 @@
   "customWallpaperUrl": {
     "description": "Custom wallpaper URL section title",
     "message": "Custom Wallpaper URL"
+  },
+  "wallhavenToplist": {
+    "description": "Wallhaven toplist mode button",
+    "message": "Toplist"
+  },
+  "wallhavenRandom": {
+    "description": "Wallhaven random mode button",
+    "message": "Random"
   }
 }

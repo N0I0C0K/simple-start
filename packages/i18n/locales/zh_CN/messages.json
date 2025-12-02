@@ -366,5 +366,13 @@
   "customWallpaperUrl": {
     "description": "Custom wallpaper URL section title",
     "message": "自定义壁纸 URL"
+  },
+  "wallhavenToplist": {
+    "description": "Wallhaven toplist mode button",
+    "message": "热门榜单"
+  },
+  "wallhavenRandom": {
+    "description": "Wallhaven random mode button",
+    "message": "随机壁纸"
   }
 }

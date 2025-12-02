@@ -20,6 +20,13 @@ export type MqttSetting = {
  */
 export type WallpaperType = 'url' | 'local'
 
+/**
+ * Represents the sorting mode for Wallhaven gallery.
+ * - 'toplist': Shows top-rated wallpapers from the past month
+ * - 'random': Shows random wallpapers
+ */
+export type WallhavenSortMode = 'toplist' | 'random'
+
 export type SettingProps = {
   useHistorySuggestion: boolean
   autoFocusCommandInput: boolean
@@ -32,6 +39,8 @@ export type SettingProps = {
    * Be aware of Chrome's storage.local quota limits (~10MB total).
    */
   localWallpaperData: string | null
+  /** The sorting mode for Wallhaven gallery (toplist or random) */
+  wallhavenSortMode: WallhavenSortMode
   mqttSettings: MqttSetting
 }
 
@@ -52,6 +61,7 @@ const defaultSetting: SettingProps = {
   wallpaperUrl: null,
   wallpaperType: 'url',
   localWallpaperData: null,
+  wallhavenSortMode: 'toplist',
   mqttSettings: {
     enabled: false,
     mqttBrokerUrl: DEFAULT_MQTT_BROKER_URL,

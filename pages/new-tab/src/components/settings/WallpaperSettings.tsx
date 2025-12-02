@@ -1,9 +1,9 @@
 import { cn } from '@/lib/utils'
 import { useStorage } from '@extension/shared'
 import { settingStorage, wallpaperHistoryStorage } from '@extension/storage'
-import type { WallpaperType } from '@extension/storage'
+import type { WallpaperType, WallhavenSortMode } from '@extension/storage'
 import { Button, Stack, Text, Separator, Input } from '@extension/ui'
-import { Check, Loader2, Image as ImageIcon, RefreshCw, History, Trash2, X, Upload, Link } from 'lucide-react'
+import { Check, Loader2, Image as ImageIcon, RefreshCw, History, Trash2, X, Upload, Link, Sparkles, TrendingUp } from 'lucide-react'
 import { type FC, useCallback, useEffect, useState, useRef } from 'react'
 import { t } from '@extension/i18n'
 
@@ -182,7 +182,7 @@ export const WallpaperSettings: FC = () => {
   const isLoadingRef = useRef(false)
   const lastRequestTimeRef = useRef(0)
 
-  const fetchWallpapers = useCallback(async (page: number, append = false) => {
+  const fetchWallpapers = useCallback(async (page: number, append = false, sortMode?: WallhavenSortMode) => {
     // Prevent duplicate requests using ref
     if (isLoadingRef.current) return
 
@@ -201,10 +201,19 @@ export const WallpaperSettings: FC = () => {
     setError(null)
 
     try {
-      // Wallhaven API for toplist wallpapers (SFW only with purity=100)
-      const response = await fetch(
-        `https://wallhaven.cc/api/v1/search?topRange=1M&sorting=toplist&purity=100&page=${page}`,
-      )
+      // Use the provided sortMode or fall back to settings
+      const currentSortMode = sortMode || settings.wallhavenSortMode
+      
+      // Wallhaven API - supports both toplist and random sorting (SFW only with purity=100)
+      let apiUrl = `https://wallhaven.cc/api/v1/search?purity=100&page=${page}`
+      
+      if (currentSortMode === 'toplist') {
+        apiUrl += '&topRange=1M&sorting=toplist'
+      } else {
+        apiUrl += '&sorting=random'
+      }
+      
+      const response = await fetch(apiUrl)
 
       // Handle rate limiting (429 status)
       if (response.status === 429) {
@@ -231,7 +240,7 @@ export const WallpaperSettings: FC = () => {
       setIsLoadingMore(false)
       isLoadingRef.current = false
     }
-  }, [])
+  }, [settings.wallhavenSortMode])
 
   useEffect(() => {
     fetchWallpapers(1)
@@ -270,6 +279,14 @@ export const WallpaperSettings: FC = () => {
     setCurrentPage(1)
     setHasMore(true)
     fetchWallpapers(1)
+  }, [fetchWallpapers])
+
+  const handleSortModeChange = useCallback(async (mode: WallhavenSortMode) => {
+    await settingStorage.update({ wallhavenSortMode: mode })
+    setCurrentPage(1)
+    setHasMore(true)
+    setWallpapers([])
+    fetchWallpapers(1, false, mode)
   }, [fetchWallpapers])
 
   const handleSelectWallpaper = useCallback(async (url: string, thumbnailUrl: string) => {
@@ -393,9 +410,27 @@ export const WallpaperSettings: FC = () => {
         <Text gray level="s">
           {t('wallpaperSettingsDescription')}
         </Text>
-        <Button variant="ghost" size="sm" onClick={handleRefresh} disabled={isLoading}>
-          <RefreshCw className={cn('size-4', isLoading && 'animate-spin')} />
-        </Button>
+        <Stack direction={'row'} className="items-center gap-1">
+          <Button
+            variant={settings.wallhavenSortMode === 'toplist' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => handleSortModeChange('toplist')}
+            disabled={isLoading}>
+            <TrendingUp className="size-4 mr-1" />
+            {t('wallhavenToplist')}
+          </Button>
+          <Button
+            variant={settings.wallhavenSortMode === 'random' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => handleSortModeChange('random')}
+            disabled={isLoading}>
+            <Sparkles className="size-4 mr-1" />
+            {t('wallhavenRandom')}
+          </Button>
+          <Button variant="ghost" size="sm" onClick={handleRefresh} disabled={isLoading}>
+            <RefreshCw className={cn('size-4', isLoading && 'animate-spin')} />
+          </Button>
+        </Stack>
       </Stack>
 
       {error && (
