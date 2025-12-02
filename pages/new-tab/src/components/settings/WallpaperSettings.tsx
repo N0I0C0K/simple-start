@@ -2,8 +2,8 @@ import { cn } from '@/lib/utils'
 import { useStorage } from '@extension/shared'
 import { settingStorage, wallpaperHistoryStorage } from '@extension/storage'
 import type { WallpaperType, WallhavenSortMode } from '@extension/storage'
-import { Button, Stack, Text, Separator, Input } from '@extension/ui'
-import { Check, Loader2, Image as ImageIcon, RefreshCw, History, Trash2, X, Upload, Link, Sparkles, TrendingUp } from 'lucide-react'
+import { Button, Stack, Text, Separator, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@extension/ui'
+import { Check, Loader2, Image as ImageIcon, RefreshCw, History, Trash2, X, Upload, Link } from 'lucide-react'
 import { type FC, useCallback, useEffect, useState, useRef } from 'react'
 import { t } from '@extension/i18n'
 
@@ -410,23 +410,19 @@ export const WallpaperSettings: FC = () => {
         <Text gray level="s">
           {t('wallpaperSettingsDescription')}
         </Text>
-        <Stack direction={'row'} className="items-center gap-1">
-          <Button
-            variant={settings.wallhavenSortMode === 'toplist' ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => handleSortModeChange('toplist')}
+        <Stack direction={'row'} className="items-center gap-2">
+          <Select
+            value={settings.wallhavenSortMode}
+            onValueChange={(value) => handleSortModeChange(value as WallhavenSortMode)}
             disabled={isLoading}>
-            <TrendingUp className="size-4 mr-1" />
-            {t('wallhavenToplist')}
-          </Button>
-          <Button
-            variant={settings.wallhavenSortMode === 'random' ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => handleSortModeChange('random')}
-            disabled={isLoading}>
-            <Sparkles className="size-4 mr-1" />
-            {t('wallhavenRandom')}
-          </Button>
+            <SelectTrigger className="w-[140px] h-9">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="toplist">{t('wallhavenToplist')}</SelectItem>
+              <SelectItem value="random">{t('wallhavenRandom')}</SelectItem>
+            </SelectContent>
+          </Select>
           <Button variant="ghost" size="sm" onClick={handleRefresh} disabled={isLoading}>
             <RefreshCw className={cn('size-4', isLoading && 'animate-spin')} />
           </Button>
