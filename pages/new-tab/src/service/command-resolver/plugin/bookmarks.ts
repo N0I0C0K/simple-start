@@ -66,10 +66,10 @@ export const bookmarksResolver: ICommandResolver = {
     let query = params.query
     const activeKeyPrefix = `${ACTIVE_KEY} `
     if (query.startsWith(activeKeyPrefix)) {
-      query = query.slice(activeKeyPrefix.length).trim()
+      query = query.slice(activeKeyPrefix.length)
     }
 
-    // Return recent bookmarks when no query
+    // Return first 10 bookmarks when no query (tree order, not chronological)
     if (query.length === 0) {
       const allBookmarks = flattenBookmarks(tree)
       return allBookmarks.slice(0, 10).map(convertBookmarkToCommandResult)
