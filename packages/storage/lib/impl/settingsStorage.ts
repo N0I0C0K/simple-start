@@ -13,11 +13,14 @@ export type MqttSetting = {
   username: string
 }
 
+export type TimeDisplaySize = 'small' | 'medium' | 'large'
+
 export type SettingProps = {
   useHistorySuggestion: boolean
   autoFocusCommandInput: boolean
   wallpaperUrl: string | null
   mqttSettings: MqttSetting
+  timeDisplaySize: TimeDisplaySize
 }
 
 type DeepPartial<T> = T extends object
@@ -41,6 +44,7 @@ const defaultSetting: SettingProps = {
     secretKey: 'ABCDEF',
     username: 'MomoBoss',
   },
+  timeDisplaySize: 'large',
 }
 
 const storage = createStorage<SettingProps>('settings-storage', defaultSetting, {

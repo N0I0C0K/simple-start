@@ -330,5 +330,25 @@
   "import": {
     "description": "Import button text",
     "message": "Import"
+  },
+  "timeDisplaySize": {
+    "description": "Time display size setting title",
+    "message": "Time Display Size"
+  },
+  "timeDisplaySizeDescription": {
+    "description": "Time display size setting description",
+    "message": "Adjust the size of the time display on new tab."
+  },
+  "timeDisplaySizeSmall": {
+    "description": "Small time display size option",
+    "message": "Small"
+  },
+  "timeDisplaySizeMedium": {
+    "description": "Medium time display size option",
+    "message": "Medium"
+  },
+  "timeDisplaySizeLarge": {
+    "description": "Large time display size option",
+    "message": "Large"
   }
 }

@@ -1,12 +1,12 @@
 import '@src/NewTab.css'
 import { Center, Input, Text, Heading, Stack } from '@extension/ui'
 import { Search, ArrowRight } from 'lucide-react'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState, useMemo } from 'react'
 import { CommandModule, SettingPanel, ScrollLinkCardPage } from './components'
 
 import '@/src/style/placeholder.css'
 import { HistoryArea } from './components/history-area'
-import { settingStorage, DEFAULT_WALLPAPER_URL } from '@extension/storage'
+import { settingStorage, DEFAULT_WALLPAPER_URL, type TimeDisplaySize } from '@extension/storage'
 import { useStorage } from '@extension/shared'
 import { DrinkWaterEventMountComponent } from './components/events'
 import { t } from '@extension/i18n'
@@ -69,6 +69,7 @@ function SearchGroup() {
 }
 
 const TimeDisplay = () => {
+  const settings = useStorage(settingStorage)
   const [time, setTime] = useState<Date>(new Date())
   const [refreshTrigger, setRefreshTrigger] = useState<number>(0)
   useEffect(() => {
@@ -85,22 +86,58 @@ const TimeDisplay = () => {
     }
   }, [refreshTrigger])
 
+  const sizeStyles = useMemo(() => {
+    const size: TimeDisplaySize = settings.timeDisplaySize || 'large'
+    const styles: Record<
+      TimeDisplaySize,
+      { timeClass: string; dotSize: number; dotSpacing: number; dateClass: string; containerPadding: string }
+    > = {
+      small: {
+        timeClass: 'text-5xl',
+        dotSize: 4,
+        dotSpacing: 8,
+        dateClass: 'text-sm',
+        containerPadding: 'px-3',
+      },
+      medium: {
+        timeClass: 'text-7xl',
+        dotSize: 5,
+        dotSpacing: 10,
+        dateClass: 'text-base',
+        containerPadding: 'px-4',
+      },
+      large: {
+        timeClass: 'text-9xl',
+        dotSize: 6,
+        dotSpacing: 12,
+        dateClass: 'text-lg',
+        containerPadding: 'px-5',
+      },
+    }
+    return styles[size]
+  }, [settings.timeDisplaySize])
+
   return (
-    <Stack direction={'column'} className="items-center">
-      <Stack className="items-end">
-        <Heading className="text-8xl select-none font-thin">{time?.getHours().toString().padStart(2, '0')}</Heading>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 6 24"
-          fill="none"
-          stroke="currentColor"
-          className="w-4 h-20 fill-current stroke-10 mx-1">
-          <circle cx="3" cy="17" r="1" />
-          <circle cx="3" cy="7" r="1" />
-        </svg>
-        <Heading className="text-8xl select-none font-thin">{time?.getMinutes().toString().padStart(2, '0')}</Heading>
+    <Stack direction={'column'} className="items-center gap-3">
+      <Stack className="items-center gap-0">
+        <Heading className={`${sizeStyles.timeClass} select-none font-light tracking-tight`}>
+          {time?.getHours().toString().padStart(2, '0')}
+        </Heading>
+        <div className={`flex flex-col items-center justify-center ${sizeStyles.containerPadding}`} style={{ gap: `${sizeStyles.dotSpacing}px` }}>
+          <div
+            className="rounded-full bg-current opacity-80"
+            style={{ width: `${sizeStyles.dotSize}px`, height: `${sizeStyles.dotSize}px` }}
+          />
+          <div
+            className="rounded-full bg-current opacity-80"
+            style={{ width: `${sizeStyles.dotSize}px`, height: `${sizeStyles.dotSize}px` }}
+          />
+        </div>
+        <Heading className={`${sizeStyles.timeClass} select-none font-light tracking-tight`}>
+          {time?.getMinutes().toString().padStart(2, '0')}
+        </Heading>
       </Stack>
-      <Text className="font-semibold select-none text-primary/80">
+      <Text className={`font-medium select-none text-primary/70 tracking-wide ${sizeStyles.dateClass}`}>
         {time.toLocaleDateString('en-US', { year: 'numeric', month: 'numeric', day: 'numeric', weekday: 'long' })}
       </Text>
     </Stack>

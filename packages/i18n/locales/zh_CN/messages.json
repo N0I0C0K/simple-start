@@ -330,5 +330,25 @@
   "import": {
     "description": "Import button text",
     "message": "导入"
+  },
+  "timeDisplaySize": {
+    "description": "Time display size setting title",
+    "message": "时间展示大小"
+  },
+  "timeDisplaySizeDescription": {
+    "description": "Time display size setting description",
+    "message": "调整新标签页中时间展示的大小。"
+  },
+  "timeDisplaySizeSmall": {
+    "description": "Small time display size option",
+    "message": "小"
+  },
+  "timeDisplaySizeMedium": {
+    "description": "Medium time display size option",
+    "message": "中"
+  },
+  "timeDisplaySizeLarge": {
+    "description": "Large time display size option",
+    "message": "大"
   }
 }
