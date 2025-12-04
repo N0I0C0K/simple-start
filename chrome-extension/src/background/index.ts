@@ -179,4 +179,31 @@ setLaunchPollingMessage.registerListener(async payload => {
   registerConfirmEvent(payload)
 })
 
+// Initialize reminders
+import {
+  initializeReminders,
+  handleReminderAlarm,
+  handleNotificationButtonClick,
+  handleNotificationClosed,
+  setupReminderStorageListener,
+} from './reminders'
+
+// Set up alarm listener
+chrome.alarms.onAlarm.addListener(alarm => {
+  handleReminderAlarm(alarm.name)
+})
+
+// Set up notification listeners
+chrome.notifications.onButtonClicked.addListener((notificationId, buttonIndex) => {
+  handleNotificationButtonClick(notificationId, buttonIndex)
+})
+
+chrome.notifications.onClosed.addListener(notificationId => {
+  handleNotificationClosed(notificationId)
+})
+
+// Initialize reminders and set up storage listener
+initializeReminders()
+setupReminderStorageListener()
+
 initializeMqttState()

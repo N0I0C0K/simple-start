@@ -330,5 +330,115 @@
   "import": {
     "description": "Import button text",
     "message": "导入"
+  },
+  "remindersTab": {
+    "description": "Reminders settings tab",
+    "message": "提醒事项"
+  },
+  "configureReminders": {
+    "description": "Reminders settings description",
+    "message": "配置定时重复提醒任务。"
+  },
+  "reminderName": {
+    "description": "Reminder name field",
+    "message": "名称"
+  },
+  "reminderNamePlaceholder": {
+    "description": "Reminder name input placeholder",
+    "message": "例如：喝水"
+  },
+  "reminderIcon": {
+    "description": "Reminder icon field",
+    "message": "图标"
+  },
+  "reminderIconPlaceholder": {
+    "description": "Reminder icon input placeholder",
+    "message": "例如：💧"
+  },
+  "reminderInterval": {
+    "description": "Reminder interval field",
+    "message": "间隔时间（分钟）"
+  },
+  "reminderIntervalPlaceholder": {
+    "description": "Reminder interval input placeholder",
+    "message": "例如：30"
+  },
+  "reminderStartTime": {
+    "description": "Reminder start time field",
+    "message": "起始时间"
+  },
+  "reminderStartTimeDescription": {
+    "description": "Reminder start time description",
+    "message": "首次提醒的时间。"
+  },
+  "addReminder": {
+    "description": "Add reminder button",
+    "message": "添加提醒"
+  },
+  "editReminder": {
+    "description": "Edit reminder button",
+    "message": "编辑提醒"
+  },
+  "deleteReminder": {
+    "description": "Delete reminder button",
+    "message": "删除"
+  },
+  "saveReminder": {
+    "description": "Save reminder button",
+    "message": "保存"
+  },
+  "cancel": {
+    "description": "Cancel button",
+    "message": "取消"
+  },
+  "noReminders": {
+    "description": "No reminders message",
+    "message": "还没有提醒事项，创建一个开始吧！"
+  },
+  "reminderComplete": {
+    "description": "Reminder complete button",
+    "message": "完成"
+  },
+  "reminderSkip": {
+    "description": "Reminder skip button",
+    "message": "跳过"
+  },
+  "reminderNotificationTitle": {
+    "description": "Reminder notification title",
+    "message": "提醒"
+  },
+  "reminderNotificationMessage": {
+    "description": "Reminder notification message",
+    "message": "该做：$NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "喝水"
+      }
+    }
+  },
+  "reminderEnabled": {
+    "description": "Reminder enabled status",
+    "message": "已启用"
+  },
+  "reminderDisabled": {
+    "description": "Reminder disabled status",
+    "message": "已禁用"
+  },
+  "reminderEvery": {
+    "description": "Reminder interval prefix",
+    "message": "每"
+  },
+  "reminderMinutes": {
+    "description": "Reminder minutes suffix",
+    "message": "分钟"
+  },
+  "reminderCreatedAt": {
+    "description": "Reminder created at label",
+    "message": "创建时间"
+  },
+  "startNow": {
+    "description": "Start now option",
+    "message": "立即开始"
   }
 }

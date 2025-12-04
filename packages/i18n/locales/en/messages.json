@@ -330,5 +330,115 @@
   "import": {
     "description": "Import button text",
     "message": "Import"
+  },
+  "remindersTab": {
+    "description": "Reminders settings tab",
+    "message": "Reminders"
+  },
+  "configureReminders": {
+    "description": "Reminders settings description",
+    "message": "Configure interval-based reminders for recurring tasks."
+  },
+  "reminderName": {
+    "description": "Reminder name field",
+    "message": "Name"
+  },
+  "reminderNamePlaceholder": {
+    "description": "Reminder name input placeholder",
+    "message": "e.g., Drink water"
+  },
+  "reminderIcon": {
+    "description": "Reminder icon field",
+    "message": "Icon"
+  },
+  "reminderIconPlaceholder": {
+    "description": "Reminder icon input placeholder",
+    "message": "e.g., 💧"
+  },
+  "reminderInterval": {
+    "description": "Reminder interval field",
+    "message": "Interval (minutes)"
+  },
+  "reminderIntervalPlaceholder": {
+    "description": "Reminder interval input placeholder",
+    "message": "e.g., 30"
+  },
+  "reminderStartTime": {
+    "description": "Reminder start time field",
+    "message": "Start Time"
+  },
+  "reminderStartTimeDescription": {
+    "description": "Reminder start time description",
+    "message": "When to start the first reminder."
+  },
+  "addReminder": {
+    "description": "Add reminder button",
+    "message": "Add Reminder"
+  },
+  "editReminder": {
+    "description": "Edit reminder button",
+    "message": "Edit Reminder"
+  },
+  "deleteReminder": {
+    "description": "Delete reminder button",
+    "message": "Delete"
+  },
+  "saveReminder": {
+    "description": "Save reminder button",
+    "message": "Save"
+  },
+  "cancel": {
+    "description": "Cancel button",
+    "message": "Cancel"
+  },
+  "noReminders": {
+    "description": "No reminders message",
+    "message": "No reminders yet. Create one to get started!"
+  },
+  "reminderComplete": {
+    "description": "Reminder complete button",
+    "message": "Complete"
+  },
+  "reminderSkip": {
+    "description": "Reminder skip button",
+    "message": "Skip"
+  },
+  "reminderNotificationTitle": {
+    "description": "Reminder notification title",
+    "message": "Reminder"
+  },
+  "reminderNotificationMessage": {
+    "description": "Reminder notification message",
+    "message": "Time for: $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Drink water"
+      }
+    }
+  },
+  "reminderEnabled": {
+    "description": "Reminder enabled status",
+    "message": "Enabled"
+  },
+  "reminderDisabled": {
+    "description": "Reminder disabled status",
+    "message": "Disabled"
+  },
+  "reminderEvery": {
+    "description": "Reminder interval prefix",
+    "message": "Every"
+  },
+  "reminderMinutes": {
+    "description": "Reminder minutes suffix",
+    "message": "minutes"
+  },
+  "reminderCreatedAt": {
+    "description": "Reminder created at label",
+    "message": "Created"
+  },
+  "startNow": {
+    "description": "Start now option",
+    "message": "Start Now"
   }
 }
