@@ -10,7 +10,7 @@ import {
   Separator,
   Badge,
 } from '@extension/ui'
-import { Bell, Plus, Trash2, Clock } from 'lucide-react'
+import { Bell, Plus, Trash2 } from 'lucide-react'
 import React, { useState, type FC } from 'react'
 import { t } from '@extension/i18n'
 import { nanoid } from 'nanoid'

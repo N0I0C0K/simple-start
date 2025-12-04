@@ -81,6 +81,14 @@ export let setLaunchPollingMessage: MessageHandler<events.DrinkWaterLaunchPayloa
 export let closeMqttClientMessage: MessageHandler<void>
 export let openMqttClientMessage: MessageHandler<void>
 
+export interface ReminderNotificationPayload {
+  id: string
+  name: string
+  icon: string
+}
+
+export let reminderNotificationMessage: MessageHandler<ReminderNotificationPayload>
+
 if (globalThis.chrome) {
   messageCenter = generateMessageCenter()
   receiveDrinkWaterLaunchMessage = messageCenter.registerMessageHandler<events.DrinkWaterLaunchPayload>('drink-water-launch')
@@ -89,5 +97,6 @@ if (globalThis.chrome) {
   setLaunchPollingMessage = messageCenter.registerMessageHandler<events.DrinkWaterLaunchPayload | null>('set-launch-polling')
   closeMqttClientMessage = messageCenter.registerMessageHandler<void>('close-mqtt-client')
   openMqttClientMessage = messageCenter.registerMessageHandler<void>('open-mqtt-client')
+  reminderNotificationMessage = messageCenter.registerMessageHandler<ReminderNotificationPayload>('reminder-notification')
 }
 

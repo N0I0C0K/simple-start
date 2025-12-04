@@ -84,6 +84,22 @@ export async function handleReminderAlarm(alarmName: string) {
 
   console.log('Reminder alarm triggered:', reminder.name)
 
+  // Update last triggered time immediately when alarm fires
+  await reminderItemsStorage.putById(reminderId, {
+    ...reminder,
+    lastTriggeredAt: new Date().toISOString(),
+  })
+
+  // Send message to frontend for toast notification
+  await chrome.runtime.sendMessage({
+    name: 'reminder-notification',
+    payload: {
+      id: reminder.id,
+      name: reminder.name,
+      icon: reminder.icon,
+    },
+  })
+
   // Show notification
   await showReminderNotification(reminder)
 }
@@ -135,19 +151,9 @@ export async function handleNotificationButtonClick(notificationId: string, butt
   if (buttonIndex === 0) {
     // Complete button clicked
     console.log('Reminder completed:', reminder.name)
-    // Update last triggered time
-    await reminderItemsStorage.putById(reminderId, {
-      ...reminder,
-      lastTriggeredAt: new Date().toISOString(),
-    })
   } else if (buttonIndex === 1) {
     // Skip button clicked
     console.log('Reminder skipped:', reminder.name)
-    // Update last triggered time
-    await reminderItemsStorage.putById(reminderId, {
-      ...reminder,
-      lastTriggeredAt: new Date().toISOString(),
-    })
   }
 
   // Close the notification
