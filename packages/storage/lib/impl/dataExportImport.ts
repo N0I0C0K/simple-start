@@ -63,14 +63,23 @@ export async function exportAllData(): Promise<void> {
 export async function importAllData(file: File): Promise<void> {
   const data = await parseAndValidateImportFile(file)
   
-  // Import settings - preserve localWallpaperData from current settings
+  /**
+   * We intentionally preserve localWallpaperData from the current settings rather than importing it.
+   * This is because local wallpaper data is stored only on the current device and is not portable across exports/imports.
+   * If the imported settings request 'local' wallpaperType but no local data exists, we switch to 'url' mode.
+   */
   const currentSettings = await settingStorage.get()
   
   // Preserve local wallpaper data and ensure wallpaperType is consistent
   const hasLocalWallpaperData = !!currentSettings.localWallpaperData
   
+  // Handle wallpaperType with validation and fallback for backward compatibility
+  let wallpaperType = data.settings.wallpaperType ?? 'url'
+  // Validate wallpaperType: must be 'url' or 'local'
+  if (wallpaperType !== 'url' && wallpaperType !== 'local') {
+    wallpaperType = 'url'
+  }
   // If imported settings want local wallpaper but we don't have local data, switch to URL mode
-  let wallpaperType = data.settings.wallpaperType
   if (wallpaperType === 'local' && !hasLocalWallpaperData) {
     wallpaperType = 'url'
   }
@@ -79,6 +88,8 @@ export async function importAllData(file: File): Promise<void> {
     ...data.settings,
     wallpaperType,
     localWallpaperData: currentSettings.localWallpaperData,
+    // Preserve user's preferred Wallhaven sort mode if not explicitly set in import
+    wallhavenSortMode: data.settings.wallhavenSortMode ?? currentSettings.wallhavenSortMode ?? 'toplist',
   })
   
   // Import quick URLs

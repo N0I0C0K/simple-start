@@ -205,7 +205,8 @@ export const WallpaperSettings: FC = () => {
     setError(null)
 
     try {
-      // Always use the current sort mode from ref
+      // Always use the current sort mode from ref to avoid stale closures in this callback.
+      // Accessing sortMode directly from state could result in outdated values if the callback is reused.
       const currentSortMode = sortModeRef.current
       
       // Wallhaven API - supports both toplist and random sorting (SFW only with purity=100)
@@ -315,6 +316,12 @@ export const WallpaperSettings: FC = () => {
 
   const fileInputRef = useRef<HTMLInputElement>(null)
 
+  const clearFileInput = useCallback(() => {
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
+  }, [])
+
   const handleLocalFileSelect = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (!file) return
@@ -322,18 +329,14 @@ export const WallpaperSettings: FC = () => {
     // Validate file type
     if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
       setError(t('localWallpaperInvalidType'))
-      if (fileInputRef.current) {
-        fileInputRef.current.value = ''
-      }
+      clearFileInput()
       return
     }
 
     // Validate file size
     if (file.size > MAX_FILE_SIZE) {
       setError(t('localWallpaperTooLarge'))
-      if (fileInputRef.current) {
-        fileInputRef.current.value = ''
-      }
+      clearFileInput()
       return
     }
 
@@ -353,21 +356,25 @@ export const WallpaperSettings: FC = () => {
           setError(null)
         } catch (error) {
           console.error('Failed to save wallpaper:', error)
-          setError(t('localWallpaperStorageError'))
-          if (fileInputRef.current) {
-            fileInputRef.current.value = ''
-          }
+          // Check for quota exceeded error for more specific messaging
+          const isQuotaError =
+            error &&
+            typeof error === 'object' &&
+            ('name' in error && error.name === 'QuotaExceededError') ||
+            ('code' in error && error.code === 22) || // DOMException for quota
+            ('message' in error && typeof error.message === 'string' && 
+              (error.message.toLowerCase().includes('quota') || error.message.toLowerCase().includes('exceeded')))
+          setError(isQuotaError ? t('localWallpaperQuotaExceeded') : t('localWallpaperStorageError'))
+          clearFileInput()
         }
       }
     }
     reader.onerror = () => {
       setError(t('localWallpaperReadError'))
-      if (fileInputRef.current) {
-        fileInputRef.current.value = ''
-      }
+      clearFileInput()
     }
     reader.readAsDataURL(file)
-  }, [])
+  }, [clearFileInput])
 
   const handleUploadClick = useCallback(() => {
     // Reset input value to allow selecting the same file again
@@ -408,7 +415,15 @@ export const WallpaperSettings: FC = () => {
       <Input
         placeholder={t('enterWallpaperUrl')}
         value={settings.wallpaperUrl || ''}
-        onChange={e => settingStorage.update({ wallpaperUrl: e.target.value, wallpaperType: 'url' })}
+        onChange={e => {
+          const newUrl = e.target.value
+          // Only set wallpaperType to 'url' if the URL is non-empty and we're currently in local mode
+          if (newUrl && settings.wallpaperType === 'local') {
+            settingStorage.update({ wallpaperUrl: newUrl, wallpaperType: 'url' })
+          } else {
+            settingStorage.update({ wallpaperUrl: newUrl })
+          }
+        }}
       />
 
       <Separator className="my-2" />

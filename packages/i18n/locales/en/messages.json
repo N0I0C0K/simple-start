@@ -353,7 +353,11 @@
   },
   "localWallpaperStorageError": {
     "description": "Local wallpaper storage error",
-    "message": "Failed to save wallpaper. Storage quota may be exceeded."
+    "message": "Failed to save wallpaper. Please try again."
+  },
+  "localWallpaperQuotaExceeded": {
+    "description": "Local wallpaper storage quota exceeded error",
+    "message": "Storage quota exceeded. Please try a smaller image or free up space."
   },
   "clearLocalWallpaper": {
     "description": "Clear local wallpaper button aria label",
