@@ -9,6 +9,13 @@ import {
   Input,
   Separator,
   Badge,
+  toast,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogTrigger,
 } from '@extension/ui'
 import { Bell, Plus, Trash2 } from 'lucide-react'
 import React, { useState, type FC } from 'react'
@@ -21,6 +28,13 @@ const ReminderItemCard: FC<{
   onDelete: (id: string) => void
   onToggle: (id: string, enabled: boolean) => void
 }> = ({ reminder, onEdit, onDelete, onToggle }) => {
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+
+  const handleDelete = async () => {
+    await onDelete(reminder.id)
+    setDeleteDialogOpen(false)
+  }
+
   return (
     <Stack
       direction={'row'}
@@ -50,9 +64,27 @@ const ReminderItemCard: FC<{
       <Button size={'sm'} variant={'ghost'} onClick={() => onEdit(reminder)}>
         {t('editReminder')}
       </Button>
-      <Button size={'sm'} variant={'ghost'} onClick={() => onDelete(reminder.id)}>
-        <Trash2 className="size-4 text-red-500" />
-      </Button>
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogTrigger asChild>
+          <Button size={'sm'} variant={'ghost'}>
+            <Trash2 className="size-4 text-red-500" />
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t('deleteReminder')}</DialogTitle>
+            <DialogDescription>Are you sure you want to delete this reminder? This action cannot be undone.</DialogDescription>
+          </DialogHeader>
+          <Stack direction={'row'} className="gap-2 justify-end">
+            <Button variant={'outline'} onClick={() => setDeleteDialogOpen(false)}>
+              {t('cancel')}
+            </Button>
+            <Button variant={'destructive'} onClick={handleDelete}>
+              {t('deleteReminder')}
+            </Button>
+          </Stack>
+        </DialogContent>
+      </Dialog>
     </Stack>
   )
 }
@@ -71,7 +103,9 @@ const ReminderForm: FC<{
     e.preventDefault()
     const interval = parseInt(intervalMinutes, 10)
     if (!name || !interval || interval < 1) {
-      alert('Please fill in all fields with valid values.')
+      toast.error('Validation Error', {
+        description: 'Please fill in all fields with valid values.',
+      })
       return
     }
 
@@ -171,9 +205,8 @@ export const ReminderSettings: FC = () => {
   }
 
   const handleDeleteReminder = async (id: string) => {
-    if (confirm('Are you sure you want to delete this reminder?')) {
-      await reminderItemsStorage.removeById(id)
-    }
+    await reminderItemsStorage.removeById(id)
+    toast.success('Reminder deleted')
   }
 
   const handleToggleReminder = async (id: string, enabled: boolean) => {

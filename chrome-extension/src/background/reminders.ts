@@ -3,6 +3,9 @@ import type { ReminderItem } from '@extension/storage'
 
 const ALARM_PREFIX = 'reminder_'
 
+// Helper function to get i18n message (background scripts can't use @extension/i18n directly)
+const t = (key: string): string => chrome.i18n.getMessage(key)
+
 // Initialize alarms for all enabled reminders
 export async function initializeReminders() {
   const reminders = await reminderItemsStorage.get()
@@ -111,9 +114,9 @@ async function showReminderNotification(reminder: ReminderItem) {
   await chrome.notifications.create(notificationId, {
     type: 'basic',
     iconUrl: chrome.runtime.getURL('icon-128.png'),
-    title: reminder.icon ? `${reminder.icon} Reminder` : 'Reminder',
+    title: reminder.icon ? `${reminder.icon} ${t('reminderNotificationTitle')}` : t('reminderNotificationTitle'),
     message: reminder.name,
-    buttons: [{ title: 'Complete' }, { title: 'Skip' }],
+    buttons: [{ title: t('reminderComplete') }, { title: t('reminderSkip') }],
     requireInteraction: true,
     priority: 2,
   })
