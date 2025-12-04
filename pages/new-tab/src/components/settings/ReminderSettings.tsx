@@ -73,7 +73,7 @@ const ReminderItemCard: FC<{
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{t('deleteReminder')}</DialogTitle>
-            <DialogDescription>Are you sure you want to delete this reminder? This action cannot be undone.</DialogDescription>
+            <DialogDescription>{t('deleteReminderConfirmation')}</DialogDescription>
           </DialogHeader>
           <Stack direction={'row'} className="gap-2 justify-end">
             <Button variant={'outline'} onClick={() => setDeleteDialogOpen(false)}>
@@ -103,8 +103,8 @@ const ReminderForm: FC<{
     e.preventDefault()
     const interval = parseInt(intervalMinutes, 10)
     if (!name || !interval || interval < 1) {
-      toast.error('Validation Error', {
-        description: 'Please fill in all fields with valid values.',
+      toast.error(t('validationError'), {
+        description: t('validationErrorMessage'),
       })
       return
     }
@@ -206,7 +206,7 @@ export const ReminderSettings: FC = () => {
 
   const handleDeleteReminder = async (id: string) => {
     await reminderItemsStorage.removeById(id)
-    toast.success('Reminder deleted')
+    toast.success(t('reminderDeletedSuccess'))
   }
 
   const handleToggleReminder = async (id: string, enabled: boolean) => {

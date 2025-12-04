@@ -440,5 +440,25 @@
   "startNow": {
     "description": "Start now option",
     "message": "立即开始"
+  },
+  "deleteReminderConfirmation": {
+    "description": "Delete reminder confirmation message",
+    "message": "确定要删除此提醒吗？此操作无法撤销。"
+  },
+  "validationError": {
+    "description": "Validation error title",
+    "message": "验证错误"
+  },
+  "validationErrorMessage": {
+    "description": "Validation error message",
+    "message": "请填写所有字段并使用有效值。"
+  },
+  "reminderDeletedSuccess": {
+    "description": "Reminder deleted success message",
+    "message": "提醒已删除"
+  },
+  "reminderNotification": {
+    "description": "Reminder notification description",
+    "message": "提醒通知"
   }
 }

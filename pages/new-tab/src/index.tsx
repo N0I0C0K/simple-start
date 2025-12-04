@@ -26,8 +26,9 @@ exampleThemeStorage.subscribe(() => {
 
 // Listen for reminder notifications
 reminderNotificationMessage.registerListener(payload => {
+  const t = (key: string) => chrome.i18n.getMessage(key)
   toast(`${payload.icon} ${payload.name}`, {
-    description: 'Reminder notification',
+    description: t('reminderNotification'),
     duration: 5000,
   })
 })

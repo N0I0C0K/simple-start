@@ -440,5 +440,25 @@
   "startNow": {
     "description": "Start now option",
     "message": "Start Now"
+  },
+  "deleteReminderConfirmation": {
+    "description": "Delete reminder confirmation message",
+    "message": "Are you sure you want to delete this reminder? This action cannot be undone."
+  },
+  "validationError": {
+    "description": "Validation error title",
+    "message": "Validation Error"
+  },
+  "validationErrorMessage": {
+    "description": "Validation error message",
+    "message": "Please fill in all fields with valid values."
+  },
+  "reminderDeletedSuccess": {
+    "description": "Reminder deleted success message",
+    "message": "Reminder deleted"
+  },
+  "reminderNotification": {
+    "description": "Reminder notification description",
+    "message": "Reminder notification"
   }
 }
