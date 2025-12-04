@@ -65,8 +65,19 @@ export async function importAllData(file: File): Promise<void> {
   
   // Import settings - preserve localWallpaperData from current settings
   const currentSettings = await settingStorage.get()
+  
+  // Preserve local wallpaper data and ensure wallpaperType is consistent
+  const hasLocalWallpaperData = !!currentSettings.localWallpaperData
+  
+  // If imported settings want local wallpaper but we don't have local data, switch to URL mode
+  let wallpaperType = data.settings.wallpaperType
+  if (wallpaperType === 'local' && !hasLocalWallpaperData) {
+    wallpaperType = 'url'
+  }
+  
   await settingStorage.set({
     ...data.settings,
+    wallpaperType,
     localWallpaperData: currentSettings.localWallpaperData,
   })
   

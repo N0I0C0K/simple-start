@@ -181,8 +181,12 @@ export const WallpaperSettings: FC = () => {
   // Use refs to track loading state and last request time to prevent race conditions
   const isLoadingRef = useRef(false)
   const lastRequestTimeRef = useRef(0)
+  
+  // Use ref to track current sort mode to avoid stale closures
+  const sortModeRef = useRef(settings.wallhavenSortMode)
+  sortModeRef.current = settings.wallhavenSortMode
 
-  const fetchWallpapers = useCallback(async (page: number, append = false, sortMode?: WallhavenSortMode) => {
+  const fetchWallpapers = useCallback(async (page: number, append = false) => {
     // Prevent duplicate requests using ref
     if (isLoadingRef.current) return
 
@@ -201,8 +205,8 @@ export const WallpaperSettings: FC = () => {
     setError(null)
 
     try {
-      // Use the provided sortMode or fall back to settings
-      const currentSortMode = sortMode || settings.wallhavenSortMode
+      // Always use the current sort mode from ref
+      const currentSortMode = sortModeRef.current
       
       // Wallhaven API - supports both toplist and random sorting (SFW only with purity=100)
       let apiUrl = `https://wallhaven.cc/api/v1/search?purity=100&page=${page}`
@@ -240,7 +244,7 @@ export const WallpaperSettings: FC = () => {
       setIsLoadingMore(false)
       isLoadingRef.current = false
     }
-  }, [settings.wallhavenSortMode])
+  }, [])
 
   useEffect(() => {
     fetchWallpapers(1)
@@ -286,7 +290,9 @@ export const WallpaperSettings: FC = () => {
     setCurrentPage(1)
     setHasMore(true)
     setWallpapers([])
-    fetchWallpapers(1, false, mode)
+    // Update the ref immediately before fetching
+    sortModeRef.current = mode
+    fetchWallpapers(1, false)
   }, [fetchWallpapers])
 
   const handleSelectWallpaper = useCallback(async (url: string, thumbnailUrl: string) => {
@@ -343,6 +349,8 @@ export const WallpaperSettings: FC = () => {
             localWallpaperData: result,
             wallpaperType: 'local',
           })
+          // Clear error after successful upload
+          setError(null)
         } catch (error) {
           console.error('Failed to save wallpaper:', error)
           setError(t('localWallpaperStorageError'))
@@ -400,7 +408,7 @@ export const WallpaperSettings: FC = () => {
       <Input
         placeholder={t('enterWallpaperUrl')}
         value={settings.wallpaperUrl || ''}
-        onChange={e => settingStorage.update({ wallpaperUrl: e.target.value })}
+        onChange={e => settingStorage.update({ wallpaperUrl: e.target.value, wallpaperType: 'url' })}
       />
 
       <Separator className="my-2" />
