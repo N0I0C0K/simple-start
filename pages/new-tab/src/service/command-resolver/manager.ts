@@ -6,6 +6,7 @@ import {
   webSearchResolver,
   calculatorResolver,
   numberToRmbResolver,
+  bookmarksResolver,
 } from './plugin'
 import { WarpDefaultObject } from '@extension/shared'
 import { commandSettingsStorage, defaultCommandSettings } from '@extension/storage'
@@ -147,3 +148,4 @@ commandResolverService.register(tabSearchResolver)
 commandResolverService.register(webSearchResolver)
 commandResolverService.register(calculatorResolver)
 commandResolverService.register(numberToRmbResolver)
+commandResolverService.register(bookmarksResolver)
