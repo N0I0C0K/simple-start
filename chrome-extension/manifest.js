@@ -28,7 +28,7 @@ const manifest = deepmerge(
     version: packageJson.version,
     description: '__MSG_extensionDescription__',
     host_permissions: ['<all_urls>'],
-    permissions: ['storage', 'scripting', 'tabs', 'notifications', 'search', 'history', 'favicon', 'bookmarks'],
+    permissions: ['storage', 'scripting', 'tabs', 'notifications', 'search', 'history', 'favicon', 'alarms', 'bookmarks'],
     options_page: 'options/index.html',
     background: {
       service_worker: 'background.iife.js',

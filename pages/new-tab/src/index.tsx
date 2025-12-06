@@ -2,8 +2,9 @@ import '@src/index.css'
 import { createRoot } from 'react-dom/client'
 //import '@extension/ui/lib/global.css'
 import { exampleThemeStorage } from '@extension/storage'
-import { ThemeProvider, Toaster, useTheme } from '@extension/ui'
+import { ThemeProvider, Toaster, useTheme, toast } from '@extension/ui'
 import { GlobalDialog } from '@src/components/global-dialog'
+import { reminderNotificationMessage } from '@extension/shared'
 import NewTab from './NewTab'
 function App() {
   const theme = useTheme()
@@ -20,6 +21,15 @@ function App() {
 exampleThemeStorage.subscribe(() => {
   exampleThemeStorage.get().then(val => {
     localStorage.setItem('theme-storage-key-local', val)
+  })
+})
+
+// Listen for reminder notifications
+reminderNotificationMessage.registerListener(payload => {
+  const t = (key: string) => chrome.i18n.getMessage(key)
+  toast(`${payload.icon} ${payload.name}`, {
+    description: t('reminderNotification'),
+    duration: 5000,
   })
 })
 

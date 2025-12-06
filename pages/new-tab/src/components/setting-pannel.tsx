@@ -46,6 +46,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@extension/ui/lib/comp
 import { t } from '@extension/i18n'
 import { WallpaperSettings } from './settings/WallpaperSettings'
 import { CommandSettings } from './settings/CommandSettings'
+import { ReminderSettings } from './settings/ReminderSettings'
 
 const SettingItem: FC<{
   className?: string
@@ -266,6 +267,7 @@ const SettingTabs: FC = () => {
         <TabsTrigger value="common-settings">{t('commonTab')}</TabsTrigger>
         <TabsTrigger value="wallpaper-settings">{t('wallpaperTab')}</TabsTrigger>
         <TabsTrigger value="command-settings">{t('commandTab')}</TabsTrigger>
+        <TabsTrigger value="reminders-settings">{t('remindersTab')}</TabsTrigger>
         <TabsTrigger value="mqtt-settings">{t('serverTab')}</TabsTrigger>
       </TabsList>
       <TabsContent value="common-settings">
@@ -276,6 +278,9 @@ const SettingTabs: FC = () => {
       </TabsContent>
       <TabsContent value="command-settings">
         <CommandSettings />
+      </TabsContent>
+      <TabsContent value="reminders-settings">
+        <ReminderSettings />
       </TabsContent>
       <TabsContent value="mqtt-settings">
         <MqttSettings />
