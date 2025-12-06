@@ -460,5 +460,60 @@
   "reminderNotification": {
     "description": "Reminder notification description",
     "message": "Reminder notification"
+  "commandPluginBookmarks": {
+    "description": "Bookmarks command plugin name",
+    "message": "Bookmarks"
+  },
+  "commandPluginBookmarksDescription": {
+    "description": "Bookmarks command plugin description",
+    "message": "Search browser bookmarks."
+  },
+  "localWallpaper": {
+    "description": "Local wallpaper section title",
+    "message": "Local Wallpaper"
+  },
+  "uploadLocalWallpaper": {
+    "description": "Upload local wallpaper button",
+    "message": "Upload"
+  },
+  "localWallpaperInvalidType": {
+    "description": "Local wallpaper invalid file type error",
+    "message": "Invalid file type. Please select a JPEG, PNG, GIF, or WebP image."
+  },
+  "localWallpaperTooLarge": {
+    "description": "Local wallpaper file too large error",
+    "message": "File too large. Please select an image under 5MB."
+  },
+  "localWallpaperReadError": {
+    "description": "Local wallpaper read error",
+    "message": "Failed to read the image file. Please try again."
+  },
+  "localWallpaperStorageError": {
+    "description": "Local wallpaper storage error",
+    "message": "Failed to save wallpaper. Please try again."
+  },
+  "localWallpaperQuotaExceeded": {
+    "description": "Local wallpaper storage quota exceeded error",
+    "message": "Storage quota exceeded. Please try a smaller image or free up space."
+  },
+  "clearLocalWallpaper": {
+    "description": "Clear local wallpaper button aria label",
+    "message": "Clear local wallpaper"
+  },
+  "selectLocalWallpaper": {
+    "description": "Select local wallpaper button aria label",
+    "message": "Select local wallpaper"
+  },
+  "customWallpaperUrl": {
+    "description": "Custom wallpaper URL section title",
+    "message": "Custom Wallpaper URL"
+  },
+  "wallhavenToplist": {
+    "description": "Wallhaven toplist mode button",
+    "message": "Toplist"
+  },
+  "wallhavenRandom": {
+    "description": "Wallhaven random mode button",
+    "message": "Random"
   }
 }

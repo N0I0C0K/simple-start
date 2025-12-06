@@ -30,7 +30,6 @@ import {
   AlignJustify,
   SunMoon,
   History,
-  HardDriveUpload,
   Pointer,
   CupSoda,
   Link2,
@@ -230,18 +229,6 @@ const CommonSettings: FC = () => {
           <Switch
             checked={settings.autoFocusCommandInput}
             onCheckedChange={val => settingStorage.update({ autoFocusCommandInput: val })}
-          />
-        }
-      />
-      <SettingItem
-        IconClass={HardDriveUpload}
-        title={t('wallpaperUrl')}
-        description={t('wallpaperUrlDescription')}
-        control={
-          <Input
-            placeholder={t('enterWallpaperUrl')}
-            value={settings.wallpaperUrl || ''}
-            onChange={e => settingStorage.update({ wallpaperUrl: e.target.value })}
           />
         }
       />

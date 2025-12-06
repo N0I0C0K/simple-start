@@ -109,10 +109,17 @@ const TimeDisplay = () => {
 
 const NewTab = () => {
   const settings = useStorage(settingStorage)
-  const [wallpaperUrl, setWallpaperUrl] = useState<string>(settings.wallpaperUrl ?? DEFAULT_WALLPAPER_URL)
+  const [wallpaperSrc, setWallpaperSrc] = useState<string>(DEFAULT_WALLPAPER_URL)
+
   useEffect(() => {
-    setWallpaperUrl(settings.wallpaperUrl ?? DEFAULT_WALLPAPER_URL)
-  }, [settings.wallpaperUrl])
+    // Update wallpaper source when settings change
+    if (settings.wallpaperType === 'local' && settings.localWallpaperData) {
+      setWallpaperSrc(settings.localWallpaperData)
+    } else {
+      setWallpaperSrc(settings.wallpaperUrl ?? DEFAULT_WALLPAPER_URL)
+    }
+  }, [settings.wallpaperType, settings.localWallpaperData, settings.wallpaperUrl])
+
   return (
     <>
       <div className={'flex h-screen w-screen max-w-full flex-col justify-center gap-4 relative overflow-hidden'}>
@@ -147,11 +154,14 @@ const NewTab = () => {
       <img
         className="x-bg-img h-screen w-screen fixed top-0 left-0 -z-10 scale-105 brightness-90 dark:brightness-75
           object-cover select-none"
-        src={wallpaperUrl}
+        src={wallpaperSrc}
         alt=""
-        onError={e => {
-          console.log('back ground err')
-          if (wallpaperUrl !== DEFAULT_WALLPAPER_URL) setWallpaperUrl(DEFAULT_WALLPAPER_URL)
+        onError={() => {
+          console.log('background image error')
+          // Only fallback to default if not already using it
+          if (wallpaperSrc !== DEFAULT_WALLPAPER_URL) {
+            setWallpaperSrc(DEFAULT_WALLPAPER_URL)
+          }
         }}
       />
       <SettingPanel className="fixed top-2 right-2" />

@@ -460,5 +460,60 @@
   "reminderNotification": {
     "description": "Reminder notification description",
     "message": "提醒通知"
+  "commandPluginBookmarks": {
+    "description": "Bookmarks command plugin name",
+    "message": "收藏夹"
+  },
+  "commandPluginBookmarksDescription": {
+    "description": "Bookmarks command plugin description",
+    "message": "搜索浏览器收藏夹。"
+  },
+  "localWallpaper": {
+    "description": "Local wallpaper section title",
+    "message": "本地壁纸"
+  },
+  "uploadLocalWallpaper": {
+    "description": "Upload local wallpaper button",
+    "message": "上传"
+  },
+  "localWallpaperInvalidType": {
+    "description": "Local wallpaper invalid file type error",
+    "message": "无效的文件类型。请选择 JPEG、PNG、GIF 或 WebP 图片。"
+  },
+  "localWallpaperTooLarge": {
+    "description": "Local wallpaper file too large error",
+    "message": "文件过大。请选择小于 5MB 的图片。"
+  },
+  "localWallpaperReadError": {
+    "description": "Local wallpaper read error",
+    "message": "读取图片文件失败，请重试。"
+  },
+  "localWallpaperStorageError": {
+    "description": "Local wallpaper storage error",
+    "message": "保存壁纸失败，请重试。"
+  },
+  "localWallpaperQuotaExceeded": {
+    "description": "Local wallpaper storage quota exceeded error",
+    "message": "存储配额已满。请尝试更小的图片或释放空间。"
+  },
+  "clearLocalWallpaper": {
+    "description": "Clear local wallpaper button aria label",
+    "message": "清除本地壁纸"
+  },
+  "selectLocalWallpaper": {
+    "description": "Select local wallpaper button aria label",
+    "message": "选择本地壁纸"
+  },
+  "customWallpaperUrl": {
+    "description": "Custom wallpaper URL section title",
+    "message": "自定义壁纸 URL"
+  },
+  "wallhavenToplist": {
+    "description": "Wallhaven toplist mode button",
+    "message": "热门榜单"
+  },
+  "wallhavenRandom": {
+    "description": "Wallhaven random mode button",
+    "message": "随机壁纸"
   }
 }

@@ -20,7 +20,7 @@ export const DndLinkCardPage: FC<{
           activationConstraints: {
             delay: {
               tolerance: 4,
-              value: 100,
+              value: 400,
             },
           },
         }),

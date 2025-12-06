@@ -66,6 +66,12 @@ export const defaultCommandSettings: CommandSettingsData = {
     activeKey: 'rmb',
     includeInGlobal: true,
   },
+  bookmarks: {
+    priority: 5,
+    active: true,
+    activeKey: 'b',
+    includeInGlobal: true,
+  },
 }
 
 const storage = createStorage<CommandSettingsData>('command-settings-storage', defaultCommandSettings, {
