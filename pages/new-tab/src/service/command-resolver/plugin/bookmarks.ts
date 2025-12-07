@@ -1,6 +1,7 @@
 import { getDefaultIconUrl } from '@/lib/url'
 import type { ICommandResolver, ICommandResult } from './protocol'
 import { Star } from 'lucide-react'
+import { t } from '@extension/i18n'
 
 function convertBookmarkToCommandResult(item: chrome.bookmarks.BookmarkTreeNode): ICommandResult {
   return {
@@ -49,7 +50,7 @@ function searchBookmarks(
 const ACTIVE_KEY = 'b'
 
 export const bookmarksResolver: ICommandResolver = {
-  name: 'bookmarks',
+  name: t('commandPluginBookmarks'),
   settings: {
     active: true,
     activeKey: ACTIVE_KEY,
@@ -57,7 +58,7 @@ export const bookmarksResolver: ICommandResolver = {
     includeInGlobal: true,
   },
   properties: {
-    label: 'Bookmarks',
+    label: t('commandPluginBookmarks'),
   },
   resolve: async params => {
     const tree = await chrome.bookmarks.getTree()

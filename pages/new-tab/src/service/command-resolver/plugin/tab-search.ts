@@ -1,13 +1,14 @@
 import type { ICommandResolver } from './protocol'
+import { t } from '@extension/i18n'
 
 export const tabSearchResolver: ICommandResolver = {
-  name: 'tabs',
+  name: t('commandPluginTabs'),
   settings: {
     priority: 0,
     active: true,
   },
   properties: {
-    label: 'Tabs',
+    label: t('commandPluginTabs'),
   },
   resolve: async params => {
     if (params.query.length === 0) return null

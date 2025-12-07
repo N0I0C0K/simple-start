@@ -279,6 +279,10 @@
     "description": "Web Search command plugin description",
     "message": "使用默认搜索引擎搜索网页。"
   },
+  "commandPluginWebSearchTitle": {
+    "description": "Web Search result title template",
+    "message": "搜索「{query}」"
+  },
   "commandPluginCalculator": {
     "description": "Calculator command plugin name",
     "message": "计算器"

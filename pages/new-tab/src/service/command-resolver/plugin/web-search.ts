@@ -1,8 +1,9 @@
 import type { ICommandResolver } from './protocol'
 import { Search } from 'lucide-react'
+import { t } from '@extension/i18n'
 
 export const webSearchResolver: ICommandResolver = {
-  name: 'webSearch',
+  name: t('commandPluginWebSearch'),
   settings: {
     priority: 100,
     active: true,
@@ -10,7 +11,7 @@ export const webSearchResolver: ICommandResolver = {
     activeKey: 'g',
   },
   properties: {
-    label: 'Search',
+    label: t('commandPluginWebSearch'),
   },
   resolve: async params => {
     if (params.query.length === 0) return null
@@ -18,8 +19,8 @@ export const webSearchResolver: ICommandResolver = {
     return [
       {
         id: `search-unique-key`,
-        title: `Search for "${query}"`,
-        description: 'use browser default search engine',
+        title: t('commandPluginWebSearchTitle').replace('{query}', query),
+        description: t('commandPluginWebSearchDescription'),
         IconType: Search,
         onSelect: () => {
           chrome.search.query({ text: query, disposition: 'NEW_TAB' })
