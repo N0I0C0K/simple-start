@@ -4,6 +4,7 @@ import { settingStorage } from '@extension/storage'
 import { command, Stack, Text } from '@extension/ui'
 import { commandResolverService } from '@src/service/command-resolver'
 import type { CommandQueryParams, ICommandResultGroup } from '@src/service/command-resolver'
+import { PLUGIN_LIST_NAME } from '@src/service/command-resolver/plugin'
 import { useEffect, useRef, useState, type FC } from 'react'
 import { t } from '@extension/i18n'
 
@@ -91,8 +92,10 @@ export const CommandModule: FC<{
           }}>
           <command.CommandEmpty>{t('noResultsFound')}</command.CommandEmpty>
           {result.map(val => {
+            // Translate internal plugin names to user-friendly names
+            const displayName = val.groupName === PLUGIN_LIST_NAME ? t('availablePlugins') : val.groupName
             return (
-              <command.CommandGroup heading={val.groupName} key={val.groupName}>
+              <command.CommandGroup heading={displayName} key={val.groupName}>
                 {val.result.length === 0 ? (
                   <command.CommandItem disabled className="py-1.5 w-full opacity-60">
                     <Text level="xs" gray>

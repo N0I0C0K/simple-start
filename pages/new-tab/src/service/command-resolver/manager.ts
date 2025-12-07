@@ -8,6 +8,7 @@ import {
   numberToRmbResolver,
   bookmarksResolver,
   pluginListResolver,
+  PLUGIN_LIST_NAME,
 } from './plugin'
 import { WarpDefaultObject } from '@extension/shared'
 import { commandSettingsStorage, defaultCommandSettings } from '@extension/storage'
@@ -100,7 +101,7 @@ class CommandResolverService {
     
     // When query is empty, show plugin list
     if (params.query.length === 0) {
-      const pluginListPlugin = this.resolvers.find(it => it.name === pluginListResolver.name)
+      const pluginListPlugin = this.resolvers.find(it => it.name === PLUGIN_LIST_NAME)
       return pluginListPlugin ? [pluginListPlugin] : []
     }
     

@@ -6,8 +6,10 @@ import { t } from '@extension/i18n'
  * Internal plugin that shows all available plugins when input is empty
  * This helps users discover what plugins are available and their trigger keys
  */
+export const PLUGIN_LIST_NAME = '__internal_plugin_list__'
+
 export const pluginListResolver: ICommandResolver = {
-  name: t('availablePlugins'),
+  name: PLUGIN_LIST_NAME,
   settings: {
     priority: -1000, // Highest priority to ensure it appears first
     active: true,
@@ -41,7 +43,7 @@ export const pluginListResolver: ICommandResolver = {
       const triggerKey = settings.activeKey
       
       // Skip the plugin-list itself
-      if (plugin.name === t('availablePlugins')) continue
+      if (plugin.name === PLUGIN_LIST_NAME) continue
 
       results.push({
         id: `plugin-list-${plugin.name}`,
