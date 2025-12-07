@@ -136,7 +136,7 @@ class CommandResolverService {
         return new Promise((resolve, reject) => {
           it.resolve(extendedParams)
             .then(res => {
-              if (res === null || (Array.isArray(res) && res.length === 0)) {
+              if (res === null || res.length === 0) {
                 // If plugin returns null or empty array, still show empty group for non-empty queries
                 // This helps users know the plugin was invoked but found nothing
                 if (params.query.length > 0) {

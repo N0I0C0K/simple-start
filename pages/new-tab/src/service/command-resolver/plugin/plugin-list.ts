@@ -1,4 +1,4 @@
-import type { ICommandResolver, ICommandResult } from './protocol'
+import type { ICommandResolver, ICommandResult, CommandQueryParams, CommandSettings } from './protocol'
 import { Layers } from 'lucide-react'
 import { t } from '@extension/i18n'
 
@@ -7,6 +7,18 @@ import { t } from '@extension/i18n'
  * This helps users discover what plugins are available and their trigger keys
  */
 export const PLUGIN_LIST_NAME = '__internal_plugin_list__'
+
+// Internal interface for resolver with settings (matches ICommandResolverWithSettings from manager.ts)
+interface ICommandResolverWithSettings extends ICommandResolver {
+  getSettings: () => CommandSettings
+}
+
+// Extended params interface for internal use with resolver service
+interface ExtendedCommandQueryParams extends CommandQueryParams {
+  resolverService?: {
+    resolvers: ICommandResolverWithSettings[]
+  }
+}
 
 export const pluginListResolver: ICommandResolver = {
   name: PLUGIN_LIST_NAME,
@@ -25,14 +37,15 @@ export const pluginListResolver: ICommandResolver = {
 
     // Get all registered plugins from the service
     // This will be populated by passing the resolver service as context
-    const { resolverService } = params as any
+    const extendedParams = params as ExtendedCommandQueryParams
+    const { resolverService } = extendedParams
 
     if (!resolverService) return null
 
     const results: ICommandResult[] = []
     
     // Get all active plugins
-    const activePlugins = resolverService.resolvers.filter((r: any) => {
+    const activePlugins = resolverService.resolvers.filter(r => {
       const settings = r.getSettings()
       return settings.active
     })
