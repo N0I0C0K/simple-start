@@ -7,6 +7,7 @@ import {
   calculatorResolver,
   numberToRmbResolver,
   bookmarksResolver,
+  pluginListResolver,
 } from './plugin'
 import { WarpDefaultObject } from '@extension/shared'
 import { commandSettingsStorage, defaultCommandSettings } from '@extension/storage'
@@ -96,6 +97,13 @@ class CommandResolverService {
 
   choosePlugins(params: CommandQueryParams): ICommandResolverWithSettings[] {
     const availablePlugins = this.resolvers.filter(it => it.getSettings().active)
+    
+    // When query is empty, show plugin list
+    if (params.query.length === 0) {
+      const pluginListPlugin = this.resolvers.find(it => it.name === pluginListResolver.name)
+      return pluginListPlugin ? [pluginListPlugin] : []
+    }
+    
     const matchedPlugins = availablePlugins.filter(it => {
       const settings = it.getSettings()
       return settings.activeKey && params.query.startsWith(settings.activeKey)
@@ -119,12 +127,23 @@ class CommandResolverService {
     // Sort resolvers before resolving (in case priorities changed)
     this.sortResolvers()
 
+    // Pass resolver service to plugins so they can access other plugins
+    const extendedParams = { ...params, resolverService: this }
+
     Promise.all(
       this.choosePlugins(params).map(it => {
         return new Promise((resolve, reject) => {
-          it.resolve(params)
+          it.resolve(extendedParams)
             .then(res => {
-              if (res === null) {
+              if (res === null || (Array.isArray(res) && res.length === 0)) {
+                // If plugin returns null or empty array, still show empty group for non-empty queries
+                // This helps users know the plugin was invoked but found nothing
+                if (params.query.length > 0) {
+                  warpOnGroupResolve({
+                    groupName: it.name,
+                    result: [],
+                  })
+                }
                 resolve(null)
                 return
               }
@@ -143,6 +162,7 @@ class CommandResolverService {
 
 export const commandResolverService = new CommandResolverService()
 
+commandResolverService.register(pluginListResolver)
 commandResolverService.register(historyResolver)
 commandResolverService.register(tabSearchResolver)
 commandResolverService.register(webSearchResolver)

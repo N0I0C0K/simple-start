@@ -93,32 +93,40 @@ export const CommandModule: FC<{
           {result.map(val => {
             return (
               <command.CommandGroup heading={val.groupName} key={val.groupName}>
-                {val.result.map(res => {
-                  return (
-                    <command.CommandItem
-                      key={res.id}
-                      value={res.id}
-                      onSelect={() => {
-                        res.onSelect?.()
-                        // Hide the panel after selection
-                        focusFunc.setFalse()
-                        inputRef.current?.blur()
-                      }}
-                      className="py-1.5 w-full">
-                      <Stack center>
-                        <CommandItemIcon iconUrl={res.iconUrl} IconType={res.IconType} />
-                        <Stack direction={'column'}>
-                          <Text level="s" className="line-clamp-1">
-                            {res.title}
-                          </Text>
-                          <Text level="xs" className="line-clamp-1" gray>
-                            {res.description}
-                          </Text>
+                {val.result.length === 0 ? (
+                  <command.CommandItem disabled className="py-1.5 w-full opacity-60">
+                    <Text level="xs" gray>
+                      {t('noResultsForPlugin')}
+                    </Text>
+                  </command.CommandItem>
+                ) : (
+                  val.result.map(res => {
+                    return (
+                      <command.CommandItem
+                        key={res.id}
+                        value={res.id}
+                        onSelect={() => {
+                          res.onSelect?.()
+                          // Hide the panel after selection
+                          focusFunc.setFalse()
+                          inputRef.current?.blur()
+                        }}
+                        className="py-1.5 w-full">
+                        <Stack center>
+                          <CommandItemIcon iconUrl={res.iconUrl} IconType={res.IconType} />
+                          <Stack direction={'column'}>
+                            <Text level="s" className="line-clamp-1">
+                              {res.title}
+                            </Text>
+                            <Text level="xs" className="line-clamp-1" gray>
+                              {res.description}
+                            </Text>
+                          </Stack>
                         </Stack>
-                      </Stack>
-                    </command.CommandItem>
-                  )
-                })}
+                      </command.CommandItem>
+                    )
+                  })
+                )}
               </command.CommandGroup>
             )
           })}

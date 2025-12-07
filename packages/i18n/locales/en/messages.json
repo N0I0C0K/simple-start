@@ -386,5 +386,17 @@
   "wallhavenRandom": {
     "description": "Wallhaven random mode button",
     "message": "Random"
+  },
+  "availablePlugins": {
+    "description": "Available plugins section title",
+    "message": "Available Plugins"
+  },
+  "availablePluginsDescription": {
+    "description": "Available plugins description",
+    "message": "Type to search or use trigger keys to activate plugins"
+  },
+  "noResultsForPlugin": {
+    "description": "No results found for plugin message",
+    "message": "No results found for this query"
   }
 }

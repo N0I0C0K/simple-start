@@ -386,5 +386,17 @@
   "wallhavenRandom": {
     "description": "Wallhaven random mode button",
     "message": "随机壁纸"
+  },
+  "availablePlugins": {
+    "description": "Available plugins section title",
+    "message": "可用插件"
+  },
+  "availablePluginsDescription": {
+    "description": "Available plugins description",
+    "message": "输入搜索或使用触发键来激活插件"
+  },
+  "noResultsForPlugin": {
+    "description": "No results found for plugin message",
+    "message": "未找到此查询的结果"
   }
 }
