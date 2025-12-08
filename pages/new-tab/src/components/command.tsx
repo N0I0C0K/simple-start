@@ -4,7 +4,14 @@ import { settingStorage } from '@extension/storage'
 import { command, Stack, Text } from '@extension/ui'
 import { commandResolverService } from '@src/service/command-resolver'
 import type { CommandQueryParams, ICommandResultGroup } from '@src/service/command-resolver'
-import { useEffect, useRef, useState, forwardRef, useImperativeHandle, type FC } from 'react'
+import {
+  useEffect,
+  useRef,
+  useState,
+  forwardRef,
+  useImperativeHandle,
+  type FC,
+} from 'react'
 import { t } from '@extension/i18n'
 
 const CommandItemIcon: FC<{ iconUrl?: string; IconType?: React.ElementType }> = ({ iconUrl, IconType }) => {
