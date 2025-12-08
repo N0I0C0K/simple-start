@@ -87,6 +87,14 @@
     "description": "Auto focus command input setting description",
     "message": "Auto focus command input."
   },
+  "doubleClickBackgroundFocusCommand": {
+    "description": "Double click background to focus command setting title",
+    "message": "Double Click Background to Focus"
+  },
+  "doubleClickBackgroundFocusCommandDescription": {
+    "description": "Double click background to focus command setting description",
+    "message": "Focus command input when double-clicking the background."
+  },
   "wallpaperUrl": {
     "description": "Wallpaper URL setting title",
     "message": "Wallpaper URL"

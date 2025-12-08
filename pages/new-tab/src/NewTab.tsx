@@ -3,6 +3,7 @@ import { Center, Input, Text, Heading, Stack } from '@extension/ui'
 import { Search, ArrowRight } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { CommandModule, SettingPanel, ScrollLinkCardPage } from './components'
+import type { CommandModuleRef } from './components/command'
 
 import '@/src/style/placeholder.css'
 import { HistoryArea } from './components/history-area'
@@ -110,6 +111,7 @@ const TimeDisplay = () => {
 const NewTab = () => {
   const settings = useStorage(settingStorage)
   const [wallpaperSrc, setWallpaperSrc] = useState<string>(DEFAULT_WALLPAPER_URL)
+  const commandModuleRef = useRef<CommandModuleRef>(null)
 
   useEffect(() => {
     // Update wallpaper source when settings change
@@ -120,15 +122,23 @@ const NewTab = () => {
     }
   }, [settings.wallpaperType, settings.localWallpaperData, settings.wallpaperUrl])
 
+  const handleBackgroundDoubleClick = useCallback(() => {
+    if (settings.doubleClickBackgroundFocusCommand) {
+      commandModuleRef.current?.focus()
+    }
+  }, [settings.doubleClickBackgroundFocusCommand])
+
   return (
     <>
-      <div className={'flex h-screen w-screen max-w-full flex-col justify-center gap-4 relative overflow-hidden'}>
+      <div 
+        className={'flex h-screen w-screen max-w-full flex-col justify-center gap-4 relative overflow-hidden'}
+        onDoubleClick={handleBackgroundDoubleClick}>
         <Center column className="flex-1">
           <TimeDisplay />
         </Center>
         <Stack direction={'column'} className="flex-1">
           <Center className="mb-8 h-10">
-            <CommandModule className="w-[40%] min-w-[20rem] max-w-[40rem] h-auto absolute z-[1]" />
+            <CommandModule ref={commandModuleRef} className="w-[40%] min-w-[20rem] max-w-[40rem] h-auto absolute z-[1]" />
           </Center>
           <Center>
             <div className="relative min-w-[20rem] w-[50%] z-0">

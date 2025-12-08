@@ -30,6 +30,7 @@ export type WallhavenSortMode = 'toplist' | 'random'
 export type SettingProps = {
   useHistorySuggestion: boolean
   autoFocusCommandInput: boolean
+  doubleClickBackgroundFocusCommand: boolean
   wallpaperUrl: string | null
   /** The source type for the wallpaper (remote URL or local file) */
   wallpaperType: WallpaperType
@@ -58,6 +59,7 @@ type SettingsStorage = BaseStorage<SettingProps> & {
 const defaultSetting: SettingProps = {
   useHistorySuggestion: true,
   autoFocusCommandInput: true,
+  doubleClickBackgroundFocusCommand: true,
   wallpaperUrl: null,
   wallpaperType: 'url',
   localWallpaperData: null,

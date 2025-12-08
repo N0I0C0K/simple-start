@@ -4,7 +4,7 @@ import { settingStorage } from '@extension/storage'
 import { command, Stack, Text } from '@extension/ui'
 import { commandResolverService } from '@src/service/command-resolver'
 import type { CommandQueryParams, ICommandResultGroup } from '@src/service/command-resolver'
-import { useEffect, useRef, useState, type FC } from 'react'
+import { useEffect, useRef, useState, forwardRef, useImperativeHandle, type FC } from 'react'
 import { t } from '@extension/i18n'
 
 const CommandItemIcon: FC<{ iconUrl?: string; IconType?: React.ElementType }> = ({ iconUrl, IconType }) => {
@@ -16,9 +16,13 @@ const CommandItemIcon: FC<{ iconUrl?: string; IconType?: React.ElementType }> = 
   )
 }
 
-export const CommandModule: FC<{
+export interface CommandModuleRef {
+  focus: () => void
+}
+
+export const CommandModule = forwardRef<CommandModuleRef, {
   className?: string
-}> = ({ className }) => {
+}>(({ className }, ref) => {
   const [focus, focusFunc] = useBoolean(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const [inputVal, setInputVal] = useState('')
@@ -58,6 +62,13 @@ export const CommandModule: FC<{
       window.removeEventListener('keydown', listener)
     }
   }, [focusFunc, isWindows])
+
+  useImperativeHandle(ref, () => ({
+    focus: () => {
+      focusFunc.setTrue()
+      inputRef.current?.focus()
+    },
+  }))
 
   const setting = useStorage(settingStorage)
 
@@ -126,4 +137,6 @@ export const CommandModule: FC<{
       )}
     </command.Command>
   )
-}
+})
+
+CommandModule.displayName = 'CommandModule'
