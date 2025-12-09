@@ -28,10 +28,11 @@ export type PartialCommandSettings = Partial<CommandSettings>
 
 export interface CommandProperties {
   label?: string
+  name: string
+  description?: string
 }
 
 export interface ICommandResolver {
-  name: string
   properties: CommandProperties
   settings: PartialCommandSettings
   resolve: (params: CommandQueryParams) => Promise<ICommandResult[] | null>

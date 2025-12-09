@@ -50,7 +50,6 @@ function searchBookmarks(
 const ACTIVE_KEY = 'b'
 
 export const bookmarksResolver: ICommandResolver = {
-  name: t('commandPluginBookmarks'),
   settings: {
     active: true,
     activeKey: ACTIVE_KEY,
@@ -58,7 +57,9 @@ export const bookmarksResolver: ICommandResolver = {
     includeInGlobal: true,
   },
   properties: {
+    name: t('commandPluginBookmarks'),
     label: t('commandPluginBookmarks'),
+    description: t('commandPluginBookmarksDescription'),
   },
   resolve: async params => {
     const tree = await chrome.bookmarks.getTree()

@@ -3,7 +3,6 @@ import { Search } from 'lucide-react'
 import { t } from '@extension/i18n'
 
 export const webSearchResolver: ICommandResolver = {
-  name: t('commandPluginWebSearch'),
   settings: {
     priority: 100,
     active: true,
@@ -11,7 +10,9 @@ export const webSearchResolver: ICommandResolver = {
     activeKey: 'g',
   },
   properties: {
+    name: t('commandPluginWebSearch'),
     label: t('commandPluginWebSearch'),
+    description: t('commandPluginWebSearchDescription'),
   },
   resolve: async params => {
     if (params.query.length === 0) return null

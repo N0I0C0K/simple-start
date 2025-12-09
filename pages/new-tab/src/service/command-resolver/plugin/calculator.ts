@@ -184,7 +184,6 @@ function calculate(expression: string): string | null {
 }
 
 export const calculatorResolver: ICommandResolver = {
-  name: t('calculator'),
   settings: {
     priority: -10, // High priority for quick math
     active: true,
@@ -192,7 +191,9 @@ export const calculatorResolver: ICommandResolver = {
     activeKey: '=',
   },
   properties: {
-    label: 'Calculator',
+    name: t('calculator'),
+    label: t('calculator'),
+    description: t('commandPluginCalculatorDescription'),
   },
   resolve: async params => {
     const results: ICommandResult[] = []

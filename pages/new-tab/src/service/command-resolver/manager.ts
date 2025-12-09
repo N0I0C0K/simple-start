@@ -37,12 +37,12 @@ function createResolverWithSettings(
     ...resolver,
     getSettings(): CommandSettings {
       const storageSettings = getStorageSettings()
-      const pluginStorageSettings = storageSettings?.[resolver.name]
+      const pluginStorageSettings = storageSettings?.[resolver.properties.name]
       if (pluginStorageSettings) {
         return pluginStorageSettings
       }
       // Fallback to default command settings or plugin defaults
-      const defaultPluginSettings = defaultCommandSettings[resolver.name]
+      const defaultPluginSettings = defaultCommandSettings[resolver.properties.name]
       if (defaultPluginSettings) {
         return defaultPluginSettings
       }
@@ -101,7 +101,7 @@ class CommandResolverService {
 
     // When query is empty, show plugin list
     if (params.query.length === 0) {
-      const pluginListPlugin = this.resolvers.find(it => it.name === PLUGIN_LIST_NAME)
+      const pluginListPlugin = this.resolvers.find(it => it.properties.name === PLUGIN_LIST_NAME)
       return pluginListPlugin ? [pluginListPlugin] : []
     }
 
@@ -141,7 +141,7 @@ class CommandResolverService {
                 // This helps users know the plugin was invoked but found nothing
                 if (params.query.length > 0) {
                   warpOnGroupResolve({
-                    groupName: it.name,
+                    groupName: it.properties.name,
                     result: [],
                   })
                 }
@@ -149,7 +149,7 @@ class CommandResolverService {
                 return
               }
               warpOnGroupResolve({
-                groupName: it.name,
+                groupName: it.properties.name,
                 result: res,
               })
               resolve(null)

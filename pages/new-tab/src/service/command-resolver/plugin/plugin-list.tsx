@@ -32,7 +32,6 @@ function GenKeyIcon(key: string) {
 }
 
 export const pluginListResolver: ICommandResolver = {
-  name: PLUGIN_LIST_NAME,
   settings: {
     priority: -1000, // Highest priority to ensure it appears first
     active: true,
@@ -40,6 +39,7 @@ export const pluginListResolver: ICommandResolver = {
     activeKey: '',
   },
   properties: {
+    name: PLUGIN_LIST_NAME,
     label: 'Plugin List',
   },
   resolve: async params => {
@@ -67,12 +67,12 @@ export const pluginListResolver: ICommandResolver = {
       const triggerKey = settings.activeKey
 
       // Skip the plugin-list itself
-      if (plugin.name === PLUGIN_LIST_NAME) continue
+      if (plugin.properties.name === PLUGIN_LIST_NAME) continue
 
       results.push({
-        id: `plugin-list-${plugin.name}`,
-        title: plugin.name,
-        description: '',
+        id: `plugin-list-${plugin.properties.name}`,
+        title: plugin.properties.name,
+        description: plugin.properties.description || '',
         IconType: triggerKey ? GenKeyIcon(triggerKey) : Layers,
         onSelect: () => {
           params.changeQuery?.(settings.activeKey || '')

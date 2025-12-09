@@ -19,13 +19,14 @@ function convertHistoryItemToCommandResult(item: chrome.history.HistoryItem): IC
 }
 
 export const historyResolver: ICommandResolver = {
-  name: t('commandPluginHistory'),
   settings: {
     active: true,
     activeKey: 'h',
   },
   properties: {
+    name: t('commandPluginHistory'),
     label: t('commandPluginHistory'),
+    description: t('commandPluginHistoryDescription'),
   },
   resolve: async params => {
     if (params.query.length === 0)

@@ -166,7 +166,6 @@ function parseInput(input: string): number | null {
 }
 
 export const numberToRmbResolver: ICommandResolver = {
-  name: t('numberToRmb'),
   settings: {
     priority: 50,
     active: true,
@@ -174,7 +173,9 @@ export const numberToRmbResolver: ICommandResolver = {
     activeKey: 'rmb',
   },
   properties: {
+    name: t('numberToRmb'),
     label: t('numberToRmbLabel'),
+    description: t('commandPluginNumberToRmbDescription'),
   },
   resolve: async params => {
     const num = parseInput(params.query)
