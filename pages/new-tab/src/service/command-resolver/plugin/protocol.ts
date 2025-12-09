@@ -1,5 +1,6 @@
 export type CommandQueryParams = {
   query: string
+  changeQuery?: (newQuery: string) => void
 }
 
 export interface ICommandResultGroup {

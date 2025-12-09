@@ -98,13 +98,13 @@ class CommandResolverService {
 
   choosePlugins(params: CommandQueryParams): ICommandResolverWithSettings[] {
     const availablePlugins = this.resolvers.filter(it => it.getSettings().active)
-    
+
     // When query is empty, show plugin list
     if (params.query.length === 0) {
       const pluginListPlugin = this.resolvers.find(it => it.name === PLUGIN_LIST_NAME)
       return pluginListPlugin ? [pluginListPlugin] : []
     }
-    
+
     const matchedPlugins = availablePlugins.filter(it => {
       const settings = it.getSettings()
       return settings.activeKey && params.query.startsWith(settings.activeKey)

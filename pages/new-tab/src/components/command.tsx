@@ -10,10 +10,10 @@ import { t } from '@extension/i18n'
 
 const CommandItemIcon: FC<{ iconUrl?: string; IconType?: React.ElementType }> = ({ iconUrl, IconType }) => {
   return (
-    <>
+    <div className="bg-muted-foreground/10 rounded-sm size-10 flex items-center justify-center shrink-0">
       {iconUrl && <img src={iconUrl} alt="icon" className="size-6 rounded-md mx-3" />}
-      {IconType && <IconType className="stroke-2 h-10 w-10 mx-3" />}
-    </>
+      {IconType && <IconType className="stroke-2 mx-3" />}
+    </div>
   )
 }
 
@@ -33,12 +33,15 @@ export const CommandModule: FC<{
   useEffect(() => {
     const query: CommandQueryParams = {
       query: inputDelay,
+      changeQuery: (newQuery: string) => {
+        setInputVal(newQuery)
+      },
     }
     setResult([])
     commandResolverService.resolve(query, group => {
       setResult(prev => [...prev, group])
     })
-  }, [inputDelay])
+  }, [inputDelay, setInputVal])
 
   useEffect(() => {
     const listener = (ev: KeyboardEvent) => {
@@ -83,58 +86,56 @@ export const CommandModule: FC<{
         className="h-14 md:h-12 text-lg md:text-base"
         keyBindings={keyBindings}
       />
-      {focus && (
-        <command.CommandList
-          className="max-h-80"
-          onMouseDown={e => {
-            // Prevent the input from losing focus when clicking on items
-            e.preventDefault()
-          }}>
-          <command.CommandEmpty>{t('noResultsFound')}</command.CommandEmpty>
-          {result.map(val => {
-            // Translate internal plugin names to user-friendly names
-            const displayName = val.groupName === PLUGIN_LIST_NAME ? t('availablePlugins') : val.groupName
-            return (
-              <command.CommandGroup heading={displayName} key={val.groupName}>
-                {val.result.length === 0 ? (
-                  <command.CommandItem disabled className="py-1.5 w-full opacity-60">
-                    <Text level="xs" gray>
-                      {t('noResultsForPlugin')}
-                    </Text>
-                  </command.CommandItem>
-                ) : (
-                  val.result.map(res => {
-                    return (
-                      <command.CommandItem
-                        key={res.id}
-                        value={res.id}
-                        onSelect={() => {
-                          res.onSelect?.()
-                          // Hide the panel after selection
-                          focusFunc.setFalse()
-                          inputRef.current?.blur()
-                        }}
-                        className="py-1.5 w-full">
-                        <Stack center>
-                          <CommandItemIcon iconUrl={res.iconUrl} IconType={res.IconType} />
-                          <Stack direction={'column'}>
-                            <Text level="s" className="line-clamp-1">
-                              {res.title}
-                            </Text>
-                            <Text level="xs" className="line-clamp-1" gray>
-                              {res.description}
-                            </Text>
-                          </Stack>
+      <command.CommandList
+        className={cn('max-h-80', focus ? 'block' : 'hidden')}
+        onMouseDown={e => {
+          // Prevent the input from losing focus when clicking on items
+          e.preventDefault()
+        }}>
+        <command.CommandEmpty>{t('noResultsFound')}</command.CommandEmpty>
+        {result.map(val => {
+          // Translate internal plugin names to user-friendly names
+          const displayName = val.groupName === PLUGIN_LIST_NAME ? t('availablePlugins') : val.groupName
+          return (
+            <command.CommandGroup heading={displayName} key={val.groupName}>
+              {val.result.length === 0 ? (
+                <command.CommandItem disabled className="py-1.5 w-full opacity-60">
+                  <Text level="xs" gray>
+                    {t('noResultsForPlugin')}
+                  </Text>
+                </command.CommandItem>
+              ) : (
+                val.result.map(res => {
+                  return (
+                    <command.CommandItem
+                      key={res.id}
+                      value={res.id}
+                      onSelect={() => {
+                        res.onSelect?.()
+                        // Hide the panel after selection
+                        focusFunc.setFalse()
+                        inputRef.current?.blur()
+                      }}
+                      className="p-2 w-full">
+                      <Stack center className="gap-2">
+                        <CommandItemIcon iconUrl={res.iconUrl} IconType={res.IconType} />
+                        <Stack direction={'column'}>
+                          <Text level="s" className="line-clamp-1">
+                            {res.title}
+                          </Text>
+                          <Text level="xs" className="line-clamp-1" gray>
+                            {res.description}
+                          </Text>
                         </Stack>
-                      </command.CommandItem>
-                    )
-                  })
-                )}
-              </command.CommandGroup>
-            )
-          })}
-        </command.CommandList>
-      )}
+                      </Stack>
+                    </command.CommandItem>
+                  )
+                })
+              )}
+            </command.CommandGroup>
+          )
+        })}
+      </command.CommandList>
     </command.Command>
   )
 }

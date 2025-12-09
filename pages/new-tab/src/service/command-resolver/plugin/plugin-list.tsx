@@ -1,6 +1,7 @@
 import type { ICommandResolver, ICommandResult, CommandQueryParams, CommandSettings } from './protocol'
 import { Layers } from 'lucide-react'
 import { t } from '@extension/i18n'
+import { cn } from '@/lib/utils'
 
 /**
  * Internal plugin that shows all available plugins when input is empty
@@ -18,6 +19,16 @@ interface ExtendedCommandQueryParams extends CommandQueryParams {
   resolverService?: {
     resolvers: ICommandResolverWithSettings[]
   }
+}
+
+function GenKeyIcon(key: string) {
+  const InnerComponent: React.FC<{
+    className?: string
+  }> = ({ className }: { className?: string }) => {
+    return <p className={cn('font-bold text-lg text-center', className)}>{key}</p>
+  }
+
+  return InnerComponent
 }
 
 export const pluginListResolver: ICommandResolver = {
@@ -43,7 +54,7 @@ export const pluginListResolver: ICommandResolver = {
     if (!resolverService) return null
 
     const results: ICommandResult[] = []
-    
+
     // Get all active plugins
     const activePlugins = resolverService.resolvers.filter(r => {
       const settings = r.getSettings()
@@ -54,19 +65,17 @@ export const pluginListResolver: ICommandResolver = {
     for (const plugin of activePlugins) {
       const settings = plugin.getSettings()
       const triggerKey = settings.activeKey
-      
+
       // Skip the plugin-list itself
       if (plugin.name === PLUGIN_LIST_NAME) continue
 
       results.push({
         id: `plugin-list-${plugin.name}`,
         title: plugin.name,
-        description: triggerKey 
-          ? `${t('commandPluginActiveKey')}: ${triggerKey}` 
-          : t('availablePluginsDescription'),
-        IconType: Layers,
+        description: '',
+        IconType: triggerKey ? GenKeyIcon(triggerKey) : Layers,
         onSelect: () => {
-          // Do nothing on select - this is just informational
+          params.changeQuery?.(settings.activeKey || '')
         },
       })
     }
