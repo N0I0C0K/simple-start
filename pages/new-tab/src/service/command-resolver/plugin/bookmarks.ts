@@ -64,20 +64,13 @@ export const bookmarksResolver: ICommandResolver = {
   resolve: async params => {
     const tree = await chrome.bookmarks.getTree()
 
-    // Strip the activeKey prefix if present
-    let query = params.query
-    const activeKeyPrefix = `${ACTIVE_KEY} `
-    if (query.startsWith(activeKeyPrefix)) {
-      query = query.slice(activeKeyPrefix.length)
-    }
-
     // Return first 10 bookmarks when no query (tree order, not chronological)
-    if (query.length === 0) {
+    if (params.query.length === 0) {
       const allBookmarks = flattenBookmarks(tree)
       return allBookmarks.slice(0, 10).map(convertBookmarkToCommandResult)
     }
 
-    const result = searchBookmarks(tree, query)
+    const result = searchBookmarks(tree, params.query)
     if (result.length === 0) return null
     return result.slice(0, 10).map(convertBookmarkToCommandResult)
   },

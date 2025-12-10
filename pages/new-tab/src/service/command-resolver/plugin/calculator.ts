@@ -197,12 +197,7 @@ export const calculatorResolver: ICommandResolver = {
   },
   resolve: async params => {
     const results: ICommandResult[] = []
-    let query = params.query
-
-    // Strip the activeKey prefix if present
-    if (query.startsWith('=')) {
-      query = query.slice(1).trim()
-    }
+    const query = params.query
 
     // If query is empty, show history
     if (query.length === 0) {

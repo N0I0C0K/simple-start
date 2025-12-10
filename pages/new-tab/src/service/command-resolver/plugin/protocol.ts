@@ -1,5 +1,6 @@
 export type CommandQueryParams = {
-  query: string
+  query: string // Query with trigger key stripped (what the user actually wants to search)
+  rawQuery: string // Original query as typed by the user
   changeQuery?: (newQuery: string) => void
 }
 

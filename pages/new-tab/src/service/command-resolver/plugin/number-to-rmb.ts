@@ -152,12 +152,8 @@ function convertFourDigits(num: number): string {
  * Parse input to extract number
  */
 function parseInput(input: string): number | null {
-  // Remove activeKey prefix if present (with or without space)
-  const trimmed = input.trim()
-  const numStr = trimmed.startsWith('rmb') ? trimmed.slice(3).trim() : trimmed
-
-  // Parse the number
-  const num = parseFloat(numStr)
+  // Parse the number (trigger key already stripped by manager)
+  const num = parseFloat(input.trim())
   if (isNaN(num)) {
     return null
   }

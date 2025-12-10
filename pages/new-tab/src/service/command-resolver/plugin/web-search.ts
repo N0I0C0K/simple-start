@@ -16,15 +16,14 @@ export const webSearchResolver: ICommandResolver = {
   },
   resolve: async params => {
     if (params.query.length === 0) return null
-    const query = params.query.startsWith('g ') ? params.query.slice(2) : params.query
     return [
       {
         id: `search-unique-key`,
-        title: t('commandPluginWebSearchTitle').replace('{query}', query),
+        title: t('commandPluginWebSearchTitle').replace('{query}', params.query),
         description: t('commandPluginWebSearchDescription'),
         IconType: Search,
         onSelect: () => {
-          chrome.search.query({ text: query, disposition: 'NEW_TAB' })
+          chrome.search.query({ text: params.query, disposition: 'NEW_TAB' })
         },
       },
     ]
