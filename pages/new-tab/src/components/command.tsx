@@ -32,7 +32,7 @@ export const CommandModule: FC<{
 
   useEffect(() => {
     const query: CommandQueryParams = {
-      query: inputDelay, // Will be replaced by manager with stripped query
+      query: inputDelay,
       rawQuery: inputDelay,
       changeQuery: (newQuery: string) => {
         setInputVal(newQuery)
