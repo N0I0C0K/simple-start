@@ -93,7 +93,7 @@
   },
   "doubleClickBackgroundFocusCommandDescription": {
     "description": "Double click background to focus command setting description",
-    "message": "Focus command input when double-clicking the background."
+    "message": "Focus command input when double-clicking the background. Keyboard users can use Alt+K (Windows/Linux) or ⌘+K (Mac)."
   },
   "wallpaperUrl": {
     "description": "Wallpaper URL setting title",
