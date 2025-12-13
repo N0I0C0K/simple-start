@@ -95,19 +95,21 @@ class CommandResolverService {
     this.sortResolvers()
   }
 
-  private sortResolvers() {
+  sortResolvers() {
     this.resolvers.sort((a, b) => {
       return a.getSettings().priority - b.getSettings().priority
     })
   }
 
-  choosePlugins(rawQuery: string): ICommandResolverWithSettings[] {
+  choosePlugins(rawQuery: string): { plugins: ICommandResolverWithSettings[]; hit: boolean } {
     const availablePlugins = this.resolvers.filter(it => it.getSettings().active)
 
     // When query is empty, show plugin list
     if (rawQuery.length === 0) {
       const pluginListPlugin = this.resolvers.find(it => it.properties.name === PLUGIN_LIST_NAME)
-      return pluginListPlugin ? [pluginListPlugin] : []
+      if (pluginListPlugin) {
+        return { plugins: [pluginListPlugin], hit: true }
+      }
     }
 
     // Try to match plugins with activeKey
@@ -117,31 +119,37 @@ class CommandResolverService {
     })
 
     if (matchedPlugins.length > 0) {
-      return matchedPlugins
+      return {
+        plugins: matchedPlugins,
+        hit: true,
+      }
     }
 
     // Return global plugins
-    return this.resolvers.filter(it => {
-      const settings = it.getSettings()
-      return settings.active && settings.includeInGlobal
-    })
+    return {
+      plugins: this.resolvers.filter(it => {
+        const settings = it.getSettings()
+        return settings.active && settings.includeInGlobal
+      }),
+      hit: false,
+    }
   }
 
   resolve(params: CommandQueryParams, onGroupResolve: (group: ICommandResultGroup) => void) {
     const _tick = ++this._queryTimes
+    // Choose plugins based on raw query
+    const { plugins, hit } = this.choosePlugins(params.rawQuery)
+
     const warpOnGroupResolve = (group: ICommandResultGroup) => {
       if (_tick !== this._queryTimes) {
         return
       }
+      // Skip empty groups if no trigger key hit
+      if (!hit && group.result.length === 0) {
+        return
+      }
       onGroupResolve(group)
     }
-
-    // Sort resolvers before resolving (in case priorities changed)
-    this.sortResolvers()
-
-    // Choose plugins based on raw query
-    const plugins = this.choosePlugins(params.rawQuery)
-
     // Base params object to reuse
     const baseParams = {
       rawQuery: params.rawQuery,

@@ -23,7 +23,7 @@ import { cn } from '@/lib/utils'
 const CommandPluginSettingItem: FC<{
   plugin: ICommandResolver
   settings: CommandPluginSettings
-  onUpdate: (settings: Partial<CommandPluginSettings>) => void
+  onUpdate: (settings: Partial<CommandPluginSettings>) => Promise<void>
 }> = ({ plugin, settings, onUpdate }) => {
   const IconType = plugin.properties.icon ?? Layers
   return (
@@ -76,10 +76,11 @@ const CommandPluginSettingItem: FC<{
             <Input
               type="number"
               value={settings.priority}
-              onChange={e => {
+              onChange={async e => {
                 const parsed = parseInt(e.target.value, 10)
                 if (!isNaN(parsed)) {
-                  onUpdate({ priority: parsed })
+                  await onUpdate({ priority: parsed })
+                  commandResolverService.sortResolvers()
                 }
               }}
               className="w-24"
@@ -95,8 +96,8 @@ export const CommandSettings: FC = () => {
   const commandSettings = useStorage(commandSettingsStorage)
 
   const [plugins] = useState(commandResolverService.registeredResolvers)
-  const handlePluginUpdate = (pluginName: string, updates: Partial<CommandPluginSettings>) => {
-    void commandSettingsStorage.setPluginSettings(pluginName, updates)
+  const handlePluginUpdate = async (pluginName: string, updates: Partial<CommandPluginSettings>) => {
+    await commandSettingsStorage.setPluginSettings(pluginName, updates)
   }
 
   return (
@@ -117,7 +118,7 @@ export const CommandSettings: FC = () => {
               key={plugin.properties.name}
               plugin={plugin}
               settings={pluginSettings}
-              onUpdate={updates => handlePluginUpdate(plugin.properties.name, updates)}
+              onUpdate={async updates => await handlePluginUpdate(plugin.properties.name, updates)}
             />
           )
         })}
