@@ -36,12 +36,6 @@ type CommandSettingsStorage = BaseStorage<CommandSettingsData> & {
  * Default settings for built-in command plugins
  */
 export const defaultCommandSettings: CommandSettingsData = {
-  __internal_plugin_list__: {
-    priority: -1000,
-    active: true,
-    activeKey: '',
-    includeInGlobal: false,
-  },
   history: {
     priority: 0,
     active: true,
@@ -96,12 +90,13 @@ export const commandSettingsStorage: CommandSettingsStorage = {
   },
   setPluginSettings: async (pluginName, settings) => {
     const currentSettings = await storage.get()
-    const currentPluginSettings = currentSettings[pluginName] || defaultCommandSettings[pluginName] || {
-      priority: 0,
-      active: true,
-      activeKey: '',
-      includeInGlobal: true,
-    }
+    const currentPluginSettings = currentSettings[pluginName] ||
+      defaultCommandSettings[pluginName] || {
+        priority: 0,
+        active: true,
+        activeKey: '',
+        includeInGlobal: true,
+      }
     await storage.set({
       ...currentSettings,
       [pluginName]: {

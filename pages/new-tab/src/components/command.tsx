@@ -87,18 +87,17 @@ export const CommandModule: FC<{
         className="h-14 md:h-12 text-lg md:text-base"
         keyBindings={keyBindings}
       />
-      {focus && (
-        <command.CommandList
-          className="max-h-80"
-          onMouseDown={e => {
-            // Prevent the input from losing focus when clicking on items
-            e.preventDefault()
-          }}>
-          <command.CommandEmpty>{t('noResultsFound')}</command.CommandEmpty>
-          {result.map(val => {
-            // groupName is already displayName (translated)
-            return (
-              <command.CommandGroup heading={val.groupName} key={val.groupName}>
+      <command.CommandList
+        className={cn('max-h-80', focus ? '' : 'hidden')}
+        onMouseDown={e => {
+          // Prevent the input from losing focus when clicking on items
+          e.preventDefault()
+        }}>
+        <command.CommandEmpty>{t('noResultsFound')}</command.CommandEmpty>
+        {result.map(val => {
+          // groupName is already displayName (translated)
+          return (
+            <command.CommandGroup heading={val.groupName} key={val.groupName}>
               {val.result.length === 0 ? (
                 <command.CommandItem disabled className="py-1.5 w-full opacity-60">
                   <Text level="xs" gray>
@@ -136,8 +135,7 @@ export const CommandModule: FC<{
             </command.CommandGroup>
           )
         })}
-        </command.CommandList>
-      )}
+      </command.CommandList>
     </command.Command>
   )
 }

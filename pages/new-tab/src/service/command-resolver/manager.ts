@@ -8,12 +8,12 @@ import {
   numberToRmbResolver,
   bookmarksResolver,
   pluginListResolver,
-  PLUGIN_LIST_NAME,
 } from './plugin'
 import { WarpDefaultObject } from '@extension/shared'
 import { commandSettingsStorage, defaultCommandSettings } from '@extension/storage'
-import type { CommandSettingsData, CommandPluginSettings } from '@extension/storage'
+import type { CommandSettingsData } from '@extension/storage'
 import { stripTriggerKeyForPlugin } from './utils'
+import { filter } from 'lodash'
 
 export type IDisposable = {
   dispose: () => void
@@ -59,16 +59,19 @@ class CommandResolverService {
   private resolvers: ICommandResolverWithSettings[] = []
   private _queryTimes = 0
   private _storageSettings: CommandSettingsData | null = null
+  private pluginListResolverInstance: ICommandResolverWithSettings
 
   constructor() {
     // Try to get initial settings synchronously from snapshot
     this._storageSettings = commandSettingsStorage.getSnapshot()
     // Initialize async to ensure storage is properly loaded and subscribed to changes
     this.initStorage()
+
+    this.pluginListResolverInstance = createResolverWithSettings(pluginListResolver, this.getStorageSettings)
   }
 
   get registeredResolvers() {
-    return this.resolvers
+    return filter(this.resolvers, it => !it.properties.name.startsWith('__'))
   }
 
   private async initStorage() {
@@ -95,7 +98,7 @@ class CommandResolverService {
     this.sortResolvers()
   }
 
-  private sortResolvers() {
+  sortResolvers() {
     this.resolvers.sort((a, b) => {
       return a.getSettings().priority - b.getSettings().priority
     })
@@ -106,9 +109,8 @@ class CommandResolverService {
 
     // When query is empty, show plugin list
     if (rawQuery.length === 0) {
-      const pluginListPlugin = this.resolvers.find(it => it.properties.name === PLUGIN_LIST_NAME)
-      if (pluginListPlugin) {
-        return { plugins: [pluginListPlugin], hit: true }
+      if (this.pluginListResolverInstance) {
+        return { plugins: [this.pluginListResolverInstance], hit: true }
       }
     }
 
@@ -201,7 +203,6 @@ class CommandResolverService {
 
 export const commandResolverService = new CommandResolverService()
 
-commandResolverService.register(pluginListResolver)
 commandResolverService.register(historyResolver)
 commandResolverService.register(tabSearchResolver)
 commandResolverService.register(webSearchResolver)
