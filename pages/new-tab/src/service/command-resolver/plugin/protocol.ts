@@ -31,6 +31,7 @@ export interface CommandProperties {
   label?: string
   name: string
   description?: string
+  icon?: React.ElementType
 }
 
 export interface ICommandResolver {

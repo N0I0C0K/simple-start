@@ -2,6 +2,7 @@ import { getDefaultIconUrl } from '@/lib/url'
 import type { ICommandResolver, ICommandResult } from './protocol'
 import moment from 'moment'
 import { t } from '@extension/i18n'
+import { Clock } from 'lucide-react'
 
 import { historySuggestStorage } from '@extension/storage'
 
@@ -27,6 +28,7 @@ export const historyResolver: ICommandResolver = {
     name: t('commandPluginHistory'),
     label: t('commandPluginHistory'),
     description: t('commandPluginHistoryDescription'),
+    icon: Clock,
   },
   resolve: async params => {
     if (params.query.length === 0)

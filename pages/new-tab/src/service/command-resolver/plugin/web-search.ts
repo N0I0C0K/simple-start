@@ -13,6 +13,7 @@ export const webSearchResolver: ICommandResolver = {
     name: t('commandPluginWebSearch'),
     label: t('commandPluginWebSearch'),
     description: t('commandPluginWebSearchDescription'),
+    icon: Search,
   },
   resolve: async params => {
     if (params.query.length === 0) return null

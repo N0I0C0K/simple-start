@@ -172,6 +172,7 @@ export const numberToRmbResolver: ICommandResolver = {
     name: t('numberToRmb'),
     label: t('numberToRmbLabel'),
     description: t('commandPluginNumberToRmbDescription'),
+    icon: Coins,
   },
   resolve: async params => {
     const num = parseInput(params.query)

@@ -42,6 +42,7 @@ export const pluginListResolver: ICommandResolver = {
     name: PLUGIN_LIST_NAME,
     label: 'Plugin List',
     description: t('availablePluginsDescription'),
+    icon: Layers,
   },
   resolve: async params => {
     // Only show when query is completely empty

@@ -60,6 +60,7 @@ export const bookmarksResolver: ICommandResolver = {
     name: t('commandPluginBookmarks'),
     label: t('commandPluginBookmarks'),
     description: t('commandPluginBookmarksDescription'),
+    icon: Star,
   },
   resolve: async params => {
     const tree = await chrome.bookmarks.getTree()

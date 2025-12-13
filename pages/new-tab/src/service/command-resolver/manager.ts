@@ -97,11 +97,14 @@ class CommandResolverService {
   }
 
   /**
-   * Strip the trigger key from the query
+   * Strip the trigger key from the query for a specific plugin
    * Handles one space after the trigger key (e.g., "rmb 1233")
    * If multiple spaces exist, only remove the first one
    */
-  private stripTriggerKey(rawQuery: string, activeKey: string): string {
+  private stripTriggerKeyForPlugin(rawQuery: string, plugin: ICommandResolverWithSettings): string {
+    const settings = plugin.getSettings()
+    const activeKey = settings.activeKey
+
     if (!activeKey || !rawQuery.startsWith(activeKey)) {
       return rawQuery
     }
@@ -117,16 +120,13 @@ class CommandResolverService {
     return remaining
   }
 
-  choosePlugins(rawQuery: string): { plugins: ICommandResolverWithSettings[]; strippedQuery: string } {
+  choosePlugins(rawQuery: string): ICommandResolverWithSettings[] {
     const availablePlugins = this.resolvers.filter(it => it.getSettings().active)
 
     // When query is empty, show plugin list
     if (rawQuery.length === 0) {
       const pluginListPlugin = this.resolvers.find(it => it.properties.name === PLUGIN_LIST_NAME)
-      return {
-        plugins: pluginListPlugin ? [pluginListPlugin] : [],
-        strippedQuery: rawQuery,
-      }
+      return pluginListPlugin ? [pluginListPlugin] : []
     }
 
     // Try to match plugins with activeKey
@@ -136,24 +136,14 @@ class CommandResolverService {
     })
 
     if (matchedPlugins.length > 0) {
-      // If we have matched plugins, strip the trigger key from the first matched plugin
-      const firstMatch = matchedPlugins[0]
-      const settings = firstMatch.getSettings()
-      const strippedQuery = this.stripTriggerKey(rawQuery, settings.activeKey)
-      return {
-        plugins: matchedPlugins,
-        strippedQuery,
-      }
+      return matchedPlugins
     }
 
-    // Return global plugins with no stripping
-    return {
-      plugins: this.resolvers.filter(it => {
-        const settings = it.getSettings()
-        return settings.active && settings.includeInGlobal
-      }),
-      strippedQuery: rawQuery,
-    }
+    // Return global plugins
+    return this.resolvers.filter(it => {
+      const settings = it.getSettings()
+      return settings.active && settings.includeInGlobal
+    })
   }
 
   resolve(params: CommandQueryParams, onGroupResolve: (group: ICommandResultGroup) => void) {
@@ -168,28 +158,34 @@ class CommandResolverService {
     // Sort resolvers before resolving (in case priorities changed)
     this.sortResolvers()
 
-    // Choose plugins and strip trigger key from query
-    const { plugins, strippedQuery } = this.choosePlugins(params.rawQuery)
-
-    // Create params with stripped query for plugins
-    const pluginParams: CommandQueryParams = {
-      query: strippedQuery,
-      rawQuery: params.rawQuery,
-      changeQuery: params.changeQuery,
-    }
+    // Choose plugins based on raw query
+    const plugins = this.choosePlugins(params.rawQuery)
 
     // Pass resolver service to plugins so they can access other plugins
-    const extendedParams = { ...pluginParams, resolverService: this }
+    const extendedParams = { ...params, resolverService: this }
 
     Promise.all(
       plugins.map(it => {
         return new Promise((resolve, reject) => {
-          it.resolve(extendedParams)
+          // Strip trigger key for this specific plugin
+          const strippedQuery = this.stripTriggerKeyForPlugin(params.rawQuery, it)
+          
+          // Create params with stripped query for this plugin
+          const pluginParams: CommandQueryParams = {
+            query: strippedQuery,
+            rawQuery: params.rawQuery,
+            changeQuery: params.changeQuery,
+          }
+          
+          // Merge with resolver service
+          const pluginExtendedParams = { ...pluginParams, resolverService: this }
+
+          it.resolve(pluginExtendedParams)
             .then(res => {
               if (res === null || res.length === 0) {
                 // If plugin returns null or empty array, still show empty group for non-empty queries
                 // This helps users know the plugin was invoked but found nothing
-                if (pluginParams.query.length > 0) {
+                if (strippedQuery.length > 0) {
                   warpOnGroupResolve({
                     groupName: it.properties.name,
                     result: [],

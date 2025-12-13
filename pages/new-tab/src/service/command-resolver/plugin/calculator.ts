@@ -194,6 +194,7 @@ export const calculatorResolver: ICommandResolver = {
     name: t('calculator'),
     label: t('calculator'),
     description: t('commandPluginCalculatorDescription'),
+    icon: Calculator,
   },
   resolve: async params => {
     const results: ICommandResult[] = []
