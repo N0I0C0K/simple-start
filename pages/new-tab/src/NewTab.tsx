@@ -1,6 +1,6 @@
 import '@src/NewTab.css'
 import { Center, Text, Heading, Stack } from '@extension/ui'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { CommandModule, SettingPanel, ScrollLinkCardPage } from './components'
 import type { CommandModuleRef } from './components/command'
 
@@ -52,7 +52,7 @@ const TimeDisplay = () => {
 const NewTab = () => {
   const settings = useStorage(settingStorage)
   const [wallpaperSrc, setWallpaperSrc] = useState<string>(() => {
-    // Update wallpaper source when settings change
+    // Initialize wallpaper source from settings
     if (settings.wallpaperType === 'local' && settings.localWallpaperData) {
       return settings.localWallpaperData
     } else {
@@ -70,11 +70,11 @@ const NewTab = () => {
     }
   }, [settings.wallpaperType, settings.localWallpaperData, settings.wallpaperUrl])
 
-  const handleBackgroundDoubleClick = useCallback(() => {
+  function handleBackgroundDoubleClick() {
     if (settings.doubleClickBackgroundFocusCommand) {
       commandModuleRef.current?.focus()
     }
-  }, [settings.doubleClickBackgroundFocusCommand])
+  }
 
   return (
     <>
