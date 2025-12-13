@@ -339,6 +339,14 @@
     "description": "Bookmarks command plugin description",
     "message": "搜索浏览器收藏夹。"
   },
+  "commandPluginQuickLinks": {
+    "description": "Quick Links command plugin name",
+    "message": "快捷链接"
+  },
+  "commandPluginQuickLinksDescription": {
+    "description": "Quick Links command plugin description",
+    "message": "通过名称或URL搜索快捷链接。"
+  },
   "localWallpaper": {
     "description": "Local wallpaper section title",
     "message": "本地壁纸"
