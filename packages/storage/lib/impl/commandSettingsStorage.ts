@@ -72,6 +72,12 @@ export const defaultCommandSettings: CommandSettingsData = {
     activeKey: 'b',
     includeInGlobal: true,
   },
+  quickLinks: {
+    priority: 3,
+    active: true,
+    activeKey: 'q',
+    includeInGlobal: true,
+  },
 }
 
 const storage = createStorage<CommandSettingsData>('command-settings-storage', defaultCommandSettings, {

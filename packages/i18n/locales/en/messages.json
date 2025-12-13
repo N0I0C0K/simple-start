@@ -339,6 +339,14 @@
     "description": "Bookmarks command plugin description",
     "message": "Search browser bookmarks."
   },
+  "commandPluginQuickLinks": {
+    "description": "Quick Links command plugin name",
+    "message": "Quick Links"
+  },
+  "commandPluginQuickLinksDescription": {
+    "description": "Quick Links command plugin description",
+    "message": "Search quick links by name or URL."
+  },
   "localWallpaper": {
     "description": "Local wallpaper section title",
     "message": "Local Wallpaper"
