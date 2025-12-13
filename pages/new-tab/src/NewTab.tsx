@@ -1,6 +1,5 @@
 import '@src/NewTab.css'
-import { Center, Input, Text, Heading, Stack } from '@extension/ui'
-import { Search, ArrowRight } from 'lucide-react'
+import { Center, Text, Heading, Stack } from '@extension/ui'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { CommandModule, SettingPanel, ScrollLinkCardPage } from './components'
 import type { CommandModuleRef } from './components/command'
@@ -10,64 +9,6 @@ import { HistoryArea } from './components/history-area'
 import { settingStorage, DEFAULT_WALLPAPER_URL } from '@extension/storage'
 import { useStorage } from '@extension/shared'
 import { DrinkWaterEventMountComponent } from './components/events'
-import { t } from '@extension/i18n'
-
-function SearchGroup() {
-  const settings = useStorage(settingStorage)
-  const [searchText, setSearchText] = useState('')
-  const searchFunc = useCallback(async (text: string) => {
-    await chrome.search.query({ text: text, disposition: 'NEW_TAB' })
-  }, [])
-  const inputRef = useRef<HTMLInputElement>(null)
-  useEffect(() => {
-    window.addEventListener('keydown', ev => {
-      if (ev.altKey && ev.code == 'KeyK') {
-        inputRef.current?.focus()
-      }
-    })
-  }, [])
-  return (
-    <div className="w-[40%] min-w-[20rem] max-w-[40rem]">
-      <div className="relative">
-        <Input
-          ref={inputRef}
-          id="input-26"
-          className="peer pe-9 ps-10 rounded-full h-12 font-medium shadow-md"
-          placeholder={t('searchPlaceholder')}
-          type="search"
-          value={searchText}
-          onChange={ev => {
-            setSearchText(ev.target.value)
-          }}
-          onKeyDown={ev => {
-            if (ev.key == 'Enter') {
-              searchFunc(searchText)
-            }
-          }}
-        />
-        <div
-          className="pointer-events-none absolute inset-y-0 start-1 flex items-center justify-center ps-3
-            text-muted-foreground/80 peer-disabled:opacity-50">
-          <Search size={16} strokeWidth={3} />
-        </div>
-
-        <button
-          className="absolute inset-y-0 end-1 flex h-full w-9 items-center justify-center rounded-e-lg
-            text-muted-foreground/80 ring-offset-background transition-shadow hover:text-foreground focus-visible:border
-            focus-visible:border-ring focus-visible:text-foreground focus-visible:outline-none focus-visible:ring-2
-            focus-visible:ring-ring/30 focus-visible:ring-offset-2 disabled:pointer-events-none
-            disabled:cursor-not-allowed disabled:opacity-50"
-          aria-label={t('submitSearch')}
-          type="submit"
-          onClick={() => {
-            searchFunc(searchText)
-          }}>
-          <ArrowRight size={16} strokeWidth={3} aria-hidden="true" />
-        </button>
-      </div>
-    </div>
-  )
-}
 
 const TimeDisplay = () => {
   const [time, setTime] = useState<Date>(new Date())
@@ -137,7 +78,9 @@ const NewTab = () => {
 
   return (
     <>
-      <div className={'flex h-screen w-screen max-w-full flex-col justify-center gap-4 relative overflow-hidden'}>
+      <div
+        className={'flex h-screen w-screen max-w-full flex-col justify-center gap-4 relative overflow-hidden'}
+        onDoubleClick={handleBackgroundDoubleClick}>
         <Center column className="flex-1">
           <TimeDisplay />
         </Center>
@@ -174,7 +117,6 @@ const NewTab = () => {
           object-cover select-none"
         src={wallpaperSrc}
         alt="background wallpaper"
-        onDoubleClick={handleBackgroundDoubleClick}
         onError={() => {
           console.log('background image error')
           // Only fallback to default if not already using it
