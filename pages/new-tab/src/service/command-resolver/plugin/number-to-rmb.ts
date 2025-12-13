@@ -1,4 +1,4 @@
-import type { ICommandResolver } from './protocol'
+import type { ICommandResolver } from '../protocol'
 import { Coins } from 'lucide-react'
 import { t } from '@extension/i18n'
 
@@ -169,8 +169,8 @@ export const numberToRmbResolver: ICommandResolver = {
     activeKey: 'rmb',
   },
   properties: {
-    name: t('numberToRmb'),
-    label: t('numberToRmbLabel'),
+    name: 'numberToRmb',
+    displayName: t('numberToRmbLabel'),
     description: t('commandPluginNumberToRmbDescription'),
     icon: Coins,
   },

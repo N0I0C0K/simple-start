@@ -1,5 +1,5 @@
 import { getDefaultIconUrl } from '@/lib/url'
-import type { ICommandResolver, ICommandResult } from './protocol'
+import type { ICommandResolver, ICommandResult } from '../protocol'
 import moment from 'moment'
 import { t } from '@extension/i18n'
 import { Clock } from 'lucide-react'
@@ -25,8 +25,8 @@ export const historyResolver: ICommandResolver = {
     activeKey: 'h',
   },
   properties: {
-    name: t('commandPluginHistory'),
-    label: t('commandPluginHistory'),
+    name: 'history',
+    displayName: t('commandPluginHistory'),
     description: t('commandPluginHistoryDescription'),
     icon: Clock,
   },

@@ -1,4 +1,4 @@
-import type { ICommandResolver } from './protocol'
+import type { ICommandResolver } from '../protocol'
 import { t } from '@extension/i18n'
 import { Columns } from 'lucide-react'
 
@@ -8,8 +8,8 @@ export const tabSearchResolver: ICommandResolver = {
     active: true,
   },
   properties: {
-    name: t('commandPluginTabs'),
-    label: t('commandPluginTabs'),
+    name: 'tabs',
+    displayName: t('commandPluginTabs'),
     description: t('commandPluginTabsDescription'),
     icon: Columns,
   },

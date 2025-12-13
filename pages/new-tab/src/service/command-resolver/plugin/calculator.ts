@@ -1,4 +1,4 @@
-import type { ICommandResolver, ICommandResult } from './protocol'
+import type { ICommandResolver, ICommandResult } from '../protocol'
 import { Calculator, History, Copy, Trash2 } from 'lucide-react'
 import { t } from '@extension/i18n'
 import { Parser } from 'expr-eval'
@@ -191,8 +191,8 @@ export const calculatorResolver: ICommandResolver = {
     activeKey: '=',
   },
   properties: {
-    name: t('calculator'),
-    label: t('calculator'),
+    name: 'calculator',
+    displayName: t('calculator'),
     description: t('commandPluginCalculatorDescription'),
     icon: Calculator,
   },

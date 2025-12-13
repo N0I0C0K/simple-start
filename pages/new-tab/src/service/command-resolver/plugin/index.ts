@@ -1,6 +1,6 @@
 export * from './history'
 export * from './tab-search'
-export * from './protocol'
+export * from '../protocol'
 export * from './web-search'
 export * from './calculator'
 export * from './number-to-rmb'

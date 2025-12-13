@@ -13,6 +13,7 @@ import {
 import { WarpDefaultObject } from '@extension/shared'
 import { commandSettingsStorage, defaultCommandSettings } from '@extension/storage'
 import type { CommandSettingsData, CommandPluginSettings } from '@extension/storage'
+import { stripTriggerKeyForPlugin } from './utils'
 
 export type IDisposable = {
   dispose: () => void
@@ -55,7 +56,7 @@ function createResolverWithSettings(
 }
 
 class CommandResolverService {
-  resolvers: ICommandResolverWithSettings[] = []
+  private resolvers: ICommandResolverWithSettings[] = []
   _queryTimes = 0
   private _storageSettings: CommandSettingsData | null = null
 
@@ -64,6 +65,10 @@ class CommandResolverService {
     this._storageSettings = commandSettingsStorage.getSnapshot()
     // Initialize async to ensure storage is properly loaded and subscribed to changes
     this.initStorage()
+  }
+
+  get registeredResolvers() {
+    return this.resolvers
   }
 
   private async initStorage() {
@@ -94,27 +99,6 @@ class CommandResolverService {
     this.resolvers.sort((a, b) => {
       return a.getSettings().priority - b.getSettings().priority
     })
-  }
-
-  /**
-   * Strip the trigger key from the query for a specific plugin
-   * Handles one space after the trigger key (e.g., "rmb 1233")
-   * If multiple spaces exist, only remove the first one
-   */
-  private stripTriggerKeyForPlugin(rawQuery: string, activeKey: string): string {
-    if (!activeKey || !rawQuery.startsWith(activeKey)) {
-      return rawQuery
-    }
-
-    // Remove the activeKey
-    let remaining = rawQuery.slice(activeKey.length)
-
-    // If there's a space at the start, remove exactly one space
-    if (remaining.startsWith(' ')) {
-      remaining = remaining.slice(1)
-    }
-
-    return remaining
   }
 
   choosePlugins(rawQuery: string): ICommandResolverWithSettings[] {
@@ -170,10 +154,10 @@ class CommandResolverService {
         return new Promise((resolve, reject) => {
           // Get settings once for this plugin
           const settings = it.getSettings()
-          
+
           // Strip trigger key for this specific plugin
-          const strippedQuery = this.stripTriggerKeyForPlugin(params.rawQuery, settings.activeKey)
-          
+          const strippedQuery = stripTriggerKeyForPlugin(params.rawQuery, settings.activeKey)
+
           // Create params with plugin-specific stripped query
           const pluginParams: CommandQueryParams & { resolverService: CommandResolverService } = {
             ...baseParams,
@@ -187,7 +171,7 @@ class CommandResolverService {
                 // This helps users know the plugin was invoked but found nothing
                 if (strippedQuery.length > 0) {
                   warpOnGroupResolve({
-                    groupName: it.properties.name,
+                    groupName: it.properties.displayName,
                     result: [],
                   })
                 }
@@ -195,7 +179,7 @@ class CommandResolverService {
                 return
               }
               warpOnGroupResolve({
-                groupName: it.properties.name,
+                groupName: it.properties.displayName,
                 result: res,
               })
               resolve(null)

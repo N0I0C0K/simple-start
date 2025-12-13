@@ -13,82 +13,32 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from '@extension/ui'
-import type { LucideProps } from 'lucide-react'
-import { History, Layers, Globe, Calculator, Coins, Star } from 'lucide-react'
-import { type ElementType, type FC } from 'react'
+import { Layers } from 'lucide-react'
+import { useState, type FC } from 'react'
 import { t } from '@extension/i18n'
-
-interface CommandPluginConfig {
-  name: string
-  labelKey: string
-  descriptionKey: string
-  IconClass: ElementType<LucideProps>
-}
-
-const COMMAND_PLUGINS: CommandPluginConfig[] = [
-  {
-    name: 'history',
-    labelKey: 'commandPluginHistory',
-    descriptionKey: 'commandPluginHistoryDescription',
-    IconClass: History,
-  },
-  {
-    name: 'tabs',
-    labelKey: 'commandPluginTabs',
-    descriptionKey: 'commandPluginTabsDescription',
-    IconClass: Layers,
-  },
-  {
-    name: 'webSearch',
-    labelKey: 'commandPluginWebSearch',
-    descriptionKey: 'commandPluginWebSearchDescription',
-    IconClass: Globe,
-  },
-  {
-    name: 'calculator',
-    labelKey: 'commandPluginCalculator',
-    descriptionKey: 'commandPluginCalculatorDescription',
-    IconClass: Calculator,
-  },
-  {
-    name: 'numberToRmb',
-    labelKey: 'commandPluginNumberToRmb',
-    descriptionKey: 'commandPluginNumberToRmbDescription',
-    IconClass: Coins,
-  },
-  {
-    name: 'bookmarks',
-    labelKey: 'commandPluginBookmarks',
-    descriptionKey: 'commandPluginBookmarksDescription',
-    IconClass: Star,
-  },
-]
+import type { ICommandResolver } from '@src/service/command-resolver'
+import { commandResolverService } from '@src/service/command-resolver'
+import { cn } from '@/lib/utils'
 
 const CommandPluginSettingItem: FC<{
-  config: CommandPluginConfig
+  plugin: ICommandResolver
   settings: CommandPluginSettings
   onUpdate: (settings: Partial<CommandPluginSettings>) => void
-}> = ({ config, settings, onUpdate }) => {
+}> = ({ plugin, settings, onUpdate }) => {
+  const IconType = plugin.properties.icon ?? Layers
   return (
-    <AccordionItem value={config.name} className="rounded-md bg-muted px-3">
+    <AccordionItem value={plugin.properties.name} className={cn('rounded-md bg-muted px-3')}>
       <AccordionTrigger className="hover:no-underline py-3">
         <Stack direction={'column'} className="gap-1 flex-1 items-start">
           <Stack direction={'row'} center className="gap-2 w-full">
-            <config.IconClass className="size-8 text-muted-foreground" />
+            <IconType className="size-8 text-muted-foreground" />
             <Stack direction={'column'} className="gap-0.5 items-start">
-              <Text className="font-medium" level="md">
-                {t(config.labelKey as never)}
+              <Text className={cn('font-medium', settings.active ? '' : 'text-muted-foreground')} level="md">
+                {plugin.properties.displayName}
               </Text>
               <Text gray level="xs" className="">
-                {t(config.descriptionKey as never)}
+                {plugin.properties.description}
               </Text>
-            </Stack>
-            <Space className="flex-1" />
-            <Stack direction={'row'} center className="gap-2" onClick={e => e.stopPropagation()}>
-              <Text level="s" gray>
-                {t('commandPluginActive')}
-              </Text>
-              <Switch checked={settings.active} onCheckedChange={val => onUpdate({ active: val })} />
             </Stack>
           </Stack>
         </Stack>
@@ -96,6 +46,11 @@ const CommandPluginSettingItem: FC<{
       <AccordionContent className="pb-3">
         <Stack direction={'column'} className="gap-3">
           <Separator />
+          <Stack direction={'row'} center className="gap-2" onClick={e => e.stopPropagation()}>
+            <Text level="s">{t('commandPluginActive')}</Text>
+            <Space className="flex-1" />
+            <Switch checked={settings.active} onCheckedChange={val => onUpdate({ active: val })} />
+          </Stack>
           <Stack direction={'row'} center className="gap-2">
             <Text level="s">{t('commandPluginIncludeInGlobal')}</Text>
             <Space className="flex-1" />
@@ -139,6 +94,7 @@ const CommandPluginSettingItem: FC<{
 export const CommandSettings: FC = () => {
   const commandSettings = useStorage(commandSettingsStorage)
 
+  const [plugins] = useState(commandResolverService.registeredResolvers)
   const handlePluginUpdate = (pluginName: string, updates: Partial<CommandPluginSettings>) => {
     void commandSettingsStorage.setPluginSettings(pluginName, updates)
   }
@@ -149,14 +105,19 @@ export const CommandSettings: FC = () => {
         {t('configureCommandSettings')}
       </Text>
       <Accordion type="multiple" className="flex flex-col gap-2">
-        {COMMAND_PLUGINS.map(config => {
-          const pluginSettings = commandSettings[config.name] || defaultCommandSettings[config.name]
+        {plugins.map(plugin => {
+          const pluginSettings =
+            commandSettings[plugin.properties.name] || defaultCommandSettings[plugin.properties.name]
+          if (!pluginSettings) {
+            console.warn('No settings found for plugin:', plugin.properties.name)
+            return null
+          }
           return (
             <CommandPluginSettingItem
-              key={config.name}
-              config={config}
+              key={plugin.properties.name}
+              plugin={plugin}
               settings={pluginSettings}
-              onUpdate={updates => handlePluginUpdate(config.name, updates)}
+              onUpdate={updates => handlePluginUpdate(plugin.properties.name, updates)}
             />
           )
         })}

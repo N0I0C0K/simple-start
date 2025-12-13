@@ -28,8 +28,8 @@ export interface CommandSettings {
 export type PartialCommandSettings = Partial<CommandSettings>
 
 export interface CommandProperties {
-  label?: string
-  name: string
+  name: string // Unique name of the command plugin, used for identification
+  displayName: string // Display name for the command plugin
   description?: string
   icon?: React.ElementType
 }

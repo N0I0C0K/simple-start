@@ -1,4 +1,4 @@
-import type { ICommandResolver, ICommandResult, CommandQueryParams, CommandSettings } from './protocol'
+import type { ICommandResolver, ICommandResult, CommandQueryParams, CommandSettings } from '../protocol'
 import { Layers } from 'lucide-react'
 import { t } from '@extension/i18n'
 import { cn } from '@/lib/utils'
@@ -25,7 +25,7 @@ function GenKeyIcon(key: string) {
   const InnerComponent: React.FC<{
     className?: string
   }> = ({ className }: { className?: string }) => {
-    return <p className={cn('font-bold text-lg text-center', className)}>{key}</p>
+    return <p className={cn('font-medium text-lg text-center', className)}>{key}</p>
   }
 
   return InnerComponent
@@ -40,7 +40,7 @@ export const pluginListResolver: ICommandResolver = {
   },
   properties: {
     name: PLUGIN_LIST_NAME,
-    label: 'Plugin List',
+    displayName: t('availablePlugins'),
     description: t('availablePluginsDescription'),
     icon: Layers,
   },
@@ -73,7 +73,7 @@ export const pluginListResolver: ICommandResolver = {
 
       results.push({
         id: `plugin-list-${plugin.properties.name}`,
-        title: plugin.properties.name,
+        title: plugin.properties.displayName,
         description: plugin.properties.description || '',
         IconType: triggerKey ? GenKeyIcon(triggerKey) : Layers,
         onSelect: () => {

@@ -1,4 +1,4 @@
-import type { ICommandResolver } from './protocol'
+import type { ICommandResolver } from '../protocol'
 import { Search } from 'lucide-react'
 import { t } from '@extension/i18n'
 
@@ -10,8 +10,8 @@ export const webSearchResolver: ICommandResolver = {
     activeKey: 'g',
   },
   properties: {
-    name: t('commandPluginWebSearch'),
-    label: t('commandPluginWebSearch'),
+    name: 'webSearch',
+    displayName: t('commandPluginWebSearch'),
     description: t('commandPluginWebSearchDescription'),
     icon: Search,
   },

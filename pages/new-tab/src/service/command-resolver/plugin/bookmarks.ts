@@ -1,5 +1,5 @@
 import { getDefaultIconUrl } from '@/lib/url'
-import type { ICommandResolver, ICommandResult } from './protocol'
+import type { ICommandResolver, ICommandResult } from '../protocol'
 import { Star } from 'lucide-react'
 import { t } from '@extension/i18n'
 
@@ -42,8 +42,7 @@ function searchBookmarks(
   const lowerQuery = query.toLowerCase()
 
   return allBookmarks.filter(
-    bookmark =>
-      bookmark.title.toLowerCase().includes(lowerQuery) || bookmark.url?.toLowerCase().includes(lowerQuery),
+    bookmark => bookmark.title.toLowerCase().includes(lowerQuery) || bookmark.url?.toLowerCase().includes(lowerQuery),
   )
 }
 
@@ -57,8 +56,8 @@ export const bookmarksResolver: ICommandResolver = {
     includeInGlobal: true,
   },
   properties: {
-    name: t('commandPluginBookmarks'),
-    label: t('commandPluginBookmarks'),
+    name: 'bookmarks',
+    displayName: t('commandPluginBookmarks'),
     description: t('commandPluginBookmarksDescription'),
     icon: Star,
   },
