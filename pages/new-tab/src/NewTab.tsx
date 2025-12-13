@@ -8,7 +8,6 @@ import '@/src/style/placeholder.css'
 import { HistoryArea } from './components/history-area'
 import { settingStorage, DEFAULT_WALLPAPER_URL } from '@extension/storage'
 import { useStorage } from '@extension/shared'
-import { DrinkWaterEventMountComponent } from './components/events'
 import { t } from '@extension/i18n'
 
 function SearchGroup() {
@@ -165,7 +164,6 @@ const NewTab = () => {
         }}
       />
       <SettingPanel className="fixed top-2 right-2" />
-      <DrinkWaterEventMountComponent />
     </>
   )
 }

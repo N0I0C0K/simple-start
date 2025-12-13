@@ -73,21 +73,12 @@ const generateMessageCenter = (): MessageCenter => {
 }
 
 export let messageCenter: MessageCenter
-export let receiveDrinkWaterLaunchMessage: MessageHandler<events.DrinkWaterLaunchPayload>
-export let receiveDrinkWaterConfirmMessage: MessageHandler<events.DrinkWaterConfirmPayload>
-export let sendDrinkWaterConfirmMessage: MessageHandler<events.DrinkWaterConfirmPayload>
-export let setLaunchPollingMessage: MessageHandler<events.DrinkWaterLaunchPayload | null>
 
 export let closeMqttClientMessage: MessageHandler<void>
 export let openMqttClientMessage: MessageHandler<void>
 
 if (globalThis.chrome) {
   messageCenter = generateMessageCenter()
-  receiveDrinkWaterLaunchMessage = messageCenter.registerMessageHandler<events.DrinkWaterLaunchPayload>('drink-water-launch')
-  receiveDrinkWaterConfirmMessage = messageCenter.registerMessageHandler<events.DrinkWaterConfirmPayload>('drink-water-confirm')
-  sendDrinkWaterConfirmMessage = messageCenter.registerMessageHandler<events.DrinkWaterConfirmPayload>('send-drink-water-confirm')
-  setLaunchPollingMessage = messageCenter.registerMessageHandler<events.DrinkWaterLaunchPayload | null>('set-launch-polling')
   closeMqttClientMessage = messageCenter.registerMessageHandler<void>('close-mqtt-client')
   openMqttClientMessage = messageCenter.registerMessageHandler<void>('open-mqtt-client')
 }
-
