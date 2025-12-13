@@ -57,7 +57,7 @@ function createResolverWithSettings(
 
 class CommandResolverService {
   private resolvers: ICommandResolverWithSettings[] = []
-  _queryTimes = 0
+  private _queryTimes = 0
   private _storageSettings: CommandSettingsData | null = null
 
   constructor() {
@@ -95,7 +95,7 @@ class CommandResolverService {
     this.sortResolvers()
   }
 
-  sortResolvers() {
+  private sortResolvers() {
     this.resolvers.sort((a, b) => {
       return a.getSettings().priority - b.getSettings().priority
     })

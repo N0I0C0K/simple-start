@@ -11,8 +11,8 @@ import { t } from '@extension/i18n'
 const CommandItemIcon: FC<{ iconUrl?: string; IconType?: React.ElementType }> = ({ iconUrl, IconType }) => {
   return (
     <div className="bg-muted-foreground/10 rounded-sm size-10 flex items-center justify-center shrink-0">
-      {iconUrl && <img src={iconUrl} alt="icon" className="size-6 rounded-md mx-3" />}
-      {IconType && <IconType className="stroke-2 mx-3" />}
+      {iconUrl && <img src={iconUrl} alt="icon" className="size-6 rounded-md" />}
+      {IconType && <IconType className="stroke-2 size-6" />}
     </div>
   )
 }
@@ -42,7 +42,7 @@ export const CommandModule: FC<{
     commandResolverService.resolve(query, group => {
       setResult(prev => [...prev, group])
     })
-  }, [inputDelay, setInputVal])
+  }, [inputDelay])
 
   useEffect(() => {
     const listener = (ev: KeyboardEvent) => {
@@ -87,18 +87,18 @@ export const CommandModule: FC<{
         className="h-14 md:h-12 text-lg md:text-base"
         keyBindings={keyBindings}
       />
-      <command.CommandList
-        className={cn('max-h-80', focus ? 'block' : 'hidden')}
-        onMouseDown={e => {
-          // Prevent the input from losing focus when clicking on items
-          e.preventDefault()
-        }}>
-        <command.CommandEmpty>{t('noResultsFound')}</command.CommandEmpty>
-        {result.map(val => {
-          // Translate internal plugin names to user-friendly names
-          const displayName = val.groupName === PLUGIN_LIST_NAME ? t('availablePlugins') : val.groupName
-          return (
-            <command.CommandGroup heading={displayName} key={val.groupName}>
+      {focus && (
+        <command.CommandList
+          className="max-h-80"
+          onMouseDown={e => {
+            // Prevent the input from losing focus when clicking on items
+            e.preventDefault()
+          }}>
+          <command.CommandEmpty>{t('noResultsFound')}</command.CommandEmpty>
+          {result.map(val => {
+            // groupName is already displayName (translated)
+            return (
+              <command.CommandGroup heading={val.groupName} key={val.groupName}>
               {val.result.length === 0 ? (
                 <command.CommandItem disabled className="py-1.5 w-full opacity-60">
                   <Text level="xs" gray>
@@ -136,7 +136,8 @@ export const CommandModule: FC<{
             </command.CommandGroup>
           )
         })}
-      </command.CommandList>
+        </command.CommandList>
+      )}
     </command.Command>
   )
 }

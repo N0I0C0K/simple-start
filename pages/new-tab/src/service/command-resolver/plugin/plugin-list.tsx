@@ -17,11 +17,11 @@ interface ICommandResolverWithSettings extends ICommandResolver {
 // Extended params interface for internal use with resolver service
 interface ExtendedCommandQueryParams extends CommandQueryParams {
   resolverService?: {
-    resolvers: ICommandResolverWithSettings[]
+    registeredResolvers: ICommandResolverWithSettings[]
   }
 }
 
-function GenKeyIcon(key: string) {
+function createKeyIcon(key: string) {
   const InnerComponent: React.FC<{
     className?: string
   }> = ({ className }: { className?: string }) => {
@@ -58,7 +58,7 @@ export const pluginListResolver: ICommandResolver = {
     const results: ICommandResult[] = []
 
     // Get all active plugins
-    const activePlugins = resolverService.resolvers.filter(r => {
+    const activePlugins = resolverService.registeredResolvers.filter(r => {
       const settings = r.getSettings()
       return settings.active
     })
@@ -71,13 +71,17 @@ export const pluginListResolver: ICommandResolver = {
       // Skip the plugin-list itself
       if (plugin.properties.name === PLUGIN_LIST_NAME) continue
 
+      // Skip plugins without trigger keys
+      if (!triggerKey) continue
+
       results.push({
         id: `plugin-list-${plugin.properties.name}`,
         title: plugin.properties.displayName,
         description: plugin.properties.description || '',
-        IconType: triggerKey ? GenKeyIcon(triggerKey) : Layers,
+        IconType: createKeyIcon(triggerKey),
         onSelect: () => {
-          params.changeQuery?.(settings.activeKey || '')
+          // Add a space after trigger key for better UX
+          params.changeQuery?.(triggerKey + ' ')
         },
       })
     }
