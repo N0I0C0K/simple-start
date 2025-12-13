@@ -4,6 +4,7 @@ import { settingStorage } from '@extension/storage'
 import { command, Stack, Text } from '@extension/ui'
 import { commandResolverService } from '@src/service/command-resolver'
 import type { CommandQueryParams, ICommandResultGroup } from '@src/service/command-resolver'
+import { PLUGIN_LIST_NAME } from '@src/service/command-resolver/plugin'
 import {
   useEffect,
   useRef,
@@ -16,10 +17,10 @@ import { t } from '@extension/i18n'
 
 const CommandItemIcon: FC<{ iconUrl?: string; IconType?: React.ElementType }> = ({ iconUrl, IconType }) => {
   return (
-    <>
-      {iconUrl && <img src={iconUrl} alt="icon" className="size-6 rounded-md mx-3" />}
-      {IconType && <IconType className="stroke-2 h-10 w-10 mx-3" />}
-    </>
+    <div className="bg-muted-foreground/10 rounded-sm size-10 flex items-center justify-center shrink-0">
+      {iconUrl && <img src={iconUrl} alt="icon" className="size-6 rounded-md" />}
+      {IconType && <IconType className="stroke-2 size-6" />}
+    </div>
   )
 }
 
@@ -43,6 +44,16 @@ export const CommandModule = forwardRef<CommandModuleRef, {
   useEffect(() => {
     const query: CommandQueryParams = {
       query: inputDelay,
+      rawQuery: inputDelay,
+      changeQuery: (newQuery: string) => {
+        setInputVal(newQuery)
+        setTimeout(() => {
+          if (inputRef.current == null) return
+          inputRef.current.focus()
+          const len = inputRef.current.value.length
+          inputRef.current.setSelectionRange(len, len)
+        }, 200)
+      },
     }
     setResult([])
     commandResolverService.resolve(query, group => {
@@ -100,18 +111,25 @@ export const CommandModule = forwardRef<CommandModuleRef, {
         className="h-14 md:h-12 text-lg md:text-base"
         keyBindings={keyBindings}
       />
-      {focus && (
-        <command.CommandList
-          className="max-h-80"
-          onMouseDown={e => {
-            // Prevent the input from losing focus when clicking on items
-            e.preventDefault()
-          }}>
-          <command.CommandEmpty>{t('noResultsFound')}</command.CommandEmpty>
-          {result.map(val => {
-            return (
-              <command.CommandGroup heading={val.groupName} key={val.groupName}>
-                {val.result.map(res => {
+      <command.CommandList
+        className={cn('max-h-80', focus ? '' : 'hidden')}
+        onMouseDown={e => {
+          // Prevent the input from losing focus when clicking on items
+          e.preventDefault()
+        }}>
+        <command.CommandEmpty>{t('noResultsFound')}</command.CommandEmpty>
+        {result.map(val => {
+          // groupName is already displayName (translated)
+          return (
+            <command.CommandGroup heading={val.groupName} key={val.groupName}>
+              {val.result.length === 0 ? (
+                <command.CommandItem disabled className="py-1.5 w-full opacity-60">
+                  <Text level="xs" gray>
+                    {t('noResultsForPlugin')}
+                  </Text>
+                </command.CommandItem>
+              ) : (
+                val.result.map(res => {
                   return (
                     <command.CommandItem
                       key={res.id}
@@ -122,8 +140,8 @@ export const CommandModule = forwardRef<CommandModuleRef, {
                         focusFunc.setFalse()
                         inputRef.current?.blur()
                       }}
-                      className="py-1.5 w-full">
-                      <Stack center>
+                      className="p-2 w-full">
+                      <Stack center className="gap-2">
                         <CommandItemIcon iconUrl={res.iconUrl} IconType={res.IconType} />
                         <Stack direction={'column'}>
                           <Text level="s" className="line-clamp-1">
@@ -136,12 +154,12 @@ export const CommandModule = forwardRef<CommandModuleRef, {
                       </Stack>
                     </command.CommandItem>
                   )
-                })}
-              </command.CommandGroup>
-            )
-          })}
-        </command.CommandList>
-      )}
+                })
+              )}
+            </command.CommandGroup>
+          )
+        })}
+      </command.CommandList>
     </command.Command>
   )
 })

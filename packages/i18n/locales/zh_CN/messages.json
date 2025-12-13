@@ -287,6 +287,10 @@
     "description": "Web Search command plugin description",
     "message": "使用默认搜索引擎搜索网页。"
   },
+  "commandPluginWebSearchTitle": {
+    "description": "Web Search result title template",
+    "message": "搜索「{query}」"
+  },
   "commandPluginCalculator": {
     "description": "Calculator command plugin name",
     "message": "计算器"
@@ -394,5 +398,17 @@
   "wallhavenRandom": {
     "description": "Wallhaven random mode button",
     "message": "随机壁纸"
+  },
+  "availablePlugins": {
+    "description": "Available plugins section title",
+    "message": "可用插件"
+  },
+  "availablePluginsDescription": {
+    "description": "Available plugins description",
+    "message": "输入搜索或使用触发键来激活插件"
+  },
+  "noResultsForPlugin": {
+    "description": "No results found for plugin message",
+    "message": "未找到此查询的结果"
   }
 }

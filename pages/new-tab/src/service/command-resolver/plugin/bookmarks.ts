@@ -1,6 +1,7 @@
 import { getDefaultIconUrl } from '@/lib/url'
-import type { ICommandResolver, ICommandResult } from './protocol'
+import type { ICommandResolver, ICommandResult } from '../protocol'
 import { Star } from 'lucide-react'
+import { t } from '@extension/i18n'
 
 function convertBookmarkToCommandResult(item: chrome.bookmarks.BookmarkTreeNode): ICommandResult {
   return {
@@ -41,15 +42,13 @@ function searchBookmarks(
   const lowerQuery = query.toLowerCase()
 
   return allBookmarks.filter(
-    bookmark =>
-      bookmark.title.toLowerCase().includes(lowerQuery) || bookmark.url?.toLowerCase().includes(lowerQuery),
+    bookmark => bookmark.title.toLowerCase().includes(lowerQuery) || bookmark.url?.toLowerCase().includes(lowerQuery),
   )
 }
 
 const ACTIVE_KEY = 'b'
 
 export const bookmarksResolver: ICommandResolver = {
-  name: 'bookmarks',
   settings: {
     active: true,
     activeKey: ACTIVE_KEY,
@@ -57,25 +56,21 @@ export const bookmarksResolver: ICommandResolver = {
     includeInGlobal: true,
   },
   properties: {
-    label: 'Bookmarks',
+    name: 'bookmarks',
+    displayName: t('commandPluginBookmarks'),
+    description: t('commandPluginBookmarksDescription'),
+    icon: Star,
   },
   resolve: async params => {
     const tree = await chrome.bookmarks.getTree()
 
-    // Strip the activeKey prefix if present
-    let query = params.query
-    const activeKeyPrefix = `${ACTIVE_KEY} `
-    if (query.startsWith(activeKeyPrefix)) {
-      query = query.slice(activeKeyPrefix.length)
-    }
-
     // Return first 10 bookmarks when no query (tree order, not chronological)
-    if (query.length === 0) {
+    if (params.query.length === 0) {
       const allBookmarks = flattenBookmarks(tree)
       return allBookmarks.slice(0, 10).map(convertBookmarkToCommandResult)
     }
 
-    const result = searchBookmarks(tree, query)
+    const result = searchBookmarks(tree, params.query)
     if (result.length === 0) return null
     return result.slice(0, 10).map(convertBookmarkToCommandResult)
   },

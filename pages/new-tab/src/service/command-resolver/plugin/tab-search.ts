@@ -1,13 +1,17 @@
-import type { ICommandResolver } from './protocol'
+import type { ICommandResolver } from '../protocol'
+import { t } from '@extension/i18n'
+import { Columns } from 'lucide-react'
 
 export const tabSearchResolver: ICommandResolver = {
-  name: 'tabs',
   settings: {
     priority: 0,
     active: true,
   },
   properties: {
-    label: 'Tabs',
+    name: 'tabs',
+    displayName: t('commandPluginTabs'),
+    description: t('commandPluginTabsDescription'),
+    icon: Columns,
   },
   resolve: async params => {
     if (params.query.length === 0) return null

@@ -1,4 +1,4 @@
-import type { ICommandResolver } from './protocol'
+import type { ICommandResolver } from '../protocol'
 import { Coins } from 'lucide-react'
 import { t } from '@extension/i18n'
 
@@ -152,12 +152,8 @@ function convertFourDigits(num: number): string {
  * Parse input to extract number
  */
 function parseInput(input: string): number | null {
-  // Remove activeKey prefix if present (with or without space)
-  const trimmed = input.trim()
-  const numStr = trimmed.startsWith('rmb') ? trimmed.slice(3).trim() : trimmed
-
-  // Parse the number
-  const num = parseFloat(numStr)
+  // Parse the number (trigger key already stripped by manager)
+  const num = parseFloat(input.trim())
   if (isNaN(num)) {
     return null
   }
@@ -166,7 +162,6 @@ function parseInput(input: string): number | null {
 }
 
 export const numberToRmbResolver: ICommandResolver = {
-  name: t('numberToRmb'),
   settings: {
     priority: 50,
     active: true,
@@ -174,7 +169,10 @@ export const numberToRmbResolver: ICommandResolver = {
     activeKey: 'rmb',
   },
   properties: {
-    label: t('numberToRmbLabel'),
+    name: 'numberToRmb',
+    displayName: t('numberToRmbLabel'),
+    description: t('commandPluginNumberToRmbDescription'),
+    icon: Coins,
   },
   resolve: async params => {
     const num = parseInput(params.query)

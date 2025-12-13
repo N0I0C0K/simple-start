@@ -1,4 +1,4 @@
-import type { ICommandResolver, ICommandResult } from './protocol'
+import type { ICommandResolver, ICommandResult } from '../protocol'
 import { Calculator, History, Copy, Trash2 } from 'lucide-react'
 import { t } from '@extension/i18n'
 import { Parser } from 'expr-eval'
@@ -184,7 +184,6 @@ function calculate(expression: string): string | null {
 }
 
 export const calculatorResolver: ICommandResolver = {
-  name: t('calculator'),
   settings: {
     priority: -10, // High priority for quick math
     active: true,
@@ -192,16 +191,14 @@ export const calculatorResolver: ICommandResolver = {
     activeKey: '=',
   },
   properties: {
-    label: 'Calculator',
+    name: 'calculator',
+    displayName: t('calculator'),
+    description: t('commandPluginCalculatorDescription'),
+    icon: Calculator,
   },
   resolve: async params => {
     const results: ICommandResult[] = []
-    let query = params.query
-
-    // Strip the activeKey prefix if present
-    if (query.startsWith('=')) {
-      query = query.slice(1).trim()
-    }
+    const query = params.query
 
     // If query is empty, show history
     if (query.length === 0) {

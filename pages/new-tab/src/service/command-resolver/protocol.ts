@@ -1,5 +1,7 @@
 export type CommandQueryParams = {
-  query: string
+  query: string // Query with trigger key stripped (what the user actually wants to search)
+  rawQuery: string // Original query as typed by the user
+  changeQuery?: (newQuery: string) => void
 }
 
 export interface ICommandResultGroup {
@@ -26,11 +28,13 @@ export interface CommandSettings {
 export type PartialCommandSettings = Partial<CommandSettings>
 
 export interface CommandProperties {
-  label?: string
+  name: string // Unique name of the command plugin, used for identification
+  displayName: string // Display name for the command plugin
+  description?: string
+  icon?: React.ElementType
 }
 
 export interface ICommandResolver {
-  name: string
   properties: CommandProperties
   settings: PartialCommandSettings
   resolve: (params: CommandQueryParams) => Promise<ICommandResult[] | null>
