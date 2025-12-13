@@ -130,9 +130,7 @@ const NewTab = () => {
 
   return (
     <>
-      <div 
-        className={'flex h-screen w-screen max-w-full flex-col justify-center gap-4 relative overflow-hidden'}
-        onDoubleClick={handleBackgroundDoubleClick}>
+      <div className={'flex h-screen w-screen max-w-full flex-col justify-center gap-4 relative overflow-hidden'}>
         <Center column className="flex-1">
           <TimeDisplay />
         </Center>
@@ -166,6 +164,7 @@ const NewTab = () => {
           object-cover select-none"
         src={wallpaperSrc}
         alt=""
+        onDoubleClick={handleBackgroundDoubleClick}
         onError={() => {
           console.log('background image error')
           // Only fallback to default if not already using it
