@@ -101,10 +101,7 @@ class CommandResolverService {
    * Handles one space after the trigger key (e.g., "rmb 1233")
    * If multiple spaces exist, only remove the first one
    */
-  private stripTriggerKeyForPlugin(rawQuery: string, plugin: ICommandResolverWithSettings): string {
-    const settings = plugin.getSettings()
-    const activeKey = settings.activeKey
-
+  private stripTriggerKeyForPlugin(rawQuery: string, activeKey: string): string {
     if (!activeKey || !rawQuery.startsWith(activeKey)) {
       return rawQuery
     }
@@ -161,26 +158,29 @@ class CommandResolverService {
     // Choose plugins based on raw query
     const plugins = this.choosePlugins(params.rawQuery)
 
-    // Pass resolver service to plugins so they can access other plugins
-    const extendedParams = { ...params, resolverService: this }
+    // Base params object to reuse
+    const baseParams = {
+      rawQuery: params.rawQuery,
+      changeQuery: params.changeQuery,
+      resolverService: this,
+    }
 
     Promise.all(
       plugins.map(it => {
         return new Promise((resolve, reject) => {
+          // Get settings once for this plugin
+          const settings = it.getSettings()
+          
           // Strip trigger key for this specific plugin
-          const strippedQuery = this.stripTriggerKeyForPlugin(params.rawQuery, it)
+          const strippedQuery = this.stripTriggerKeyForPlugin(params.rawQuery, settings.activeKey)
           
-          // Create params with stripped query for this plugin
-          const pluginParams: CommandQueryParams = {
+          // Create params with plugin-specific stripped query
+          const pluginParams: CommandQueryParams & { resolverService: CommandResolverService } = {
+            ...baseParams,
             query: strippedQuery,
-            rawQuery: params.rawQuery,
-            changeQuery: params.changeQuery,
           }
-          
-          // Merge with resolver service
-          const pluginExtendedParams = { ...pluginParams, resolverService: this }
 
-          it.resolve(pluginExtendedParams)
+          it.resolve(pluginParams)
             .then(res => {
               if (res === null || res.length === 0) {
                 // If plugin returns null or empty array, still show empty group for non-empty queries
