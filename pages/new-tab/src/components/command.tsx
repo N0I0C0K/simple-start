@@ -36,6 +36,12 @@ export const CommandModule: FC<{
       rawQuery: inputDelay,
       changeQuery: (newQuery: string) => {
         setInputVal(newQuery)
+        setTimeout(() => {
+          if (inputRef.current == null) return
+          inputRef.current.focus()
+          const len = inputRef.current.value.length
+          inputRef.current.setSelectionRange(len, len)
+        }, 200)
       },
     }
     setResult([])
