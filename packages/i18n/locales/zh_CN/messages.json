@@ -87,6 +87,14 @@
     "description": "Auto focus command input setting description",
     "message": "自动聚焦命令输入框。"
   },
+  "doubleClickBackgroundFocusCommand": {
+    "description": "Double click background to focus command setting title",
+    "message": "双击背景聚焦命令"
+  },
+  "doubleClickBackgroundFocusCommandDescription": {
+    "description": "Double click background to focus command setting description",
+    "message": "双击背景时聚焦命令输入框。键盘用户可以使用 Alt+K (Windows/Linux) 或 ⌘+K (Mac)。"
+  },
   "wallpaperUrl": {
     "description": "Wallpaper URL setting title",
     "message": "壁纸 URL"

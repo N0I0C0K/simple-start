@@ -39,6 +39,7 @@ import {
   Dot,
   Download,
   Upload,
+  MousePointerClick,
 } from 'lucide-react'
 import React, { type ElementType, type FC, type ReactElement, type ReactNode } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@extension/ui/lib/components/ui/tabs'
@@ -227,6 +228,17 @@ const CommonSettings: FC = () => {
           <Switch
             checked={settings.autoFocusCommandInput}
             onCheckedChange={val => settingStorage.update({ autoFocusCommandInput: val })}
+          />
+        }
+      />
+      <SettingItem
+        IconClass={MousePointerClick}
+        title={t('doubleClickBackgroundFocusCommand')}
+        description={t('doubleClickBackgroundFocusCommandDescription')}
+        control={
+          <Switch
+            checked={settings.doubleClickBackgroundFocusCommand}
+            onCheckedChange={val => settingStorage.update({ doubleClickBackgroundFocusCommand: val })}
           />
         }
       />
