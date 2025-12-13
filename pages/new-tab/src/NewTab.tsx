@@ -110,7 +110,14 @@ const TimeDisplay = () => {
 
 const NewTab = () => {
   const settings = useStorage(settingStorage)
-  const [wallpaperSrc, setWallpaperSrc] = useState<string>(DEFAULT_WALLPAPER_URL)
+  const [wallpaperSrc, setWallpaperSrc] = useState<string>(() => {
+    // Update wallpaper source when settings change
+    if (settings.wallpaperType === 'local' && settings.localWallpaperData) {
+      return settings.localWallpaperData
+    } else {
+      return settings.wallpaperUrl ?? DEFAULT_WALLPAPER_URL
+    }
+  })
   const commandModuleRef = useRef<CommandModuleRef>(null)
 
   useEffect(() => {
@@ -136,7 +143,10 @@ const NewTab = () => {
         </Center>
         <Stack direction={'column'} className="flex-1">
           <Center className="mb-8 h-10">
-            <CommandModule ref={commandModuleRef} className="w-[40%] min-w-[20rem] max-w-[40rem] h-auto absolute z-[1]" />
+            <CommandModule
+              ref={commandModuleRef}
+              className="w-[40%] min-w-[20rem] max-w-[40rem] h-auto absolute z-[1]"
+            />
           </Center>
           <Center>
             <div className="relative min-w-[20rem] w-[50%] z-0">
@@ -163,7 +173,7 @@ const NewTab = () => {
         className="x-bg-img h-screen w-screen fixed top-0 left-0 -z-10 scale-105 brightness-90 dark:brightness-75
           object-cover select-none"
         src={wallpaperSrc}
-        alt=""
+        alt="background wallpaper"
         onDoubleClick={handleBackgroundDoubleClick}
         onError={() => {
           console.log('background image error')
