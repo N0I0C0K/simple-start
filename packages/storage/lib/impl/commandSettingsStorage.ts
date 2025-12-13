@@ -90,12 +90,13 @@ export const commandSettingsStorage: CommandSettingsStorage = {
   },
   setPluginSettings: async (pluginName, settings) => {
     const currentSettings = await storage.get()
-    const currentPluginSettings = currentSettings[pluginName] || defaultCommandSettings[pluginName] || {
-      priority: 0,
-      active: true,
-      activeKey: '',
-      includeInGlobal: true,
-    }
+    const currentPluginSettings = currentSettings[pluginName] ||
+      defaultCommandSettings[pluginName] || {
+        priority: 0,
+        active: true,
+        activeKey: '',
+        includeInGlobal: true,
+      }
     await storage.set({
       ...currentSettings,
       [pluginName]: {

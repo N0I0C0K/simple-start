@@ -1,6 +1,8 @@
 import { getDefaultIconUrl } from '@/lib/url'
-import type { ICommandResolver, ICommandResult } from './protocol'
+import type { ICommandResolver, ICommandResult } from '../protocol'
 import moment from 'moment'
+import { t } from '@extension/i18n'
+import { Clock } from 'lucide-react'
 
 import { historySuggestStorage } from '@extension/storage'
 
@@ -18,13 +20,15 @@ function convertHistoryItemToCommandResult(item: chrome.history.HistoryItem): IC
 }
 
 export const historyResolver: ICommandResolver = {
-  name: 'history',
   settings: {
     active: true,
     activeKey: 'h',
   },
   properties: {
-    label: 'History',
+    name: 'history',
+    displayName: t('commandPluginHistory'),
+    description: t('commandPluginHistoryDescription'),
+    icon: Clock,
   },
   resolve: async params => {
     if (params.query.length === 0)
