@@ -1,4 +1,4 @@
-import type { ILoadable } from "./type";
+import type { ILoadable } from "./type"
 
 import { mqttStateManager, settingStorage } from '@extension/storage'
 import { MqttPayloadBuilder, MqttProvider, closeMqttClientMessage, openMqttClientMessage } from '@extension/shared'
@@ -8,7 +8,7 @@ import type { MqttClient } from 'mqtt'
 const mqttProvider: MqttProvider = new MqttProvider('ws://broker.emqx.io:8083/mqtt')
 const payloadBuilder = new MqttPayloadBuilder()
 
-async function _initMqttClientEvent(client: MqttClient) {
+async function initMqttClientEvent(client: MqttClient) {
   client.on('close', async () => {
     console.log('MQTT connection closed')
     await mqttStateManager.setConnected(false)
@@ -29,13 +29,12 @@ async function setupMqtt() {
     return
   }
   console.log('Connecting to MQTT broker...')
-  await mqttProvider.changeSecretPrefix(settings.mqttSettings.secretKey)
+  // Set secret prefix directly before first connect to avoid duplicate subscription logic
+  mqttProvider.secretPrefix = settings.mqttSettings.secretKey
   await mqttProvider.connect({ brokerUrl: settings.mqttSettings.mqttBrokerUrl })
   payloadBuilder.username = settings.mqttSettings.username
   console.log('MQTT connected')
-  _initMqttClientEvent(mqttProvider.client)
-
-  await mqttStateManager.setConnected(true)
+  initMqttClientEvent(mqttProvider.client)
 }
 
 closeMqttClientMessage.registerListener(async () => {
