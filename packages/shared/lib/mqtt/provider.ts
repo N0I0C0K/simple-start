@@ -95,6 +95,7 @@ export class MqttProvider {
     }
     return this._clientInner
   }
+
   /**
    * Creates a secret topic by prepending the secret prefix.
    * @param rawTopic - The raw topic name
@@ -116,6 +117,7 @@ export class MqttProvider {
     }
     return secretTopic
   }
+
   /**
    * Sets the secret prefix. If already initialized, unsubscribes and resubscribes with new prefix.
    * @param newPrefix - The new secret prefix to use
