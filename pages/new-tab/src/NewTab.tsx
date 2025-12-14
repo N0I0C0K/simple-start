@@ -8,7 +8,6 @@ import '@/src/style/placeholder.css'
 import { HistoryArea } from './components/history-area'
 import { settingStorage, DEFAULT_WALLPAPER_URL } from '@extension/storage'
 import { useStorage } from '@extension/shared'
-import { t } from '@extension/i18n'
 
 const TimeDisplay = () => {
   const [time, setTime] = useState<Date>(new Date())
