@@ -1,75 +1,59 @@
-import type * as events from '../mqtt/events'
-
 export interface Message<T> {
   name: string
   payload: T
 }
 
-export interface MessageHandler<T> {
-  emit: (payload: T) => Promise<void>
-  registerListener: (callback: (payload: T) => void) => void
-  unregisterListener: (callback: (payload: T) => void) => void
-  listeners: Array<(payload: T) => void>
-  name: string
-  onMessage: (message: Message<T>) => void
+export class MessageHandler<T> {
+  private listeners: Array<(payload: T) => void> = []
+  public readonly name: string
+  constructor(messageName: string) {
+    this.name = messageName
+  }
+  public async emit(payload: T): Promise<void> {
+    await sendMessage<T>({ name: this.name, payload })
+  }
+  public registerListener(callback: (payload: T) => void): void {
+    this.listeners.push(callback)
+  }
+  public unregisterListener(callback: (payload: T) => void): void {
+    const index = this.listeners.indexOf(callback)
+    if (index !== -1) {
+      this.listeners.splice(index, 1)
+    }
+  }
+  public onMessage(message: Message<T>): void {
+    if (message.name !== this.name) return
+    this.listeners.forEach(callback => callback(message.payload))
+  }
 }
 
-export interface MessageCenter {
-  registerMessageHandler: <T>(messageName: string) => MessageHandler<T>
-  unregisterMessageHandler: (messageName: string) => void
+export class MessageCenter {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private registeredHandlers: Map<string, MessageHandler<any>> = new Map()
+  constructor() {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    chrome.runtime.onMessage.addListener((message: Message<any>) => {
+      if (!this.registeredHandlers.has(message.name)) return
+      const handler = this.registeredHandlers.get(message.name)!
+      handler.onMessage(message)
+    })
+  }
+  registerMessageHandler<T>(messageName: string): MessageHandler<T> {
+    if (this.registeredHandlers.has(messageName)) {
+      return this.registeredHandlers.get(messageName)! as MessageHandler<T>
+    }
+    const newHandler = new MessageHandler<T>(messageName)
+    this.registeredHandlers.set(messageName, newHandler)
+    return newHandler
+  }
+  unregisterMessageHandler(messageName: string): void {
+    if (!this.registeredHandlers.has(messageName)) return
+    this.registeredHandlers.delete(messageName)
+  }
 }
 
 export const sendMessage = async <T>(message: Message<T>) => {
   await chrome.runtime.sendMessage(message)
-}
-
-const generateMessageHandler = <T>(messageName: string): MessageHandler<T> => {
-  const listeners: Array<(payload: T) => void> = []
-  return {
-    name: messageName,
-    listeners,
-    emit: async function (payload: T) {
-      await sendMessage<T>({ name: messageName, payload })
-    },
-    registerListener: function (callback: (payload: T) => void) {
-      listeners.push(callback)
-    },
-    unregisterListener: function (callback: (payload: T) => void) {
-      const index = listeners.indexOf(callback)
-      if (index !== -1) {
-        listeners.splice(index, 1)
-      }
-    },
-    onMessage: function (message: Message<T>) {
-      if (message.name !== messageName) return
-      listeners.forEach(callback => callback(message.payload))
-    },
-  }
-}
-
-const generateMessageCenter = (): MessageCenter => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const registeredHandlers = new Map<string, MessageHandler<any>>()
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  chrome.runtime.onMessage.addListener((message: Message<any>) => {
-    if (!registeredHandlers.has(message.name)) return
-    const handler = registeredHandlers.get(message.name)!
-    handler.onMessage(message)
-  })
-  return {
-    registerMessageHandler: <T>(messageName: string) => {
-      if (registeredHandlers.has(messageName)) {
-        return registeredHandlers.get(messageName)! as MessageHandler<T>
-      }
-      const newHandler = generateMessageHandler<T>(messageName)
-      registeredHandlers.set(messageName, newHandler)
-      return newHandler
-    },
-    unregisterMessageHandler: (messageName: string) => {
-      if (!registeredHandlers.has(messageName)) return
-      registeredHandlers.delete(messageName)
-    },
-  }
 }
 
 export let messageCenter: MessageCenter
@@ -78,7 +62,7 @@ export let closeMqttClientMessage: MessageHandler<void>
 export let openMqttClientMessage: MessageHandler<void>
 
 if (globalThis.chrome) {
-  messageCenter = generateMessageCenter()
+  messageCenter = new MessageCenter()
   closeMqttClientMessage = messageCenter.registerMessageHandler<void>('close-mqtt-client')
   openMqttClientMessage = messageCenter.registerMessageHandler<void>('open-mqtt-client')
 }

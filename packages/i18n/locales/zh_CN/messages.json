@@ -1,11 +1,11 @@
 {
   "extensionDescription": {
     "description": "Extension description",
-    "message": "使用 Vite、React 和 Typescript 开发的 Chrome 扩展模板"
+    "message": "一个简单且现代的浏览器起始界面。"
   },
   "extensionName": {
     "description": "Extension name",
-    "message": "Chrome 扩展模板"
+    "message": "Simple Start"
   },
   "toggleTheme": {
     "message": "切换主题"
