@@ -1,6 +1,5 @@
 import { cn } from '@/lib/utils'
 import { closeMqttClientMessage, openMqttClientMessage, useStorage } from '@extension/shared'
-import { useDrinkWaterEventManager } from '@extension/shared/lib/state/events'
 import { mqttStateManager, settingStorage, exportAllData, importAllData } from '@extension/storage'
 import {
   Button,
@@ -337,7 +336,6 @@ const DrawerSettingPanel: FC<{ className?: string }> = ({ className }) => {
 }
 
 const DrinkWaterButton: FC<{ className?: string }> = ({ className }) => {
-  const drinkWaterState = useDrinkWaterEventManager()
   return (
     <TooltipButton
       size={'icon'}
@@ -345,9 +343,7 @@ const DrinkWaterButton: FC<{ className?: string }> = ({ className }) => {
       variant={'ghost'}
       className={cn('rounded-full', className)}
       side="left"
-      onClick={async () => {
-        await drinkWaterState.launchEvent()
-      }}>
+      onClick={async () => {}}>
       <CupSoda />
     </TooltipButton>
   )

@@ -1,1 +1,1 @@
-export { drinkWaterEventGlobalState } from './events'
+export {}
