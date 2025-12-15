@@ -13,7 +13,9 @@ export class MessageHandler<T> {
     await sendMessage<T>({ name: this.name, payload })
   }
   public registerListener(callback: (payload: T) => void): void {
-    this.listeners.push(callback)
+    if (!this.listeners.includes(callback)) {
+      this.listeners.push(callback)
+    }
   }
   public unregisterListener(callback: (payload: T) => void): void {
     const index = this.listeners.indexOf(callback)
