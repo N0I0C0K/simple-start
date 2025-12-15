@@ -45,7 +45,6 @@ class TopicEventHandler<T> {
  */
 export class MqttProvider {
   private _clientInner: mqtt.MqttClient | null = null
-  private _messageHandlerRegistered = false
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private registeredTopics: Map<string, TopicEventHandler<any>> = new Map()
   private registeredTopicsSet: Set<string> = new Set()
@@ -149,7 +148,6 @@ export class MqttProvider {
 
     if (this._clientInner) {
       if (this._clientInner.connected) {
-        console.log('MQTT client already connected')
         return
       }
       if (useReconnect) {
@@ -168,22 +166,18 @@ export class MqttProvider {
       throw error
     }
 
-    // Register message handler only once
-    if (!this._messageHandlerRegistered) {
-      this._clientInner.on('message', (topic: string, message: Buffer) => {
-        console.info('Received message on topic:', topic, 'message:', message.toString())
-        const rawTopic = this.removeSecretTopic(topic)
-        const topicEvent = this.registeredTopics.get(rawTopic)
-        if (!topicEvent) return
-        try {
-          const payload = JSON.parse(message.toString())
-          topicEvent.onReceive(rawTopic, payload)
-        } catch (error) {
-          console.error('Error emitting topic event:', error)
-        }
-      })
-      this._messageHandlerRegistered = true
-    }
+    this._clientInner.on('message', (topic: string, message: Buffer) => {
+      console.info('Received message on topic:', topic, 'message:', message.toString())
+      const rawTopic = this.removeSecretTopic(topic)
+      const topicEvent = this.registeredTopics.get(rawTopic)
+      if (!topicEvent) return
+      try {
+        const payload = JSON.parse(message.toString())
+        topicEvent.onReceive(rawTopic, payload)
+      } catch (error) {
+        console.error('Error emitting topic event:', error)
+      }
+    })
 
     await this.reSubscribeAll()
   }
