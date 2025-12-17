@@ -18,7 +18,7 @@ async function initMqttClientEvent(client: MqttClient) {
 
 const mqttProvider: MqttProvider = new MqttProvider('ws://broker.emqx.io:8083/mqtt')
 const payloadBuilder = new MqttPayloadBuilder()
-mqttProvider.eventEmitter.on('client-loaded', client => {
+mqttProvider.on('client-loaded', client => {
   initMqttClientEvent(client)
 })
 

@@ -40,15 +40,17 @@ class TopicEventHandler<T> {
   }
 }
 
+type MqttProviderEventMap = {
+  'client-loaded': [mqtt.MqttClient]
+}
+
+
 /**
  * MQTT Provider class for managing MQTT connections and message handling.
  * Provides topic subscription, publishing, and event handling capabilities.
  */
-export class MqttProvider {
+export class MqttProvider extends EventEmitter<MqttProviderEventMap> {
   private _clientInner: mqtt.MqttClient | null = null
-  readonly eventEmitter: EventEmitter<{
-    'client-loaded': [mqtt.MqttClient]
-  }> = new EventEmitter()
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private registeredTopics: Map<string, TopicEventHandler<any>> = new Map()
   private registeredTopicsSet: Set<string> = new Set()
@@ -56,6 +58,7 @@ export class MqttProvider {
   private _secretPrefix?: string
 
   constructor(brokerUrl: string) {
+    super()
     this.brokerUrl = brokerUrl
   }
 
@@ -128,7 +131,7 @@ export class MqttProvider {
       console.error('Failed to connect to MQTT broker:', error)
       throw error
     }
-    this.eventEmitter.emit('client-loaded', this._clientInner)
+    this.emit('client-loaded', this._clientInner)
 
     this._clientInner.on('message', (topic: string, message: Buffer) => {
       console.info('Received message on topic:', topic, 'message:', message.toString())
