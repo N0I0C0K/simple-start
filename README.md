@@ -1,6 +1,6 @@
 <div align="center">
 
-<h1>Simple Start</h1>
+<h1>NextTab</h1>
 <p>A simple and fast start interface.</p>
 
 ![](https://img.shields.io/badge/React-61DAFB?style=flat-square&logo=react&logoColor=black)
