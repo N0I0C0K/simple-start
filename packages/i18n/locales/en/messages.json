@@ -107,10 +107,6 @@
     "description": "Related bookmarks section label in context menu",
     "message": "Related Bookmarks"
   },
-  "noBookmarksFound": {
-    "description": "No bookmarks found message",
-    "message": "No bookmarks found for this domain"
-  },
   "wallpaperUrl": {
     "description": "Wallpaper URL setting title",
     "message": "Wallpaper URL"

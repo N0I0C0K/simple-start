@@ -107,10 +107,6 @@
     "description": "Related bookmarks section label in context menu",
     "message": "相关收藏"
   },
-  "noBookmarksFound": {
-    "description": "No bookmarks found message",
-    "message": "未找到该域名下的收藏"
-  },
   "wallpaperUrl": {
     "description": "Wallpaper URL setting title",
     "message": "壁纸 URL"

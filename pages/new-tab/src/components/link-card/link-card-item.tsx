@@ -93,9 +93,14 @@ export const LinkCardItem = forwardRef<HTMLDivElement, LinkCardProps & CustomGri
       if (contextMenuOpen && settings.showBookmarksInQuickUrlMenu) {
         const domain = getDomainFromUrl(url)
         if (domain) {
-          findBookmarksByDomain(domain).then(bookmarks => {
-            setRelatedBookmarks(bookmarks)
-          })
+          findBookmarksByDomain(domain)
+            .then(bookmarks => {
+              setRelatedBookmarks(bookmarks)
+            })
+            .catch(error => {
+              console.error('Failed to fetch bookmarks:', error)
+              setRelatedBookmarks([])
+            })
         }
       } else {
         setRelatedBookmarks([])
