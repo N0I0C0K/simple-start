@@ -52,13 +52,13 @@ export const AboutSettings: FC = () => {
       <AboutItem
         IconClass={Info}
         title={t('version')}
-        description={version}
+        description={t('versionDescription')}
         control={<Text className="font-mono text-muted-foreground">{version}</Text>}
       />
       <AboutItem
         IconClass={ExternalLink}
         title={t('repository')}
-        description={repositoryUrl}
+        description={t('repositoryDescription')}
         control={
           <Button variant={'outline'} onClick={() => openUrl(repositoryUrl)}>
             {t('viewOnGithub')}

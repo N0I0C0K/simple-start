@@ -450,5 +450,13 @@
   "checkForUpdatesDescription": {
     "description": "Check for updates description",
     "message": "访问发布页面查看最新更新。"
+  },
+  "versionDescription": {
+    "description": "Version description",
+    "message": "当前扩展版本"
+  },
+  "repositoryDescription": {
+    "description": "Repository description",
+    "message": "NextTab 的 GitHub 代码仓库"
   }
 }

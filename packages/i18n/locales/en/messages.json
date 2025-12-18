@@ -450,5 +450,13 @@
   "checkForUpdatesDescription": {
     "description": "Check for updates description",
     "message": "Visit the releases page to see the latest updates."
+  },
+  "versionDescription": {
+    "description": "Version description",
+    "message": "Current extension version"
+  },
+  "repositoryDescription": {
+    "description": "Repository description",
+    "message": "GitHub repository for NextTab"
   }
 }
