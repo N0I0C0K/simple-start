@@ -9,13 +9,14 @@ import { Stack, Text, toast, Tooltip, TooltipContent, TooltipProvider, TooltipTr
 import {
   ContextMenu,
   ContextMenuContent,
+  ContextMenuItem,
   ContextMenuItemWitchIcon,
   ContextMenuTrigger,
   ContextMenuSeparator,
   ContextMenuLabel,
 } from '@extension/ui/lib/components/ui/context-menu'
 import { useGlobalDialog } from '@src/provider'
-import { Pencil, Trash, ExternalLink } from 'lucide-react'
+import { Pencil, Trash } from 'lucide-react'
 import type { CSSProperties, MouseEventHandler, Ref, TouchEventHandler } from 'react'
 import { useRef, useState, forwardRef, useEffect } from 'react'
 import { t } from '@extension/i18n'
@@ -167,7 +168,7 @@ export const LinkCardItem = forwardRef<HTMLDivElement, LinkCardProps & CustomGri
                 <Text>{id}</Text>
               </Stack>
             </TooltipContent>
-            <ContextMenuContent className="w-44">
+            <ContextMenuContent className="w-64 max-w-xs">
               <ContextMenuItemWitchIcon
                 IconType={Pencil}
                 shortCut="Ctrl+E"
@@ -209,16 +210,25 @@ export const LinkCardItem = forwardRef<HTMLDivElement, LinkCardProps & CustomGri
                   <ContextMenuSeparator />
                   <ContextMenuLabel>{t('relatedBookmarks')}</ContextMenuLabel>
                   {relatedBookmarks.slice(0, 10).map(bookmark => (
-                    <ContextMenuItemWitchIcon
+                    <ContextMenuItem
                       key={bookmark.id}
-                      IconType={ExternalLink}
                       onClick={() => {
                         if (bookmark.url) {
                           chrome.tabs.update({ url: bookmark.url })
                         }
-                      }}>
-                      <span className="truncate">{bookmark.title || bookmark.url}</span>
-                    </ContextMenuItemWitchIcon>
+                      }}
+                      className="flex items-center gap-2">
+                      <img 
+                        src={getDefaultIconUrl(bookmark.url || '')} 
+                        alt="" 
+                        className="size-4 rounded-sm flex-shrink-0"
+                        onError={(e) => {
+                          // Fallback to default icon if image fails to load
+                          e.currentTarget.style.display = 'none'
+                        }}
+                      />
+                      <span className="truncate flex-1">{bookmark.title || bookmark.url}</span>
+                    </ContextMenuItem>
                   ))}
                 </>
               )}
