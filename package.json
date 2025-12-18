@@ -1,11 +1,11 @@
 {
-  "name": "simple-start",
+  "name": "nexttab",
   "version": "1.0.1",
   "description": "Simple and modern start interface",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/N0I0C0K/simple-start"
+    "url": "https://github.com/N0I0C0K/NextTab"
   },
   "type": "module",
   "scripts": {

@@ -50,7 +50,7 @@ export async function exportAllData(): Promise<void> {
   
   const link = document.createElement('a')
   link.href = url
-  link.download = `simple-start-settings-${new Date().toISOString().split('T')[0]}.json`
+  link.download = `nexttab-settings-${new Date().toISOString().split('T')[0]}.json`
   document.body.appendChild(link)
   link.click()
   document.body.removeChild(link)

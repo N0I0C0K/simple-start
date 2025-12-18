@@ -1,4 +1,4 @@
-# Simple Start - Chrome Extension Development Guide
+# NextTab - Chrome Extension Development Guide
 
 ## Architecture Overview
 
