@@ -80,6 +80,8 @@ const SettingItem: FC<{
   )
 }
 
+export { SettingItem }
+
 const ConnectSettingItem: FC = () => {
   const mqttServerState = useStorage(mqttStateManager)
   return (

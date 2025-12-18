@@ -1,42 +1,13 @@
 import { Button, Stack, Text } from '@extension/ui'
 import { Info, ExternalLink, MessageSquareWarning, RefreshCw } from 'lucide-react'
-import type { FC , ElementType, ReactElement } from 'react'
+import type { FC } from 'react'
 import { t } from '@extension/i18n'
-import { cn } from '@/lib/utils'
-import type { LucideProps } from 'lucide-react'
-
-const AboutItem: FC<{
-  className?: string
-  title: string
-  description?: string
-  control: ReactElement
-  IconClass: ElementType<LucideProps>
-}> = ({ control, title, className, description, IconClass }) => {
-  return (
-    <Stack
-      direction={'row'}
-      className={cn(
-        'items-center overflow-hidden relative rounded-md p-3 border-slate-400/20',
-        'bg-muted gap-2',
-        className,
-      )}>
-      <IconClass className="min-w-8 size-8 text-muted-foreground" />
-      <Stack direction={'column'} className="gap-0.5">
-        <Text className="font-medium" level="md">
-          {title}
-        </Text>
-        <Text gray className="-mt-1 max-w-[20em]" level="s">
-          {description}
-        </Text>
-      </Stack>
-      <div className="ml-auto">{control}</div>
-    </Stack>
-  )
-}
+import { SettingItem } from '../setting-pannel'
+import packageJson from '../../../../../package.json'
 
 export const AboutSettings: FC = () => {
   const version = chrome.runtime.getManifest().version
-  const repositoryUrl = 'https://github.com/N0I0C0K/NextTab'
+  const repositoryUrl = packageJson.repository.url
   const issuesUrl = `${repositoryUrl}/issues/new`
   const releasesUrl = `${repositoryUrl}/releases`
 
@@ -49,13 +20,13 @@ export const AboutSettings: FC = () => {
       <Text gray level="s">
         {t('aboutDescription')}
       </Text>
-      <AboutItem
+      <SettingItem
         IconClass={Info}
         title={t('version')}
         description={t('versionDescription')}
         control={<Text className="font-mono text-muted-foreground">{version}</Text>}
       />
-      <AboutItem
+      <SettingItem
         IconClass={ExternalLink}
         title={t('repository')}
         description={t('repositoryDescription')}
@@ -65,7 +36,7 @@ export const AboutSettings: FC = () => {
           </Button>
         }
       />
-      <AboutItem
+      <SettingItem
         IconClass={MessageSquareWarning}
         title={t('reportIssue')}
         description={t('reportIssueDescription')}
@@ -75,7 +46,7 @@ export const AboutSettings: FC = () => {
           </Button>
         }
       />
-      <AboutItem
+      <SettingItem
         IconClass={RefreshCw}
         title={t('updates')}
         description={t('checkForUpdatesDescription')}
