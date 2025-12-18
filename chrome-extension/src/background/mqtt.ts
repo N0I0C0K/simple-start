@@ -60,8 +60,45 @@ chrome.alarms.onAlarm.addListener(async alarm => {
   }
 })
 
+// Listen for settings changes and update MQTT configuration
+async function handleSettingsChange() {
+  const settings = await settingStorage.get()
+  
+  // Check if MQTT is enabled and properly configured
+  if (!(settings.mqttSettings?.enabled && settings.mqttSettings.secretKey)) {
+    console.log('MQTT is disabled or not properly configured. Disconnecting...')
+    if (mqttProvider.connected) {
+      await mqttProvider.disconnect()
+    }
+    return
+  }
+
+  // Update secret key (this will resubscribe to topics with new prefix)
+  if (mqttProvider.initialized) {
+    console.log('Settings changed. Updating MQTT configuration...')
+    await mqttProvider.changeSecretPrefix(settings.mqttSettings.secretKey)
+  }
+
+  // Update username for payload builder
+  payloadBuilder.username = settings.mqttSettings.username
+
+  // Reconnect if broker URL changed or if not connected
+  if (!mqttProvider.connected) {
+    console.log('Reconnecting to MQTT broker with new settings...')
+    await mqttProvider.connect({ brokerUrl: settings.mqttSettings.mqttBrokerUrl })
+    await mqttStateManager.setConnected(true)
+  }
+}
+
 export const MqttLoader: ILoadable = {
   async load() {
     await setupMqtt()
+    
+    // Subscribe to settings changes
+    settingStorage.subscribe(() => {
+      handleSettingsChange().catch(error => {
+        console.error('Error handling MQTT settings change:', error)
+      })
+    })
   },
 }
