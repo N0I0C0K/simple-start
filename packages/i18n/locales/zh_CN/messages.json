@@ -95,6 +95,22 @@
     "description": "Double click background to focus command setting description",
     "message": "双击背景时聚焦命令输入框。键盘用户可以使用 Alt+K (Windows/Linux) 或 ⌘+K (Mac)。"
   },
+  "showBookmarksInQuickUrlMenu": {
+    "description": "Show bookmarks in quick URL context menu setting title",
+    "message": "在快捷链接菜单中显示收藏"
+  },
+  "showBookmarksInQuickUrlMenuDescription": {
+    "description": "Show bookmarks in quick URL context menu setting description",
+    "message": "右键快捷链接时显示相关收藏。"
+  },
+  "relatedBookmarks": {
+    "description": "Related bookmarks section label in context menu",
+    "message": "相关收藏"
+  },
+  "noBookmarksFound": {
+    "description": "No bookmarks found message",
+    "message": "未找到该域名下的收藏"
+  },
   "wallpaperUrl": {
     "description": "Wallpaper URL setting title",
     "message": "壁纸 URL"

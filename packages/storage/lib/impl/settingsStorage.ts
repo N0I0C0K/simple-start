@@ -31,6 +31,7 @@ export type SettingProps = {
   useHistorySuggestion: boolean
   autoFocusCommandInput: boolean
   doubleClickBackgroundFocusCommand: boolean
+  showBookmarksInQuickUrlMenu: boolean
   wallpaperUrl: string | null
   /** The source type for the wallpaper (remote URL or local file) */
   wallpaperType: WallpaperType
@@ -60,6 +61,7 @@ const defaultSetting: SettingProps = {
   useHistorySuggestion: true,
   autoFocusCommandInput: true,
   doubleClickBackgroundFocusCommand: true,
+  showBookmarksInQuickUrlMenu: true,
   wallpaperUrl: null,
   wallpaperType: 'url',
   localWallpaperData: null,

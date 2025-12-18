@@ -40,6 +40,7 @@ import {
   Download,
   Upload,
   MousePointerClick,
+  Bookmark,
 } from 'lucide-react'
 import React, { type ElementType, type FC, type ReactElement, type ReactNode } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@extension/ui/lib/components/ui/tabs'
@@ -239,6 +240,17 @@ const CommonSettings: FC = () => {
           <Switch
             checked={settings.doubleClickBackgroundFocusCommand}
             onCheckedChange={val => settingStorage.update({ doubleClickBackgroundFocusCommand: val })}
+          />
+        }
+      />
+      <SettingItem
+        IconClass={Bookmark}
+        title={t('showBookmarksInQuickUrlMenu')}
+        description={t('showBookmarksInQuickUrlMenuDescription')}
+        control={
+          <Switch
+            checked={settings.showBookmarksInQuickUrlMenu}
+            onCheckedChange={val => settingStorage.update({ showBookmarksInQuickUrlMenu: val })}
           />
         }
       />

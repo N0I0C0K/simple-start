@@ -95,6 +95,22 @@
     "description": "Double click background to focus command setting description",
     "message": "Focus command input when double-clicking the background. Keyboard users can use Alt+K (Windows/Linux) or ⌘+K (Mac)."
   },
+  "showBookmarksInQuickUrlMenu": {
+    "description": "Show bookmarks in quick URL context menu setting title",
+    "message": "Show Bookmarks in Quick URL Menu"
+  },
+  "showBookmarksInQuickUrlMenuDescription": {
+    "description": "Show bookmarks in quick URL context menu setting description",
+    "message": "Display related bookmarks when right-clicking quick URL items."
+  },
+  "relatedBookmarks": {
+    "description": "Related bookmarks section label in context menu",
+    "message": "Related Bookmarks"
+  },
+  "noBookmarksFound": {
+    "description": "No bookmarks found message",
+    "message": "No bookmarks found for this domain"
+  },
   "wallpaperUrl": {
     "description": "Wallpaper URL setting title",
     "message": "Wallpaper URL"

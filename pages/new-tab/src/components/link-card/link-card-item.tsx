@@ -3,20 +3,68 @@ import { getDefaultIconUrl } from '@/lib/url'
 import { cn } from '@/lib/utils'
 import { QuickItemEditForm } from '@/src/components/quick-item-edit-form'
 import type { QuickUrlItem } from '@extension/storage'
-import { quickUrlItemsStorage } from '@extension/storage'
+import { quickUrlItemsStorage, settingStorage } from '@extension/storage'
+import { useStorage } from '@extension/shared'
 import { Stack, Text, toast, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@extension/ui'
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItemWitchIcon,
   ContextMenuTrigger,
+  ContextMenuSeparator,
+  ContextMenuLabel,
 } from '@extension/ui/lib/components/ui/context-menu'
 import { useGlobalDialog } from '@src/provider'
-import { Pencil, Trash } from 'lucide-react'
+import { Pencil, Trash, ExternalLink } from 'lucide-react'
 import type { CSSProperties, MouseEventHandler, Ref, TouchEventHandler } from 'react'
-import { useRef, useState, forwardRef } from 'react'
+import { useRef, useState, forwardRef, useEffect } from 'react'
+import { t } from '@extension/i18n'
 
 import { MakeSortableItem } from '@/src/components/sortable-area'
+
+/**
+ * Extract domain from URL
+ */
+function getDomainFromUrl(url: string): string | null {
+  try {
+    const urlObj = new URL(url)
+    return urlObj.hostname
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Flatten bookmarks tree into a list
+ */
+function flattenBookmarks(
+  nodes: chrome.bookmarks.BookmarkTreeNode[],
+  results: chrome.bookmarks.BookmarkTreeNode[] = [],
+): chrome.bookmarks.BookmarkTreeNode[] {
+  for (const node of nodes) {
+    if (node.url) {
+      results.push(node)
+    }
+    if (node.children) {
+      flattenBookmarks(node.children, results)
+    }
+  }
+  return results
+}
+
+/**
+ * Find bookmarks matching a domain
+ */
+async function findBookmarksByDomain(domain: string): Promise<chrome.bookmarks.BookmarkTreeNode[]> {
+  const tree = await chrome.bookmarks.getTree()
+  const allBookmarks = flattenBookmarks(tree)
+  
+  return allBookmarks.filter(bookmark => {
+    if (!bookmark.url) return false
+    const bookmarkDomain = getDomainFromUrl(bookmark.url)
+    return bookmarkDomain === domain
+  })
+}
 
 interface LinkCardProps extends QuickUrlItem {
   ref?: Ref<HTMLDivElement>
@@ -33,9 +81,26 @@ interface CustomGridItemProps {
 export const LinkCardItem = forwardRef<HTMLDivElement, LinkCardProps & CustomGridItemProps>(
   ({ url, title, id, iconUrl, className, onMouseDown, onMouseUp, onTouchEnd, style }, ref) => {
     const [dragAreaVisable, setDragAreaVisible] = useState(false)
+    const [relatedBookmarks, setRelatedBookmarks] = useState<chrome.bookmarks.BookmarkTreeNode[]>([])
+    const [contextMenuOpen, setContextMenuOpen] = useState(false)
     const globalDialog = useGlobalDialog()
     const innerRef = useRef<HTMLDivElement>(null)
+    const settings = useStorage(settingStorage)
     //const downingTime = useMouseDownTime(innerRef.current)
+
+    // Fetch bookmarks when context menu opens
+    useEffect(() => {
+      if (contextMenuOpen && settings.showBookmarksInQuickUrlMenu) {
+        const domain = getDomainFromUrl(url)
+        if (domain) {
+          findBookmarksByDomain(domain).then(bookmarks => {
+            setRelatedBookmarks(bookmarks)
+          })
+        }
+      } else {
+        setRelatedBookmarks([])
+      }
+    }, [contextMenuOpen, url, settings.showBookmarksInQuickUrlMenu])
 
     return (
       <TooltipProvider>
@@ -43,7 +108,7 @@ export const LinkCardItem = forwardRef<HTMLDivElement, LinkCardProps & CustomGri
           onOpenChange={opened => {
             setDragAreaVisible(opened)
           }}>
-          <ContextMenu>
+          <ContextMenu onOpenChange={setContextMenuOpen}>
             <div
               style={style}
               className={cn(
@@ -132,6 +197,26 @@ export const LinkCardItem = forwardRef<HTMLDivElement, LinkCardProps & CustomGri
                 }}>
                 Delete
               </ContextMenuItemWitchIcon>
+              
+              {/* Related Bookmarks Section */}
+              {settings.showBookmarksInQuickUrlMenu && relatedBookmarks.length > 0 && (
+                <>
+                  <ContextMenuSeparator />
+                  <ContextMenuLabel>{t('relatedBookmarks')}</ContextMenuLabel>
+                  {relatedBookmarks.slice(0, 10).map(bookmark => (
+                    <ContextMenuItemWitchIcon
+                      key={bookmark.id}
+                      IconType={ExternalLink}
+                      onClick={() => {
+                        if (bookmark.url) {
+                          chrome.tabs.update({ url: bookmark.url })
+                        }
+                      }}>
+                      <span className="truncate">{bookmark.title || bookmark.url}</span>
+                    </ContextMenuItemWitchIcon>
+                  ))}
+                </>
+              )}
             </ContextMenuContent>
           </ContextMenu>
         </Tooltip>
