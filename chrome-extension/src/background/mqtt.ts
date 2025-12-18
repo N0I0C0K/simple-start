@@ -22,6 +22,9 @@ mqttProvider.on('client-loaded', client => {
   initMqttClientEvent(client)
 })
 
+// Track previous settings to detect actual changes
+let previousSettings: { secretKey: string; username: string; brokerUrl: string } | null = null
+
 async function setupMqtt() {
   await mqttStateManager.setConnected(false)
   const settings = await settingStorage.get()
@@ -66,9 +69,6 @@ chrome.alarms.onAlarm.addListener(async alarm => {
     await heartBeatEvent.emit(payloadBuilder.buildPayload({}))
   }
 })
-
-// Track previous settings to detect actual changes
-let previousSettings: { secretKey: string; username: string; brokerUrl: string } | null = null
 
 // Listen for settings changes and update MQTT configuration
 async function handleSettingsChange() {
