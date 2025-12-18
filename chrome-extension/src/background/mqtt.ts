@@ -95,6 +95,11 @@ async function handleSettingsChange() {
   const brokerUrlChanged = previousSettings?.brokerUrl !== currentSettings.brokerUrl
   const usernameChanged = previousSettings?.username !== currentSettings.username
 
+  // Skip if nothing changed
+  if (previousSettings && !secretKeyChanged && !brokerUrlChanged && !usernameChanged) {
+    return
+  }
+
   if (!previousSettings || secretKeyChanged || brokerUrlChanged || usernameChanged) {
     console.log('Settings changed. Updating MQTT configuration...')
 
@@ -115,6 +120,7 @@ async function handleSettingsChange() {
       console.log('Reconnecting to MQTT broker with new settings...')
       if (mqttProvider.connected && brokerUrlChanged) {
         await mqttProvider.disconnect()
+        await mqttStateManager.setConnected(false)
       }
       await mqttProvider.connect({ brokerUrl: currentSettings.brokerUrl })
       await mqttStateManager.setConnected(true)
