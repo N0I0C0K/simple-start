@@ -410,5 +410,45 @@
   "noResultsForPlugin": {
     "description": "No results found for plugin message",
     "message": "No results found for this query"
+  },
+  "aboutTab": {
+    "description": "About settings tab",
+    "message": "About"
+  },
+  "aboutDescription": {
+    "description": "About settings description",
+    "message": "Information about NextTab extension"
+  },
+  "version": {
+    "description": "Version label",
+    "message": "Version"
+  },
+  "repository": {
+    "description": "Repository label",
+    "message": "Repository"
+  },
+  "viewOnGithub": {
+    "description": "View on GitHub button",
+    "message": "View on GitHub"
+  },
+  "reportIssue": {
+    "description": "Report issue button",
+    "message": "Report Issue"
+  },
+  "reportIssueDescription": {
+    "description": "Report issue description",
+    "message": "Found a bug or have a suggestion? Let us know!"
+  },
+  "updates": {
+    "description": "Updates label",
+    "message": "Updates"
+  },
+  "checkForUpdates": {
+    "description": "Check for updates button",
+    "message": "Check for Updates"
+  },
+  "checkForUpdatesDescription": {
+    "description": "Check for updates description",
+    "message": "Visit the releases page to see the latest updates."
   }
 }
