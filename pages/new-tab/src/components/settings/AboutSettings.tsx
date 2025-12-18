@@ -7,7 +7,7 @@ import packageJson from '../../../../../package.json'
 
 export const AboutSettings: FC = () => {
   const version = chrome.runtime.getManifest().version
-  const repositoryUrl = packageJson.repository.url
+  const repositoryUrl = packageJson.repository?.url || 'https://github.com/N0I0C0K/NextTab'
   const issuesUrl = `${repositoryUrl}/issues/new`
   const releasesUrl = `${repositoryUrl}/releases`
 
