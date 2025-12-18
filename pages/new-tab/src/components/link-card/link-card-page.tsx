@@ -45,10 +45,12 @@ export const LinkCardPage: FC<{
     const curBp = Object.entries(commonBreakpoints).find(([, bpSize]) => bpSize <= width)
     setCols(commonCols[(curBp?.[0] ?? 'md') as keyof typeof commonCols])
     setMounted(true)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
     setUrlItems(urlItems)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [urlItems])
 
   return (

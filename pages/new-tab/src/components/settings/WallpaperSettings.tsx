@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils'
 import { useStorage } from '@extension/shared'
 import { settingStorage, wallpaperHistoryStorage } from '@extension/storage'
-import type { WallpaperType, WallhavenSortMode } from '@extension/storage'
+import type { WallhavenSortMode } from '@extension/storage'
 import { Button, Stack, Text, Separator, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@extension/ui'
 import { Check, Loader2, Image as ImageIcon, RefreshCw, History, Trash2, X, Upload, Link } from 'lucide-react'
 import { type FC, useCallback, useEffect, useState, useRef } from 'react'

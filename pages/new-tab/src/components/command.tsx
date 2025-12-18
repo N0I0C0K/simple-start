@@ -4,7 +4,6 @@ import { settingStorage } from '@extension/storage'
 import { command, Stack, Text } from '@extension/ui'
 import { commandResolverService } from '@src/service/command-resolver'
 import type { CommandQueryParams, ICommandResultGroup } from '@src/service/command-resolver'
-import { PLUGIN_LIST_NAME } from '@src/service/command-resolver/plugin'
 import {
   useEffect,
   useRef,

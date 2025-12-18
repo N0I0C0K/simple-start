@@ -3,7 +3,7 @@ import { DragDropProvider } from '@dnd-kit/react'
 import { move } from '@dnd-kit/helpers'
 
 export function Grid() {
-  const [items, setItems] = useState(Array.from({ length: 30 }, (_, idx) => idx))
+  const [, setItems] = useState(Array.from({ length: 30 }, (_, idx) => idx))
 
   return (
     <DragDropProvider

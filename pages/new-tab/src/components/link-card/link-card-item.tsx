@@ -31,8 +31,8 @@ interface CustomGridItemProps {
 }
 
 export const LinkCardItem = forwardRef<HTMLDivElement, LinkCardProps & CustomGridItemProps>(
-  ({ url, title, id, iconUrl, className, onMouseDown, onMouseUp, onTouchEnd, style }, ref) => {
-    const [dragAreaVisable, setDragAreaVisible] = useState(false)
+  ({ url, title, id, className, onMouseDown, onMouseUp, onTouchEnd, style }, ref) => {
+    const [, setDragAreaVisible] = useState(false)
     const globalDialog = useGlobalDialog()
     const innerRef = useRef<HTMLDivElement>(null)
     //const downingTime = useMouseDownTime(innerRef.current)
