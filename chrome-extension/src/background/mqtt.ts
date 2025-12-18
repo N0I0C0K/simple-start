@@ -38,6 +38,13 @@ async function setupMqtt() {
   // because event is delay connect, so set connected here
   await mqttStateManager.setConnected(true)
   console.log('MQTT connected')
+  
+  // Initialize previous settings to track changes
+  previousSettings = {
+    secretKey: settings.mqttSettings.secretKey,
+    username: settings.mqttSettings.username,
+    brokerUrl: settings.mqttSettings.mqttBrokerUrl,
+  }
 }
 
 closeMqttClientMessage.registerListener(async () => {
@@ -60,6 +67,9 @@ chrome.alarms.onAlarm.addListener(async alarm => {
   }
 })
 
+// Track previous settings to detect actual changes
+let previousSettings: { secretKey: string; username: string; brokerUrl: string } | null = null
+
 // Listen for settings changes and update MQTT configuration
 async function handleSettingsChange() {
   const settings = await settingStorage.get()
@@ -70,23 +80,48 @@ async function handleSettingsChange() {
     if (mqttProvider.connected) {
       await mqttProvider.disconnect()
     }
+    previousSettings = null
     return
   }
 
-  // Update secret key (this will resubscribe to topics with new prefix)
-  if (mqttProvider.initialized) {
-    console.log('Settings changed. Updating MQTT configuration...')
-    await mqttProvider.changeSecretPrefix(settings.mqttSettings.secretKey)
+  const currentSettings = {
+    secretKey: settings.mqttSettings.secretKey,
+    username: settings.mqttSettings.username,
+    brokerUrl: settings.mqttSettings.mqttBrokerUrl,
   }
 
-  // Update username for payload builder
-  payloadBuilder.username = settings.mqttSettings.username
+  // Check if this is the first time or if settings have actually changed
+  const secretKeyChanged = previousSettings?.secretKey !== currentSettings.secretKey
+  const brokerUrlChanged = previousSettings?.brokerUrl !== currentSettings.brokerUrl
+  const usernameChanged = previousSettings?.username !== currentSettings.username
 
-  // Reconnect if broker URL changed or if not connected
-  if (!mqttProvider.connected) {
-    console.log('Reconnecting to MQTT broker with new settings...')
-    await mqttProvider.connect({ brokerUrl: settings.mqttSettings.mqttBrokerUrl })
-    await mqttStateManager.setConnected(true)
+  if (!previousSettings || secretKeyChanged || brokerUrlChanged || usernameChanged) {
+    console.log('Settings changed. Updating MQTT configuration...')
+
+    // Update secret key if it changed (this will resubscribe to topics with new prefix)
+    if (mqttProvider.initialized && secretKeyChanged) {
+      console.log('Secret key changed, updating prefix...')
+      await mqttProvider.changeSecretPrefix(currentSettings.secretKey)
+    }
+
+    // Update username if it changed
+    if (usernameChanged) {
+      console.log('Username changed, updating payload builder...')
+      payloadBuilder.username = currentSettings.username
+    }
+
+    // Reconnect if broker URL changed or if not connected
+    if (brokerUrlChanged || !mqttProvider.connected) {
+      console.log('Reconnecting to MQTT broker with new settings...')
+      if (mqttProvider.connected && brokerUrlChanged) {
+        await mqttProvider.disconnect()
+      }
+      await mqttProvider.connect({ brokerUrl: currentSettings.brokerUrl })
+      await mqttStateManager.setConnected(true)
+    }
+
+    // Update previous settings
+    previousSettings = currentSettings
   }
 }
 
