@@ -1,7 +1,7 @@
-import fs from 'node:fs';
-import { replaceTscAliasPaths } from 'tsc-alias';
-import { resolve } from 'node:path';
-import esbuild from 'esbuild';
+import fs from 'node:fs'
+import { replaceTscAliasPaths } from 'tsc-alias'
+import { resolve } from 'node:path'
+import esbuild from 'esbuild'
 
 /**
  * @type { import('esbuild').BuildOptions }
@@ -13,9 +13,9 @@ const buildOptions = {
   target: 'es6',
   outdir: './dist',
   sourcemap: true,
-};
+}
 
-await esbuild.build(buildOptions);
+await esbuild.build(buildOptions)
 
 /**
  * Post build paths resolve since ESBuild only natively
@@ -27,6 +27,6 @@ await replaceTscAliasPaths({
   watch: false,
   outDir: 'dist',
   declarationDir: 'dist',
-});
+})
 
-fs.copyFileSync(resolve('lib', 'global.css'), resolve('dist', 'global.css'));
+fs.copyFileSync(resolve('lib', 'global.css'), resolve('dist', 'global.css'))

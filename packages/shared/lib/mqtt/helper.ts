@@ -1,4 +1,4 @@
-import type { MqttBasePayload } from "./payload"
+import type { MqttBasePayload } from './payload'
 
 export class MqttPayloadBuilder {
   private _username?: string

@@ -1,14 +1,14 @@
-import '@src/SidePanel.css';
-import { useStorage, withErrorBoundary, withSuspense } from '@extension/shared';
-import { exampleThemeStorage } from '@extension/storage';
-import type { ComponentPropsWithoutRef } from 'react';
+import '@src/SidePanel.css'
+import { useStorage, withErrorBoundary, withSuspense } from '@extension/shared'
+import { exampleThemeStorage } from '@extension/storage'
+import type { ComponentPropsWithoutRef } from 'react'
 
 const SidePanel = () => {
-  const theme = useStorage(exampleThemeStorage);
-  const isLight = theme === 'light';
-  const logo = isLight ? 'side-panel/logo_vertical.svg' : 'side-panel/logo_vertical_dark.svg';
+  const theme = useStorage(exampleThemeStorage)
+  const isLight = theme === 'light'
+  const logo = isLight ? 'side-panel/logo_vertical.svg' : 'side-panel/logo_vertical_dark.svg'
   const goGithubSite = () =>
-    chrome.tabs.create({ url: 'https://github.com/Jonghakseo/chrome-extension-boilerplate-react-vite' });
+    chrome.tabs.create({ url: 'https://github.com/Jonghakseo/chrome-extension-boilerplate-react-vite' })
 
   return (
     <div className={`App ${isLight ? 'bg-slate-50' : 'bg-gray-800'}`}>
@@ -22,11 +22,11 @@ const SidePanel = () => {
         <ToggleButton>Toggle theme</ToggleButton>
       </header>
     </div>
-  );
-};
+  )
+}
 
 const ToggleButton = (props: ComponentPropsWithoutRef<'button'>) => {
-  const theme = useStorage(exampleThemeStorage);
+  const theme = useStorage(exampleThemeStorage)
   return (
     <button
       className={
@@ -38,7 +38,7 @@ const ToggleButton = (props: ComponentPropsWithoutRef<'button'>) => {
       onClick={exampleThemeStorage.toggle}>
       {props.children}
     </button>
-  );
-};
+  )
+}
 
-export default withErrorBoundary(withSuspense(SidePanel, <div> Loading ... </div>), <div> Error Occur </div>);
+export default withErrorBoundary(withSuspense(SidePanel, <div> Loading ... </div>), <div> Error Occur </div>)

@@ -28,14 +28,24 @@ The following GitHub Actions workflows must complete successfully before merging
 
 To enforce these required checks, a repository administrator should:
 
-1. Go to **Settings** → **Branches** → **Branch protection rules**
-2. Add or edit the rule for the `main` branch
-3. Enable **Require status checks to pass before merging**
-4. Enable **Require branches to be up to date before merging** (recommended)
-5. Search for and select the following status checks:
-   - `eslint`
-   - `type-check`
-   - `prettier`
+1. **Important**: These workflows must run at least once before they appear in the branch protection settings. Create a test PR or push to main to trigger them.
+
+2. Go to **Settings** → **Branches** → **Branch protection rules**
+
+3. Add or edit the rule for the `main` branch
+
+4. Enable **Require status checks to pass before merging**
+
+5. Enable **Require branches to be up to date before merging** (recommended)
+
+6. Search for and select the following status checks:
+   - **Lint Check / eslint** (from `.github/workflows/lint.yml`)
+   - **Type Check / type-check** (from `.github/workflows/type-check.yml`)
+   - **Prettier Check** (from `.github/workflows/prettier.yml`)
+
+7. Save the changes
+
+Once configured, pull requests cannot be merged until all three checks pass successfully.
 
 ## Additional Recommended Checks
 
