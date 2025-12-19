@@ -29,15 +29,15 @@ export function useMouseDownTime(ref?: HTMLElement | null, intervalTimeout: numb
   const [downTime, setDownTime] = useState<number | undefined>()
   const [time, setTime] = useState(0)
   useEffect(() => {
-    if (downing) {
-      setInterval(() => {
-        setTime(Date.now() - downTime!)
+    if (downing && downTime) {
+      const interval = setInterval(() => {
+        setTime(Date.now() - downTime)
       }, intervalTimeout)
+      return () => clearInterval(interval)
     } else {
       setTime(0)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [downing, intervalTimeout])
+  }, [downing, downTime, intervalTimeout])
 
   const mouseDownCallback = useCallback(() => {
     setDowning(true)

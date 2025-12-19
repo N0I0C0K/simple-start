@@ -52,15 +52,9 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
       const root = window.document.documentElement
       root.classList.remove('light', 'dark')
       root.classList.add(systemThemeIsDark ? 'dark' : 'light')
+      setRealTheme(systemThemeIsDark ? 'dark' : 'light')
     }
-    setRealTheme(systemThemeIsDark ? 'dark' : 'light')
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [systemThemeIsDark])
-
-  useEffect(() => {
-    setRealTheme(theme === 'system' ? (systemThemeIsDark ? 'dark' : 'light') : (theme as RealTheme))
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [systemThemeIsDark, theme])
 
   const value = {
     theme,
