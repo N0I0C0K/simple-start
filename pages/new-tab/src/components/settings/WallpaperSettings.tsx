@@ -2,7 +2,18 @@ import { cn } from '@/lib/utils'
 import { useStorage } from '@extension/shared'
 import { settingStorage, wallpaperHistoryStorage } from '@extension/storage'
 import type { WallpaperType, WallhavenSortMode } from '@extension/storage'
-import { Button, Stack, Text, Separator, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@extension/ui'
+import {
+  Button,
+  Stack,
+  Text,
+  Separator,
+  Input,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@extension/ui'
 import { Check, Loader2, Image as ImageIcon, RefreshCw, History, Trash2, X, Upload, Link } from 'lucide-react'
 import { type FC, useCallback, useEffect, useState, useRef } from 'react'
 import { t } from '@extension/i18n'
@@ -181,7 +192,7 @@ export const WallpaperSettings: FC = () => {
   // Use refs to track loading state and last request time to prevent race conditions
   const isLoadingRef = useRef(false)
   const lastRequestTimeRef = useRef(0)
-  
+
   // Use ref to track current sort mode to avoid stale closures
   const sortModeRef = useRef(settings.wallhavenSortMode)
   sortModeRef.current = settings.wallhavenSortMode
@@ -208,16 +219,16 @@ export const WallpaperSettings: FC = () => {
       // Always use the current sort mode from ref to avoid stale closures in this callback.
       // Accessing sortMode directly from state could result in outdated values if the callback is reused.
       const currentSortMode = sortModeRef.current
-      
+
       // Wallhaven API - supports both toplist and random sorting (SFW only with purity=100)
       let apiUrl = `https://wallhaven.cc/api/v1/search?purity=100&page=${page}`
-      
+
       if (currentSortMode === 'toplist') {
         apiUrl += '&topRange=1M&sorting=toplist'
       } else {
         apiUrl += '&sorting=random'
       }
-      
+
       const response = await fetch(apiUrl)
 
       // Handle rate limiting (429 status)
@@ -286,15 +297,18 @@ export const WallpaperSettings: FC = () => {
     fetchWallpapers(1)
   }, [fetchWallpapers])
 
-  const handleSortModeChange = useCallback(async (mode: WallhavenSortMode) => {
-    await settingStorage.update({ wallhavenSortMode: mode })
-    setCurrentPage(1)
-    setHasMore(true)
-    setWallpapers([])
-    // Update the ref immediately before fetching
-    sortModeRef.current = mode
-    fetchWallpapers(1, false)
-  }, [fetchWallpapers])
+  const handleSortModeChange = useCallback(
+    async (mode: WallhavenSortMode) => {
+      await settingStorage.update({ wallhavenSortMode: mode })
+      setCurrentPage(1)
+      setHasMore(true)
+      setWallpapers([])
+      // Update the ref immediately before fetching
+      sortModeRef.current = mode
+      fetchWallpapers(1, false)
+    },
+    [fetchWallpapers],
+  )
 
   const handleSelectWallpaper = useCallback(async (url: string, thumbnailUrl: string) => {
     // Validate URL format before saving
@@ -322,59 +336,61 @@ export const WallpaperSettings: FC = () => {
     }
   }, [])
 
-  const handleLocalFileSelect = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (!file) return
+  const handleLocalFileSelect = useCallback(
+    async (event: React.ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0]
+      if (!file) return
 
-    // Validate file type
-    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
-      setError(t('localWallpaperInvalidType'))
-      clearFileInput()
-      return
-    }
+      // Validate file type
+      if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+        setError(t('localWallpaperInvalidType'))
+        clearFileInput()
+        return
+      }
 
-    // Validate file size
-    if (file.size > MAX_FILE_SIZE) {
-      setError(t('localWallpaperTooLarge'))
-      clearFileInput()
-      return
-    }
+      // Validate file size
+      if (file.size > MAX_FILE_SIZE) {
+        setError(t('localWallpaperTooLarge'))
+        clearFileInput()
+        return
+      }
 
-    setError(null)
+      setError(null)
 
-    // Read file as base64
-    const reader = new FileReader()
-    reader.onload = async (e) => {
-      const result = e.target?.result
-      if (result && typeof result === 'string') {
-        try {
-          await settingStorage.update({
-            localWallpaperData: result,
-            wallpaperType: 'local',
-          })
-          // Clear error after successful upload
-          setError(null)
-        } catch (error) {
-          console.error('Failed to save wallpaper:', error)
-          // Check for quota exceeded error for more specific messaging
-          const isQuotaError =
-            error &&
-            typeof error === 'object' &&
-            ('name' in error && error.name === 'QuotaExceededError') ||
-            ('code' in error && error.code === 22) || // DOMException for quota
-            ('message' in error && typeof error.message === 'string' && 
-              (error.message.toLowerCase().includes('quota') || error.message.toLowerCase().includes('exceeded')))
-          setError(isQuotaError ? t('localWallpaperQuotaExceeded') : t('localWallpaperStorageError'))
-          clearFileInput()
+      // Read file as base64
+      const reader = new FileReader()
+      reader.onload = async e => {
+        const result = e.target?.result
+        if (result && typeof result === 'string') {
+          try {
+            await settingStorage.update({
+              localWallpaperData: result,
+              wallpaperType: 'local',
+            })
+            // Clear error after successful upload
+            setError(null)
+          } catch (error) {
+            console.error('Failed to save wallpaper:', error)
+            // Check for quota exceeded error for more specific messaging
+            const isQuotaError =
+              (error && typeof error === 'object' && 'name' in error && error.name === 'QuotaExceededError') ||
+              ('code' in error && error.code === 22) || // DOMException for quota
+              ('message' in error &&
+                typeof error.message === 'string' &&
+                (error.message.toLowerCase().includes('quota') || error.message.toLowerCase().includes('exceeded')))
+            setError(isQuotaError ? t('localWallpaperQuotaExceeded') : t('localWallpaperStorageError'))
+            clearFileInput()
+          }
         }
       }
-    }
-    reader.onerror = () => {
-      setError(t('localWallpaperReadError'))
-      clearFileInput()
-    }
-    reader.readAsDataURL(file)
-  }, [clearFileInput])
+      reader.onerror = () => {
+        setError(t('localWallpaperReadError'))
+        clearFileInput()
+      }
+      reader.readAsDataURL(file)
+    },
+    [clearFileInput],
+  )
 
   const handleUploadClick = useCallback(() => {
     // Reset input value to allow selecting the same file again
@@ -436,7 +452,7 @@ export const WallpaperSettings: FC = () => {
         <Stack direction={'row'} className="items-center gap-2">
           <Select
             value={settings.wallhavenSortMode}
-            onValueChange={(value) => handleSortModeChange(value as WallhavenSortMode)}
+            onValueChange={value => handleSortModeChange(value as WallhavenSortMode)}
             disabled={isLoading}>
             <SelectTrigger className="w-[140px] h-9">
               <SelectValue />
@@ -532,12 +548,7 @@ export const WallpaperSettings: FC = () => {
         </Stack>
         <Stack direction={'row'} className="items-center gap-1">
           {settings.localWallpaperData && (
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={handleClearLocalWallpaper}
-              aria-label={t('clearLocalWallpaper')}
-            >
+            <Button variant="ghost" size="sm" onClick={handleClearLocalWallpaper} aria-label={t('clearLocalWallpaper')}>
               <Trash2 className="size-4" />
             </Button>
           )}
@@ -557,14 +568,17 @@ export const WallpaperSettings: FC = () => {
       {settings.localWallpaperData && (
         <div
           className={cn(
-            'relative cursor-pointer overflow-hidden rounded-lg border-2 transition-all hover:scale-[1.02] w-full max-w-[200px]',
-            settings.wallpaperType === 'local' ? 'border-primary ring-2 ring-primary/50' : 'border-transparent hover:border-muted-foreground/30',
+            `relative cursor-pointer overflow-hidden rounded-lg border-2 transition-all hover:scale-[1.02] w-full
+            max-w-[200px]`,
+            settings.wallpaperType === 'local'
+              ? 'border-primary ring-2 ring-primary/50'
+              : 'border-transparent hover:border-muted-foreground/30',
           )}
           role="button"
           tabIndex={0}
           aria-label={t('selectLocalWallpaper')}
           onClick={handleSelectLocalWallpaper}
-          onKeyDown={(e) => {
+          onKeyDown={e => {
             if (e.key === 'Enter' || e.key === ' ') {
               e.preventDefault()
               handleSelectLocalWallpaper()

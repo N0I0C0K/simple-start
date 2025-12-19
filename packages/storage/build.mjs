@@ -1,4 +1,4 @@
-import esbuild from 'esbuild';
+import esbuild from 'esbuild'
 
 /**
  * @type { import('esbuild').BuildOptions }
@@ -10,6 +10,6 @@ const buildOptions = {
   target: 'es6',
   outdir: './dist',
   sourcemap: true,
-};
+}
 
-await esbuild.build(buildOptions);
+await esbuild.build(buildOptions)

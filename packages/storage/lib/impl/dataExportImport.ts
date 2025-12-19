@@ -30,11 +30,11 @@ export async function exportAllData(): Promise<void> {
   const quickUrls = await quickUrlItemsStorage.get()
   const theme = await exampleThemeStorage.get()
   const commandSettings = await commandSettingsStorage.get()
-  
+
   // Exclude localWallpaperData from export to reduce file size
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { localWallpaperData, ...settingsToExport } = settings
-  
+
   const exportData: ExportedData = {
     version: '1.0.0',
     exportDate: new Date().toISOString(),
@@ -43,11 +43,11 @@ export async function exportAllData(): Promise<void> {
     quickUrls,
     commandSettings,
   }
-  
+
   const jsonString = JSON.stringify(exportData, null, 2)
   const blob = new Blob([jsonString], { type: 'application/json' })
   const url = URL.createObjectURL(blob)
-  
+
   const link = document.createElement('a')
   link.href = url
   link.download = `nexttab-settings-${new Date().toISOString().split('T')[0]}.json`
@@ -62,17 +62,17 @@ export async function exportAllData(): Promise<void> {
  */
 export async function importAllData(file: File): Promise<void> {
   const data = await parseAndValidateImportFile(file)
-  
+
   /**
    * We intentionally preserve localWallpaperData from the current settings rather than importing it.
    * This is because local wallpaper data is stored only on the current device and is not portable across exports/imports.
    * If the imported settings request 'local' wallpaperType but no local data exists, we switch to 'url' mode.
    */
   const currentSettings = await settingStorage.get()
-  
+
   // Preserve local wallpaper data and ensure wallpaperType is consistent
   const hasLocalWallpaperData = !!currentSettings.localWallpaperData
-  
+
   // Handle wallpaperType with validation and fallback for backward compatibility
   let wallpaperType = data.settings.wallpaperType ?? 'url'
   // Validate wallpaperType: must be 'url' or 'local'
@@ -83,7 +83,7 @@ export async function importAllData(file: File): Promise<void> {
   if (wallpaperType === 'local' && !hasLocalWallpaperData) {
     wallpaperType = 'url'
   }
-  
+
   await settingStorage.set({
     ...data.settings,
     wallpaperType,
@@ -91,15 +91,15 @@ export async function importAllData(file: File): Promise<void> {
     // Preserve user's preferred Wallhaven sort mode if not explicitly set in import
     wallhavenSortMode: data.settings.wallhavenSortMode ?? currentSettings.wallhavenSortMode ?? 'toplist',
   })
-  
+
   // Import quick URLs
   await quickUrlItemsStorage.set(data.quickUrls)
-  
+
   // Import theme if present
   if (data.theme) {
     await exampleThemeStorage.set(data.theme)
   }
-  
+
   // Import command settings if present
   if (data.commandSettings) {
     await commandSettingsStorage.set(data.commandSettings)
@@ -112,56 +112,64 @@ export async function importAllData(file: File): Promise<void> {
 function parseAndValidateImportFile(file: File): Promise<ExportedData> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
-    
-    reader.onload = (e) => {
+
+    reader.onload = e => {
       try {
         const content = e.target?.result as string
         const data = JSON.parse(content) as ExportedData
-        
+
         // Validate the imported data structure
         if (!data.settings || !data.quickUrls || !Array.isArray(data.quickUrls)) {
           throw new Error('Invalid data format: missing required fields (settings or quickUrls)')
         }
-        
+
         // Validate settings structure
-        if (typeof data.settings.useHistorySuggestion !== 'boolean' ||
-            typeof data.settings.autoFocusCommandInput !== 'boolean' ||
-            !data.settings.mqttSettings) {
+        if (
+          typeof data.settings.useHistorySuggestion !== 'boolean' ||
+          typeof data.settings.autoFocusCommandInput !== 'boolean' ||
+          !data.settings.mqttSettings
+        ) {
           throw new Error('Invalid settings format')
         }
-        
+
         // Validate quick URLs
         for (const item of data.quickUrls) {
           if (!item.id || !item.title || !item.url) {
             throw new Error('Invalid quick URL item: missing required fields')
           }
         }
-        
+
         // Validate command settings if present
         if (data.commandSettings) {
-          if (typeof data.commandSettings !== 'object' || Array.isArray(data.commandSettings) || data.commandSettings === null) {
+          if (
+            typeof data.commandSettings !== 'object' ||
+            Array.isArray(data.commandSettings) ||
+            data.commandSettings === null
+          ) {
             throw new Error('Invalid command settings format: must be an object')
           }
           for (const pluginSettings of Object.values(data.commandSettings)) {
-            if (typeof pluginSettings.priority !== 'number' ||
-                typeof pluginSettings.active !== 'boolean' ||
-                typeof pluginSettings.activeKey !== 'string' ||
-                typeof pluginSettings.includeInGlobal !== 'boolean') {
+            if (
+              typeof pluginSettings.priority !== 'number' ||
+              typeof pluginSettings.active !== 'boolean' ||
+              typeof pluginSettings.activeKey !== 'string' ||
+              typeof pluginSettings.includeInGlobal !== 'boolean'
+            ) {
               throw new Error('Invalid command settings format')
             }
           }
         }
-        
+
         resolve(data)
       } catch (error) {
         reject(new Error('Failed to parse JSON file: ' + (error as Error).message))
       }
     }
-    
+
     reader.onerror = () => {
       reject(new Error('Failed to read file'))
     }
-    
+
     reader.readAsText(file)
   })
 }

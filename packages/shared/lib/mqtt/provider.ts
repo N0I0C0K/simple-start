@@ -44,7 +44,6 @@ type MqttProviderEventMap = {
   'client-loaded': [mqtt.MqttClient]
 }
 
-
 /**
  * MQTT Provider class for managing MQTT connections and message handling.
  * Provides topic subscription, publishing, and event handling capabilities.

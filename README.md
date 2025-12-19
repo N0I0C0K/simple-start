@@ -15,3 +15,15 @@
 
 This project is powered by [chrome-extension-boilerplate-react-vite](https://github.com/Jonghakseo/chrome-extension-boilerplate-react-vite)
 
+## Contributing
+
+Contributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md) for details on:
+- Development setup and workflow
+- Code quality requirements
+- **Required status checks** that must pass before PR merge:
+  - ✅ ESLint (Lint Check)
+  - ✅ TypeScript Type Check
+  - ✅ Prettier (Formatting)
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for more information.
+

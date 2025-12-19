@@ -1,11 +1,11 @@
-import sucrase from '@rollup/plugin-sucrase';
+import sucrase from '@rollup/plugin-sucrase'
 
 const plugins = [
   sucrase({
     exclude: ['node_modules/**'],
     transforms: ['typescript'],
   }),
-];
+]
 
 /**
  * @type {import("rollup").RollupOptions[]}
@@ -27,4 +27,4 @@ export default [
       file: 'build/injections/refresh.js',
     },
   },
-];
+]
