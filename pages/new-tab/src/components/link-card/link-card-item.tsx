@@ -27,7 +27,6 @@ interface CustomGridItemProps {
 
 export const LinkCardItem = forwardRef<HTMLDivElement, LinkCardProps & CustomGridItemProps>(
   ({ url, title, id, className, onMouseDown, onMouseUp, onTouchEnd, style }, ref) => {
-    const [, setDragAreaVisible] = useState(false)
     const [contextMenuOpen, setContextMenuOpen] = useState(false)
     const globalDialog = useGlobalDialog()
     const innerRef = useRef<HTMLDivElement>(null)
@@ -45,10 +44,7 @@ export const LinkCardItem = forwardRef<HTMLDivElement, LinkCardProps & CustomGri
 
     return (
       <TooltipProvider>
-        <Tooltip
-          onOpenChange={opened => {
-            setDragAreaVisible(opened)
-          }}>
+        <Tooltip>
           <ContextMenu onOpenChange={setContextMenuOpen}>
             <div
               style={style}
@@ -62,8 +58,8 @@ export const LinkCardItem = forwardRef<HTMLDivElement, LinkCardProps & CustomGri
               onMouseDown={onMouseDown}
               onMouseUp={onMouseUp}
               onTouchEnd={onTouchEnd}>
-              <TooltipTrigger asChild>
-                <ContextMenuTrigger asChild>
+              <TooltipTrigger>
+                <ContextMenuTrigger>
                   <LinkCardIcon url={url} onClick={handleIconClick} ref={innerRef} />
                 </ContextMenuTrigger>
               </TooltipTrigger>

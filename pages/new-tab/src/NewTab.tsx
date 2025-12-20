@@ -94,7 +94,7 @@ const NewTab = () => {
             <div className="relative min-w-[20rem] w-[50%] z-0">
               <ScrollLinkCardPage
                 className="relative backdrop-blur-2xl rounded-2xl shadow-md dark:backdrop-brightness-75 w-full
-                  overflow-hidden bg-slate-50/15 dark:bg-slate-700/5 z-0"
+                  overflow-hidden bg-white/20 dark:bg-black/20 z-0"
               />
               {/* <DndLinkCardPage className="relative backdrop-blur-2xl rounded-2xl shadow-md dark:backdrop-brightness-75 w-full overflow-hidden bg-slate-50/20 dark:bg-slate-700/20" /> */}
             </div>
