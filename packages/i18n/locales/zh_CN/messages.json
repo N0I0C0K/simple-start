@@ -422,5 +422,53 @@
   "noResultsForPlugin": {
     "description": "No results found for plugin message",
     "message": "未找到此查询的结果"
+  },
+  "aboutTab": {
+    "description": "About settings tab",
+    "message": "关于"
+  },
+  "aboutDescription": {
+    "description": "About settings description",
+    "message": "关于 NextTab 扩展的信息"
+  },
+  "version": {
+    "description": "Version label",
+    "message": "版本"
+  },
+  "repository": {
+    "description": "Repository label",
+    "message": "代码仓库"
+  },
+  "viewOnGithub": {
+    "description": "View on GitHub button",
+    "message": "在 GitHub 上查看"
+  },
+  "reportIssue": {
+    "description": "Report issue button",
+    "message": "报告问题"
+  },
+  "reportIssueDescription": {
+    "description": "Report issue description",
+    "message": "发现问题或有建议？欢迎反馈！"
+  },
+  "updates": {
+    "description": "Updates label",
+    "message": "更新"
+  },
+  "checkForUpdates": {
+    "description": "Check for updates button",
+    "message": "检查更新"
+  },
+  "checkForUpdatesDescription": {
+    "description": "Check for updates description",
+    "message": "访问发布页面查看最新更新。"
+  },
+  "versionDescription": {
+    "description": "Version description",
+    "message": "当前扩展版本"
+  },
+  "repositoryDescription": {
+    "description": "Repository description",
+    "message": "NextTab 的 GitHub 代码仓库"
   }
 }

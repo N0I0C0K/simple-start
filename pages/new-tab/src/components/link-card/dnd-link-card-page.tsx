@@ -3,7 +3,7 @@ import { isSortable } from '@dnd-kit/react/sortable'
 import { arrayMove } from '@dnd-kit/helpers'
 import { useStorage } from '@extension/shared'
 import { quickUrlItemsStorage } from '@extension/storage'
-import { useEffect, type FC } from 'react'
+import { type FC } from 'react'
 
 import { SortableLinkCardItem } from '@/src/components/link-card/link-card-item'
 import { cn } from '@/lib/utils'

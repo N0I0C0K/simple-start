@@ -1,6 +1,6 @@
 import { Button } from '@extension/ui'
 import type { FC, ReactElement } from 'react'
-import { createContext, useCallback, useContext, useState } from 'react'
+import { createContext, useCallback, useContext } from 'react'
 
 export interface GlobalDialogProps {
   show: (element: ReactElement, title?: string, description?: string) => void

@@ -45,11 +45,11 @@ export const LinkCardPage: FC<{
     const curBp = Object.entries(commonBreakpoints).find(([, bpSize]) => bpSize <= width)
     setCols(commonCols[(curBp?.[0] ?? 'md') as keyof typeof commonCols])
     setMounted(true)
-  }, [])
+  }, [boxSize])
 
   useEffect(() => {
     setUrlItems(urlItems)
-  }, [urlItems])
+  }, [urlItems, urlItemsState])
 
   return (
     <ReactGridLayout
