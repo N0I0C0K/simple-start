@@ -175,6 +175,18 @@
     "description": "Disconnect button",
     "message": "Disconnect"
   },
+  "onlineUsers": {
+    "description": "Online users title",
+    "message": "Online Users"
+  },
+  "onlineUsersDescription": {
+    "description": "Online users description",
+    "message": "Show all online users (with heartbeat in the last 2 minutes)."
+  },
+  "noOnlineUsers": {
+    "description": "No online users message",
+    "message": "No online users"
+  },
   "noResultsFound": {
     "description": "No results found message",
     "message": "No results found."

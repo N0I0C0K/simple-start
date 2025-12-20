@@ -175,6 +175,18 @@
     "description": "Disconnect button",
     "message": "断开"
   },
+  "onlineUsers": {
+    "description": "Online users title",
+    "message": "在线用户"
+  },
+  "onlineUsersDescription": {
+    "description": "Online users description",
+    "message": "显示所有在线的用户（2分钟内有心跳）。"
+  },
+  "noOnlineUsers": {
+    "description": "No online users message",
+    "message": "暂无在线用户"
+  },
   "noResultsFound": {
     "description": "No results found message",
     "message": "未找到结果。"

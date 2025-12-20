@@ -45,6 +45,7 @@ import { t } from '@extension/i18n'
 import { WallpaperSettings } from './settings/WallpaperSettings'
 import { CommandSettings } from './settings/CommandSettings'
 import { AboutSettings } from './settings/AboutSettings'
+import OnlineUsersDisplay from './settings/OnlineUsers'
 
 const SettingItem: FC<{
   className?: string
@@ -161,6 +162,7 @@ const MqttSettings: FC = () => {
           />
         }
       />
+      <OnlineUsersDisplay />
     </Stack>
   )
 }
