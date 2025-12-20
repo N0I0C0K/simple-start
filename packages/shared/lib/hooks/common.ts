@@ -34,9 +34,9 @@ export function useMouseDownTime(ref?: HTMLElement | null, intervalTimeout: numb
         setTime(Date.now() - downTime)
       }, intervalTimeout)
       return () => clearInterval(interval)
-    } else {
-      setTime(0)
     }
+    setTime(0)
+    return undefined
   }, [downing, downTime, intervalTimeout])
 
   const mouseDownCallback = useCallback(() => {
