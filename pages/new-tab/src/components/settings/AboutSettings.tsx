@@ -28,8 +28,8 @@ export const AboutSettings: FC = () => {
     setIsChecking(true)
     setCheckError(false)
     try {
-      // Extract owner and repo from repository URL
-      const repoMatch = repositoryUrl.match(/github\.com\/([^/]+)\/([^/]+)/)
+      // Extract owner and repo from repository URL, handling .git suffix
+      const repoMatch = repositoryUrl.match(/github\.com\/([^/]+)\/([^/]+?)(?:\.git)?(?:\/|$)/)
       if (!repoMatch) {
         throw new Error('Invalid repository URL')
       }
@@ -59,9 +59,11 @@ export const AboutSettings: FC = () => {
     const cleanCurrent = current.replace(/^v/, '').trim()
     const cleanLatest = latest.replace(/^v/, '').trim()
     
-    // Parse semantic version numbers
+    // Parse semantic version numbers (only split on dots, ignore pre-release identifiers)
     const parseParts = (version: string) => {
-      const parts = version.split(/[.-]/).map(p => parseInt(p, 10))
+      // Split on dots and take only numeric parts before any hyphen (pre-release)
+      const mainVersion = version.split('-')[0]
+      const parts = mainVersion.split('.').map(p => parseInt(p, 10))
       return parts.filter(p => !isNaN(p))
     }
     
