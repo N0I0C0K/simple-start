@@ -44,6 +44,109 @@ type MqttProviderEventMap = {
   'client-loaded': [mqtt.MqttClient]
 }
 
+class MqttSecretPrefixTopicRegisterService {
+  private registeredSecretTopics: Set<string> = new Set() // topics registered with secret prefix
+  private rawTopics: Set<string> = new Set() // raw topics without secret prefix
+  private _secretPrefix: string | null = null
+  private _client: mqtt.MqttClient | null = null
+
+  constructor() {
+  }
+
+  get secretPrefix(): string {
+    if (!this._secretPrefix) {
+      throw new Error('Secret prefix is not set')
+    }
+    return this._secretPrefix
+  }
+
+  isTopicRegistered(topic: string): boolean {
+    const secretTopic = this.joinSecretPrefix(topic)
+    return this.registeredSecretTopics.has(secretTopic)
+  }
+
+  joinSecretPrefix(rawTopic: string): string {
+    return `${this._secretPrefix}/${rawTopic}`
+  }
+
+  removeSecretPrefix(secretTopic: string): string {
+    const prefixWithSlash = this.secretPrefix + '/'
+    if (secretTopic.startsWith(prefixWithSlash)) {
+      return secretTopic.slice(prefixWithSlash.length)
+    }
+    return secretTopic
+  }
+
+  async setSecretPrefix(newPrefix: string) {
+    if (this._secretPrefix === newPrefix) return
+    await this.unSubscribeAll()
+    this._secretPrefix = newPrefix
+    await this.subscribeAll()
+  }
+
+  async setMqttClient(client: mqtt.MqttClient) {
+    if (this._client === client) return
+    if (this._client) {
+      await this.unSubscribeAll()
+    }
+    this._client = client
+    await this.subscribeAll()
+  }
+
+  async registerTopic(topic: string) {
+    this.rawTopics.add(topic)
+    const secretTopic = this.joinSecretPrefix(topic)
+    await this.subscribeTopic(secretTopic)
+  }
+
+  async unregisterTopic(topic: string) {
+    this.rawTopics.delete(topic)
+    const secretTopic = this.joinSecretPrefix(topic)
+    await this.unSubscribeTopic(secretTopic)
+  }
+
+  private async subscribeTopic(secretTopic: string) {
+    if (!this._client) {
+      return
+    }
+    await this._client.subscribeAsync(secretTopic)
+    this.registeredSecretTopics.add(secretTopic)
+    console.log('Subscribed to topic:', secretTopic)
+  }
+
+  private async unSubscribeTopic(secretTopic: string) {
+    if (!this._client) {
+      return
+    }
+    await this._client.unsubscribeAsync(secretTopic)
+    this.registeredSecretTopics.delete(secretTopic)
+    console.log('Unsubscribed from topic:', secretTopic)
+  }
+
+  // Subscribe to all raw topics with the current secret prefix
+  async subscribeAll() {
+    if (!this._client) {
+      return
+    }
+    const topics = Array.from(this.rawTopics).map(topic => this.joinSecretPrefix(topic))
+    if (topics.length === 0) return
+    await this._client.subscribeAsync(topics)
+    topics.forEach(topic => this.registeredSecretTopics.add(topic))
+    console.log('Subscribed to all topics with secret prefix:', topics)
+  }
+
+  // Unsubscribe from all registered secret topics
+  async unSubscribeAll() {
+    if (!this._client) {
+      return
+    }
+    const topics = Array.from(this.registeredSecretTopics)
+    if (topics.length === 0) return
+    await this._client.unsubscribeAsync(topics)
+    this.registeredSecretTopics.clear()
+    console.log('Unsubscribed from all topics with secret prefix:', topics)
+  }
+}
 
 /**
  * MQTT Provider class for managing MQTT connections and message handling.
@@ -53,13 +156,19 @@ export class MqttProvider extends EventEmitter<MqttProviderEventMap> {
   private _clientInner: mqtt.MqttClient | null = null
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private registeredTopics: Map<string, TopicEventHandler<any>> = new Map()
-  private registeredTopicsSet: Set<string> = new Set()
   private brokerUrl: string
   private _secretPrefix?: string
+  private topicRegisterService: MqttSecretPrefixTopicRegisterService
 
   constructor(brokerUrl: string) {
     super()
     this.brokerUrl = brokerUrl
+    this.topicRegisterService = new MqttSecretPrefixTopicRegisterService()
+
+    this.on('client-loaded', async client => {
+      await this.topicRegisterService.setSecretPrefix(this.secretPrefix)
+      await this.topicRegisterService.setMqttClient(client)
+    })
   }
 
   get connected(): boolean {
@@ -84,26 +193,13 @@ export class MqttProvider extends EventEmitter<MqttProviderEventMap> {
     return this._clientInner
   }
 
-  createSecretTopic(rawTopic: string): string {
-    return `${this.secretPrefix}/${rawTopic}`
-  }
-
-  removeSecretTopic(secretTopic: string): string {
-    const prefixWithSlash = this.secretPrefix + '/'
-    if (secretTopic.startsWith(prefixWithSlash)) {
-      return secretTopic.slice(prefixWithSlash.length)
-    }
-    return secretTopic
-  }
-
   /**
    * Changes the secret prefix and resubscribes to all topics with the new prefix.
    * @param newPrefix - The new secret prefix to use
    */
   async changeSecretPrefix(newPrefix: string) {
-    await this.unSubscribeAll()
+    await this.topicRegisterService.setSecretPrefix(newPrefix)
     this._secretPrefix = newPrefix
-    await this.reSubscribeAll()
   }
 
   async connect(options?: MqttConnectionOptions) {
@@ -134,7 +230,7 @@ export class MqttProvider extends EventEmitter<MqttProviderEventMap> {
     this.emit('client-loaded', this._clientInner)
 
     this._clientInner.on('message', (topic: string, message: Buffer) => {
-      const rawTopic = this.removeSecretTopic(topic)
+      const rawTopic = this.topicRegisterService.removeSecretPrefix(topic)
       const topicEvent = this.registeredTopics.get(rawTopic)
       if (!topicEvent) return
       try {
@@ -145,48 +241,12 @@ export class MqttProvider extends EventEmitter<MqttProviderEventMap> {
       }
     })
 
-    await this.reSubscribeAll()
+    await this.topicRegisterService.subscribeAll()
   }
 
   async disconnect() {
     if (!this._clientInner || !this._clientInner.connected) return
     await this._clientInner.endAsync()
-  }
-
-  async reSubscribeAll() {
-    if (!this._clientInner) return
-    const topics = Array.from(this.registeredTopicsSet).map(topic => this.createSecretTopic(topic))
-    if (topics.length === 0) return
-    console.log('Re-subscribing to topics:', topics)
-    await this.client.subscribeAsync(topics)
-  }
-
-  async unSubscribeAll() {
-    if (!this._clientInner) return
-    const topics = Array.from(this.registeredTopicsSet).map(topic => this.createSecretTopic(topic))
-    if (topics.length === 0) return
-    console.log('Unsubscribing from topics:', topics)
-    await this.client.unsubscribeAsync(topics)
-  }
-
-  subscribe(topic: string) {
-    this.registeredTopicsSet.add(topic)
-    if (!this._clientInner) {
-      return
-    }
-    const secretTopic = this.createSecretTopic(topic)
-    console.log('Subscribing to topic:', secretTopic)
-    this.client.subscribe(secretTopic)
-  }
-
-  unregisterTopic(topic: string) {
-    this.registeredTopicsSet.delete(topic)
-    if (!this._clientInner) {
-      return
-    }
-    const secretTopic = this.createSecretTopic(topic)
-    console.log('Unsubscribing from topic:', secretTopic)
-    this.client.unsubscribe(secretTopic)
   }
 
   registerTopicCallback<T>(topic: string, callback: (payload: T) => void) {
@@ -203,20 +263,20 @@ export class MqttProvider extends EventEmitter<MqttProviderEventMap> {
       // No more callbacks, remove the topic
       // Ensure delete first to avoid race conditions
       this.registeredTopics.delete(topic)
-      this.unregisterTopic(topic)
+      this.topicRegisterService.unregisterTopic(topic)
     }
   }
 
   getOrCreateTopicEvent<T>(topic: string): TopicEventHandler<T> {
     if (!this.registeredTopics.has(topic)) {
-      this.subscribe(topic)
+      this.topicRegisterService.registerTopic(topic)
       this.registeredTopics.set(topic, new TopicEventHandler<T>(topic, this))
     }
     return this.registeredTopics.get(topic)!
   }
 
   async publish<T>(topic: string, payload: T): Promise<void> {
-    const secretTopic = this.createSecretTopic(topic)
+    const secretTopic = this.topicRegisterService.joinSecretPrefix(topic)
     await this.client.publishAsync(secretTopic, JSON.stringify(payload))
   }
 }
