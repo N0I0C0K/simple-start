@@ -134,7 +134,6 @@ export class MqttProvider extends EventEmitter<MqttProviderEventMap> {
     this.emit('client-loaded', this._clientInner)
 
     this._clientInner.on('message', (topic: string, message: Buffer) => {
-      console.info('Received message on topic:', topic, 'message:', message.toString())
       const rawTopic = this.removeSecretTopic(topic)
       const topicEvent = this.registeredTopics.get(rawTopic)
       if (!topicEvent) return
@@ -218,7 +217,6 @@ export class MqttProvider extends EventEmitter<MqttProviderEventMap> {
 
   async publish<T>(topic: string, payload: T): Promise<void> {
     const secretTopic = this.createSecretTopic(topic)
-    console.info('Publishing to topic:', secretTopic, 'payload:', payload)
     await this.client.publishAsync(secretTopic, JSON.stringify(payload))
   }
 }

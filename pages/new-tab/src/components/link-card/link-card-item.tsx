@@ -53,7 +53,7 @@ export const LinkCardItem = forwardRef<HTMLDivElement, LinkCardProps & CustomGri
         if (domain) {
           findBookmarksByDomain(domain)
             .then(bookmarks => {
-              setRelatedBookmarks(bookmarks)
+              setRelatedBookmarks(bookmarks.filter(b => b.url !== url))
             })
             .catch(error => {
               console.error('Failed to fetch bookmarks:', error)
@@ -125,10 +125,9 @@ export const LinkCardItem = forwardRef<HTMLDivElement, LinkCardProps & CustomGri
                   }}>
                   {url}
                 </Text>
-                <Text>{id}</Text>
               </Stack>
             </TooltipContent>
-            <ContextMenuContent className="w-64 max-w-xs">
+            <ContextMenuContent className="max-w-xs">
               <ContextMenuItemWitchIcon
                 IconType={Pencil}
                 shortCut="Ctrl+E"
@@ -163,7 +162,7 @@ export const LinkCardItem = forwardRef<HTMLDivElement, LinkCardProps & CustomGri
                 }}>
                 Delete
               </ContextMenuItemWitchIcon>
-              
+
               {/* Related Bookmarks Section */}
               {settings.showBookmarksInQuickUrlMenu && relatedBookmarks.length > 0 && (
                 <>
@@ -178,11 +177,11 @@ export const LinkCardItem = forwardRef<HTMLDivElement, LinkCardProps & CustomGri
                         }
                       }}
                       className="flex items-center gap-2">
-                      <img 
-                        src={getDefaultIconUrl(bookmark.url || '')} 
-                        alt="" 
+                      <img
+                        src={getDefaultIconUrl(bookmark.url || '')}
+                        alt=""
                         className="size-4 rounded-sm flex-shrink-0"
-                        onError={(e) => {
+                        onError={e => {
                           // Fallback to default icon if image fails to load
                           e.currentTarget.style.display = 'none'
                         }}

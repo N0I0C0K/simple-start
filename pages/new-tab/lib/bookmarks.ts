@@ -14,23 +14,6 @@ export function getDomainFromUrl(url: string): string | null {
   }
 }
 
-/**
- * Flatten bookmarks tree into a list
- */
-export function flattenBookmarks(
-  nodes: chrome.bookmarks.BookmarkTreeNode[],
-  results: chrome.bookmarks.BookmarkTreeNode[] = [],
-): chrome.bookmarks.BookmarkTreeNode[] {
-  for (const node of nodes) {
-    if (node.url) {
-      results.push(node)
-    }
-    if (node.children) {
-      flattenBookmarks(node.children, results)
-    }
-  }
-  return results
-}
 
 /**
  * Find bookmarks matching a domain using chrome.bookmarks.search API
@@ -40,8 +23,8 @@ export async function findBookmarksByDomain(domain: string): Promise<chrome.book
   try {
     // Use chrome.bookmarks.search() to find bookmarks containing the domain
     // This is more efficient than getTree() for large bookmark collections
-    const results = await chrome.bookmarks.search({ url: domain })
-    
+    const results = await chrome.bookmarks.search({ query: domain })
+
     // Filter to exact domain matches
     return results.filter(bookmark => {
       if (!bookmark.url) return false
