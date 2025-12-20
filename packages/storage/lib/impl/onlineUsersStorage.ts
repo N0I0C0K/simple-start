@@ -1,6 +1,7 @@
 import { StorageEnum } from '../base/enums'
 import { createStorage } from '../base/base'
 import type { BaseStorage } from '../base/types'
+import { ONLINE_USER_TIMEOUT_MS } from './constants'
 
 export type OnlineUser = {
   username: string
@@ -14,7 +15,7 @@ export type OnlineUsersState = {
 export type OnlineUsersStorage = BaseStorage<OnlineUsersState> & {
   updateUserHeartbeat: (username: string) => Promise<void>
   getOnlineUsers: (timeoutMs?: number) => Promise<OnlineUser[]>
-  cleanupOfflineUsers: (timeoutMs: number) => Promise<void>
+  cleanupOfflineUsers: (timeoutMs?: number) => Promise<void>
 }
 
 const defaultOnlineUsersState: OnlineUsersState = {
@@ -39,13 +40,12 @@ export const onlineUsersStorage: OnlineUsersStorage = {
       },
     }))
   },
-  getOnlineUsers: async (timeoutMs = 120000) => {
-    // Default 2 minutes timeout
+  getOnlineUsers: async (timeoutMs = ONLINE_USER_TIMEOUT_MS) => {
     const state = await storage.get()
     const now = Date.now()
     return Object.values(state.users).filter(user => now - user.lastHeartbeat < timeoutMs)
   },
-  cleanupOfflineUsers: async (timeoutMs: number) => {
+  cleanupOfflineUsers: async (timeoutMs = ONLINE_USER_TIMEOUT_MS) => {
     await storage.set(prev => {
       const now = Date.now()
       const activeUsers: Record<string, OnlineUser> = {}

@@ -1,5 +1,6 @@
 import { useStorage } from '@extension/shared'
-import { onlineUsersStorage } from '@extension/storage'
+import { onlineUsersStorage, ONLINE_USER_TIMEOUT_MS } from '@extension/storage'
+import type { OnlineUser } from '@extension/storage'
 import { Avatar, AvatarFallback, Stack, Text } from '@extension/ui'
 import { Users } from 'lucide-react'
 import type { FC } from 'react'
@@ -9,16 +10,13 @@ import { SettingItem } from '../setting-pannel'
 
 const OnlineUsersDisplay: FC = () => {
   const onlineUsersState = useStorage(onlineUsersStorage)
-  const [onlineUsers, setOnlineUsers] = React.useState<Array<{ username: string; lastHeartbeat: number }>>([])
 
-  React.useEffect(() => {
-    // Filter users who had heartbeat in last 2 minutes
+  const getOnlineUsers = React.useCallback((): OnlineUser[] => {
     const now = Date.now()
-    const activeUsers = Object.values(onlineUsersState.users).filter(
-      user => now - user.lastHeartbeat < 120000, // 2 minutes
-    )
-    setOnlineUsers(activeUsers)
+    return Object.values(onlineUsersState.users).filter(user => now - user.lastHeartbeat < ONLINE_USER_TIMEOUT_MS)
   }, [onlineUsersState])
+
+  const onlineUsers = getOnlineUsers()
 
   const getInitials = (username: string): string => {
     if (!username) return '?'

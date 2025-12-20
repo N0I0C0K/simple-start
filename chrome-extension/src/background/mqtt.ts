@@ -1,6 +1,6 @@
 import type { ILoadable } from './type'
 
-import { mqttStateManager, settingStorage, onlineUsersStorage } from '@extension/storage'
+import { mqttStateManager, settingStorage, onlineUsersStorage, ONLINE_USER_TIMEOUT_MS } from '@extension/storage'
 import { MqttPayloadBuilder, MqttProvider, closeMqttClientMessage, openMqttClientMessage } from '@extension/shared'
 import type { MqttBasePayload } from '@extension/shared'
 import type { MqttClient } from 'mqtt'
@@ -68,8 +68,8 @@ chrome.alarms.onAlarm.addListener(async alarm => {
     await heartBeatEvent.emit(payloadBuilder.buildPayload({}))
   }
   if (alarm.name === 'mqtt-cleanup-offline-users') {
-    // Clean up users offline for more than 2 minutes (120000ms)
-    await onlineUsersStorage.cleanupOfflineUsers(120000)
+    // Clean up users offline for more than 2 minutes
+    await onlineUsersStorage.cleanupOfflineUsers(ONLINE_USER_TIMEOUT_MS)
   }
 })
 
