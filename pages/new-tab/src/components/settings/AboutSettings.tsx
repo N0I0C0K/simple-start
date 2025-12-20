@@ -1,6 +1,6 @@
 import { Button, Stack, Text } from '@extension/ui'
 import { Info, ExternalLink, MessageSquareWarning, RefreshCw } from 'lucide-react'
-import { type FC, useState, useEffect } from 'react'
+import { type FC, useState, useEffect, useCallback } from 'react'
 import { t } from '@extension/i18n'
 import { SettingItem } from '../setting-pannel'
 import packageJson from '../../../../../package.json'
@@ -24,16 +24,22 @@ export const AboutSettings: FC = () => {
     chrome.tabs.create({ url })
   }
   
-  const fetchLatestVersion = async () => {
+  const fetchLatestVersion = useCallback(async () => {
     setIsChecking(true)
     setCheckError(false)
     try {
-      const response = await fetch('https://api.github.com/repos/N0I0C0K/NextTab/releases/latest')
+      // Extract owner and repo from repository URL
+      const repoMatch = repositoryUrl.match(/github\.com\/([^/]+)\/([^/]+)/)
+      if (!repoMatch) {
+        throw new Error('Invalid repository URL')
+      }
+      const [, owner, repo] = repoMatch
+      const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/releases/latest`)
       if (!response.ok) {
         throw new Error('Failed to fetch')
       }
       const data: GitHubRelease = await response.json()
-      // Use tag_name if name is empty, otherwise use name
+      // Use name if available, otherwise use tag_name
       const versionText = data.name || data.tag_name
       setLatestVersion(versionText)
     } catch (error) {
@@ -42,17 +48,42 @@ export const AboutSettings: FC = () => {
     } finally {
       setIsChecking(false)
     }
-  }
+  }, [repositoryUrl])
   
   useEffect(() => {
     fetchLatestVersion()
-  }, [])
+  }, [fetchLatestVersion])
   
   const compareVersions = (current: string, latest: string): boolean => {
-    // Simple version comparison - returns true if update is available
-    const cleanCurrent = current.replace(/^v/, '')
-    const cleanLatest = latest.replace(/^v/, '')
-    return cleanCurrent !== cleanLatest
+    // Remove 'v' prefix if present
+    const cleanCurrent = current.replace(/^v/, '').trim()
+    const cleanLatest = latest.replace(/^v/, '').trim()
+    
+    // Parse semantic version numbers
+    const parseParts = (version: string) => {
+      const parts = version.split(/[.-]/).map(p => parseInt(p, 10))
+      return parts.filter(p => !isNaN(p))
+    }
+    
+    const currentParts = parseParts(cleanCurrent)
+    const latestParts = parseParts(cleanLatest)
+    
+    // Compare version parts
+    const maxLength = Math.max(currentParts.length, latestParts.length)
+    for (let i = 0; i < maxLength; i++) {
+      const currentPart = currentParts[i] || 0
+      const latestPart = latestParts[i] || 0
+      
+      if (latestPart > currentPart) {
+        return true // Update available
+      }
+      if (latestPart < currentPart) {
+        return false // Current is newer
+      }
+    }
+    
+    // Versions are equal
+    return false
   }
   
   const hasUpdate = latestVersion && !checkError && compareVersions(version, latestVersion)
