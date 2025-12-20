@@ -1,22 +1,17 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
-import { getDefaultIconUrl } from '@/lib/url'
 import { cn } from '@/lib/utils'
-import { QuickItemEditForm } from '@/src/components/quick-item-edit-form'
 import type { QuickUrlItem } from '@extension/storage'
-import { quickUrlItemsStorage } from '@extension/storage'
-import { Stack, Text, toast, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@extension/ui'
-import {
-  ContextMenu,
-  ContextMenuContent,
-  ContextMenuItemWitchIcon,
-  ContextMenuTrigger,
-} from '@extension/ui/lib/components/ui/context-menu'
+import { Text, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@extension/ui'
+import { ContextMenu, ContextMenuContent, ContextMenuTrigger } from '@extension/ui/lib/components/ui/context-menu'
 import { useGlobalDialog } from '@src/provider'
-import { Pencil, Trash } from 'lucide-react'
 import type { CSSProperties, MouseEventHandler, Ref, TouchEventHandler } from 'react'
 import { useRef, useState, forwardRef } from 'react'
 
 import { MakeSortableItem } from '@/src/components/sortable-area'
+import { LinkCardIcon } from './link-card-icon'
+import { LinkCardTooltipContent } from './link-card-tooltip'
+import { LinkCardContextMenuContent } from './link-card-context-menu'
+import { useRelatedBookmarks } from './use-related-bookmarks'
 
 interface LinkCardProps extends QuickUrlItem {
   ref?: Ref<HTMLDivElement>
@@ -32,18 +27,25 @@ interface CustomGridItemProps {
 
 export const LinkCardItem = forwardRef<HTMLDivElement, LinkCardProps & CustomGridItemProps>(
   ({ url, title, id, className, onMouseDown, onMouseUp, onTouchEnd, style }, ref) => {
-    const [, setDragAreaVisible] = useState(false)
+    const [contextMenuOpen, setContextMenuOpen] = useState(false)
     const globalDialog = useGlobalDialog()
     const innerRef = useRef<HTMLDivElement>(null)
-    //const downingTime = useMouseDownTime(innerRef.current)
+
+    // Fetch related bookmarks when context menu opens
+    const { relatedBookmarks, showBookmarks } = useRelatedBookmarks(url, contextMenuOpen)
+
+    const handleIconClick = (ev: React.MouseEvent<HTMLDivElement>) => {
+      if (ev.ctrlKey) {
+        chrome.tabs.create({ url: url, active: true })
+      } else {
+        chrome.tabs.update({ url: url })
+      }
+    }
 
     return (
       <TooltipProvider>
-        <Tooltip
-          onOpenChange={opened => {
-            setDragAreaVisible(opened)
-          }}>
-          <ContextMenu>
+        <Tooltip>
+          <ContextMenu onOpenChange={setContextMenuOpen}>
             <div
               style={style}
               className={cn(
@@ -56,82 +58,27 @@ export const LinkCardItem = forwardRef<HTMLDivElement, LinkCardProps & CustomGri
               onMouseDown={onMouseDown}
               onMouseUp={onMouseUp}
               onTouchEnd={onTouchEnd}>
-              <TooltipTrigger asChild>
-                <ContextMenuTrigger asChild>
-                  <div
-                    className={cn(
-                      `relative flex flex-row items-center justify-center rounded-lg size-[4.5rem] text-primary
-                      duration-200 select-none cursor-pointer`,
-                      'hover:bg-slate-200/40 active:bg-slate-100/70',
-                      'dark:hover:bg-slate-100/20 dark:active:bg-slate-200/70',
-                    )}
-                    onClick={ev => {
-                      if (ev.ctrlKey) {
-                        chrome.tabs.create({ url: url, active: true })
-                      } else {
-                        chrome.tabs.update({ url: url })
-                      }
-                    }}
-                    aria-hidden="true"
-                    ref={innerRef}>
-                    <img src={getDefaultIconUrl(url)} alt="img" className="size-8 rounded-md select-none" />
-                  </div>
+              <TooltipTrigger>
+                <ContextMenuTrigger>
+                  <LinkCardIcon url={url} onClick={handleIconClick} ref={innerRef} />
                 </ContextMenuTrigger>
               </TooltipTrigger>
               <Text level="s" className="select-none line-clamp-1">
                 {title}
               </Text>
             </div>
-            <TooltipContent asChild>
-              <Stack direction={'column'}>
-                <Text>{title}</Text>
-                <Text
-                  level="s"
-                  gray
-                  className="cursor-pointer"
-                  onClick={() => {
-                    toast.success('Copy success', { description: url })
-                  }}>
-                  {url}
-                </Text>
-                <Text>{id}</Text>
-              </Stack>
+            <TooltipContent>
+              <LinkCardTooltipContent title={title} url={url} id={id} />
             </TooltipContent>
-            <ContextMenuContent className="w-44">
-              <ContextMenuItemWitchIcon
-                IconType={Pencil}
-                shortCut="Ctrl+E"
-                onClick={() => {
-                  globalDialog.show(
-                    <QuickItemEditForm
-                      defaultValue={{ title, url }}
-                      onSubmit={item => {
-                        quickUrlItemsStorage.putById(id, {
-                          id: id,
-                          title: item.title,
-                          url: item.url,
-                        })
-                        globalDialog.close()
-                      }}
-                      submitButtonTitle="Save"
-                    />,
-                    'Edit',
-                  )
-                }}>
-                Edit
-              </ContextMenuItemWitchIcon>
-              <ContextMenuItemWitchIcon
-                className="text-red-800"
-                IconType={Trash}
-                shortCut="Ctrl+D"
-                onClick={() => {
-                  globalDialog.confirm(`Continue delete ${title}?`, 'Delete can not recover', () => {
-                    quickUrlItemsStorage.removeById(id)
-                    globalDialog.close()
-                  })
-                }}>
-                Delete
-              </ContextMenuItemWitchIcon>
+            <ContextMenuContent className="max-w-xs">
+              <LinkCardContextMenuContent
+                id={id}
+                title={title}
+                url={url}
+                relatedBookmarks={relatedBookmarks}
+                showBookmarks={showBookmarks}
+                globalDialog={globalDialog}
+              />
             </ContextMenuContent>
           </ContextMenu>
         </Tooltip>
