@@ -18,6 +18,7 @@ export function useEffectMemo<T>(func: () => T, defaultVal: T, deps?: Dependency
   const [val, setVal] = useState<T>(defaultVal)
   useEffect(() => {
     setVal(func())
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps)
 
   return val
@@ -26,23 +27,17 @@ export function useEffectMemo<T>(func: () => T, defaultVal: T, deps?: Dependency
 export function useMouseDownTime(ref?: HTMLElement | null, intervalTimeout: number = 100): number {
   const [downing, setDowning] = useState(false)
   const [downTime, setDownTime] = useState<number | undefined>()
-  const [downingCountInterval, setDowningCountInterval] = useState<number | undefined>()
   const [time, setTime] = useState(0)
   useEffect(() => {
-    if (downingCountInterval) {
-      clearInterval(downingCountInterval)
-      setDowningCountInterval(undefined)
-    }
-
-    if (downing) {
-      const t = setInterval(() => {
-        setTime(Date.now() - downTime!)
+    if (downing && downTime) {
+      const interval = setInterval(() => {
+        setTime(Date.now() - downTime)
       }, intervalTimeout)
-      //setDowningCountInterval(t)
-    } else {
-      setTime(0)
+      return () => clearInterval(interval)
     }
-  }, [downing, intervalTimeout])
+    setTime(0)
+    return undefined
+  }, [downing, downTime, intervalTimeout])
 
   const mouseDownCallback = useCallback(() => {
     setDowning(true)

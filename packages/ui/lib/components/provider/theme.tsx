@@ -24,7 +24,7 @@ const initialState: ThemeProviderState = {
 
 const ThemeProviderContext = createContext<ThemeProviderState>(initialState)
 
-export function ThemeProvider({ children, defaultTheme = 'system', ...props }: ThemeProviderProps) {
+export function ThemeProvider({ children }: ThemeProviderProps) {
   const theme = useStorage(exampleThemeStorage)
   const systemThemeIsDark = useMediaQuery('(prefers-color-scheme: dark)')
   const [realTheme, setRealTheme] = useState<RealTheme>(
@@ -44,6 +44,7 @@ export function ThemeProvider({ children, defaultTheme = 'system', ...props }: T
     }
     setRealTheme(theme)
     root.classList.add(theme)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [theme])
 
   useEffect(() => {
@@ -51,13 +52,9 @@ export function ThemeProvider({ children, defaultTheme = 'system', ...props }: T
       const root = window.document.documentElement
       root.classList.remove('light', 'dark')
       root.classList.add(systemThemeIsDark ? 'dark' : 'light')
+      setRealTheme(systemThemeIsDark ? 'dark' : 'light')
     }
-    setRealTheme(systemThemeIsDark ? 'dark' : 'light')
-  }, [systemThemeIsDark])
-
-  useEffect(() => {
-    setRealTheme(theme === 'system' ? (systemThemeIsDark ? 'dark' : 'light') : (theme as RealTheme))
-  }, [])
+  }, [systemThemeIsDark, theme])
 
   const value = {
     theme,
@@ -68,7 +65,7 @@ export function ThemeProvider({ children, defaultTheme = 'system', ...props }: T
   }
 
   return (
-    <ThemeProviderContext.Provider {...props} value={value}>
+    <ThemeProviderContext.Provider value={value}>
       {children}
     </ThemeProviderContext.Provider>
   )

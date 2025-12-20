@@ -21,7 +21,6 @@ import {
   DialogTitle,
   DialogHeader,
   DialogDescription,
-  Badge,
   ScrollArea,
 } from '@extension/ui'
 import type { LucideProps } from 'lucide-react'
@@ -31,7 +30,6 @@ import {
   History,
   Pointer,
   CupSoda,
-  Link2,
   KeyRound,
   ToggleRight,
   User,
@@ -327,7 +325,7 @@ const SidebarButton: FC<{
   )
 }
 
-const DrawerSettingPanel: FC<{ className?: string }> = ({ className }) => {
+const DrawerSettingPanel: FC = () => {
   return (
     <SidebarButton IconClass={AlignJustify} label={t('settings')} description={t('setYourPreferences')}>
       <SettingTabs />

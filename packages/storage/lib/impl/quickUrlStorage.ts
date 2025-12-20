@@ -1,7 +1,6 @@
 import { StorageEnum } from '../base/enums'
 import { createStorage } from '../base/base'
 import type { BaseStorage, QuickUrlItem } from '../base/types'
-import { getIconUrlFromWebsit } from '../utils'
 
 export type QuickUrlItemsStorage = BaseStorage<QuickUrlItem[]>
 

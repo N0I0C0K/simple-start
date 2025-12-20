@@ -3,7 +3,7 @@ export * from './shared-types'
 
 export function WarpDefaultObject<T extends object>(src: Partial<T>, defaultTgt: T): T {
   return new Proxy(src, {
-    get(target, p, receiver) {
+    get(target, p) {
       if (p in target) {
         const val = Reflect.get(target, p)
         if (val !== undefined) {

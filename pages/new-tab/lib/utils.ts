@@ -48,4 +48,4 @@ export function useBoolean(initVal: boolean): [boolean, booleanFunc] {
   ]
 }
 
-export function useCrontab(func: () => unknown) {}
+export function useCrontab() {}
