@@ -470,5 +470,29 @@
   "repositoryDescription": {
     "description": "Repository description",
     "message": "GitHub repository for NextTab"
+  },
+  "latestVersion": {
+    "description": "Latest version label",
+    "message": "Latest Version"
+  },
+  "latestVersionDescription": {
+    "description": "Latest version description",
+    "message": "The latest version available on GitHub"
+  },
+  "checkingForUpdates": {
+    "description": "Checking for updates message",
+    "message": "Checking..."
+  },
+  "updateAvailable": {
+    "description": "Update available message",
+    "message": "Update Available"
+  },
+  "upToDate": {
+    "description": "Up to date message",
+    "message": "Up to Date"
+  },
+  "failedToCheckUpdates": {
+    "description": "Failed to check for updates message",
+    "message": "Failed to check"
   }
 }
