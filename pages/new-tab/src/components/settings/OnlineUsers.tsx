@@ -8,6 +8,9 @@ import React from 'react'
 import { t } from '@extension/i18n'
 import { SettingItem } from '../setting-pannel'
 
+const MAX_SHORT_USERNAME_LENGTH = 2
+const MAX_INITIALS_LENGTH = 2
+
 const OnlineUsersDisplay: FC = () => {
   const onlineUsersState = useStorage(onlineUsersStorage)
 
@@ -21,14 +24,14 @@ const OnlineUsersDisplay: FC = () => {
   const getInitials = (username: string): string => {
     if (!username) return '?'
     // For Chinese characters or single words, take first character
-    if (username.length <= 2) return username.substring(0, 1).toUpperCase()
+    if (username.length <= MAX_SHORT_USERNAME_LENGTH) return username.substring(0, 1).toUpperCase()
     // For multiple words, take first letter of first two words
     const words = username.split(/\s+/)
-    if (words.length >= 2) {
+    if (words.length >= MAX_INITIALS_LENGTH) {
       return (words[0][0] + words[1][0]).toUpperCase()
     }
     // Otherwise take first two characters
-    return username.substring(0, 2).toUpperCase()
+    return username.substring(0, MAX_INITIALS_LENGTH).toUpperCase()
   }
 
   const getColorFromUsername = (username: string): string => {
