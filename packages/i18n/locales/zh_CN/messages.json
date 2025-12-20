@@ -457,7 +457,7 @@
   },
   "checkForUpdates": {
     "description": "Check for updates button",
-    "message": "检查更新"
+    "message": "获取更新"
   },
   "checkForUpdatesDescription": {
     "description": "Check for updates description",

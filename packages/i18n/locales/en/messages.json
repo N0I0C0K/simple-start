@@ -457,7 +457,7 @@
   },
   "checkForUpdates": {
     "description": "Check for updates button",
-    "message": "Check for Updates"
+    "message": "Get Updates"
   },
   "checkForUpdatesDescription": {
     "description": "Check for updates description",

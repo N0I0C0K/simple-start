@@ -120,23 +120,25 @@ export const AboutSettings: FC = () => {
         title={t('version')}
         description={t('versionDescription')}
         control={<Text className="font-mono text-muted-foreground">{version}</Text>}
-      />
-      <SettingItem
-        IconClass={RefreshCw}
-        title={t('latestVersion')}
-        description={t('latestVersionDescription')}
-        control={
-          <Stack direction={'column'} className="items-end gap-0.5">
-            <Text className="font-mono text-muted-foreground">{getLatestVersionDisplay()}</Text>
-            {getUpdateStatus() && (
-              <Text 
-                level="xs" 
-                className={hasUpdate ? 'text-yellow-500' : 'text-green-500'}
-              >
-                {getUpdateStatus()}
+        additionalControl={
+          <>
+            <Stack direction={'row'} center className="absolute bottom-0 end-1 gap-1">
+              <Text gray level="xs">
+                {t('latestVersion')}:
               </Text>
-            )}
-          </Stack>
+              <Text level="xs" className="font-mono">
+                {getLatestVersionDisplay()}
+              </Text>
+              {getUpdateStatus() && (
+                <Text 
+                  level="xs" 
+                  className={hasUpdate ? 'text-yellow-500' : 'text-green-500'}
+                >
+                  · {getUpdateStatus()}
+                </Text>
+              )}
+            </Stack>
+          </>
         }
       />
       <SettingItem
