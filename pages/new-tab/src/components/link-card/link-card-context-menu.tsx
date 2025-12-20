@@ -2,7 +2,6 @@ import { getDefaultIconUrl } from '@/lib/url'
 import { QuickItemEditForm } from '@/src/components/quick-item-edit-form'
 import { quickUrlItemsStorage } from '@extension/storage'
 import {
-  ContextMenuContent,
   ContextMenuItem,
   ContextMenuItemWitchIcon,
   ContextMenuSeparator,
@@ -11,6 +10,7 @@ import {
 import type { GlobalDialogContextType } from '@src/provider'
 import { Pencil, Trash } from 'lucide-react'
 import { t } from '@extension/i18n'
+import type { ReactNode } from 'react'
 
 interface LinkCardContextMenuContentProps {
   id: string
@@ -22,7 +22,8 @@ interface LinkCardContextMenuContentProps {
 }
 
 /**
- * LinkCardContextMenuContent - The context menu content with edit, delete, and bookmarks
+ * LinkCardContextMenuContent - The context menu items (edit, delete, and bookmarks)
+ * Returns an array of menu items to be placed inside ContextMenuContent
  */
 export const LinkCardContextMenuContent = ({
   id,
@@ -31,9 +32,9 @@ export const LinkCardContextMenuContent = ({
   relatedBookmarks,
   showBookmarks,
   globalDialog,
-}: LinkCardContextMenuContentProps) => {
+}: LinkCardContextMenuContentProps): ReactNode => {
   return (
-    <ContextMenuContent className="max-w-xs">
+    <>
       <ContextMenuItemWitchIcon
         IconType={Pencil}
         shortCut="Ctrl+E"
@@ -85,7 +86,7 @@ export const LinkCardContextMenuContent = ({
               className="flex items-center gap-2">
               <img
                 src={getDefaultIconUrl(bookmark.url || '')}
-                alt=""
+                alt={bookmark.title || bookmark.url || 'Bookmark icon'}
                 className="size-4 rounded-sm flex-shrink-0"
                 onError={e => {
                   // Fallback to hide broken images
@@ -97,6 +98,8 @@ export const LinkCardContextMenuContent = ({
           ))}
         </>
       )}
-    </ContextMenuContent>
+    </>
   )
 }
+
+LinkCardContextMenuContent.displayName = 'LinkCardContextMenuContent'

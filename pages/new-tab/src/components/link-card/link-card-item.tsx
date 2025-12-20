@@ -2,7 +2,7 @@
 import { cn } from '@/lib/utils'
 import type { QuickUrlItem } from '@extension/storage'
 import { Text, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@extension/ui'
-import { ContextMenu, ContextMenuTrigger } from '@extension/ui/lib/components/ui/context-menu'
+import { ContextMenu, ContextMenuContent, ContextMenuTrigger } from '@extension/ui/lib/components/ui/context-menu'
 import { useGlobalDialog } from '@src/provider'
 import type { CSSProperties, MouseEventHandler, Ref, TouchEventHandler } from 'react'
 import { useRef, useState, forwardRef } from 'react'
@@ -71,17 +71,19 @@ export const LinkCardItem = forwardRef<HTMLDivElement, LinkCardProps & CustomGri
                 {title}
               </Text>
             </div>
-            <TooltipContent asChild>
-              <LinkCardTooltipContent title={title} url={url} />
+            <TooltipContent>
+              <LinkCardTooltipContent title={title} url={url} id={id} />
             </TooltipContent>
-            <LinkCardContextMenuContent
-              id={id}
-              title={title}
-              url={url}
-              relatedBookmarks={relatedBookmarks}
-              showBookmarks={showBookmarks}
-              globalDialog={globalDialog}
-            />
+            <ContextMenuContent className="max-w-xs">
+              <LinkCardContextMenuContent
+                id={id}
+                title={title}
+                url={url}
+                relatedBookmarks={relatedBookmarks}
+                showBookmarks={showBookmarks}
+                globalDialog={globalDialog}
+              />
+            </ContextMenuContent>
           </ContextMenu>
         </Tooltip>
       </TooltipProvider>
