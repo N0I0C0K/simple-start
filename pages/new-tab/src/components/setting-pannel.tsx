@@ -44,6 +44,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@extension/ui/lib/comp
 import { t } from '@extension/i18n'
 import { WallpaperSettings } from './settings/WallpaperSettings'
 import { CommandSettings } from './settings/CommandSettings'
+import { AboutSettings } from './settings/AboutSettings'
 
 const SettingItem: FC<{
   className?: string
@@ -76,6 +77,8 @@ const SettingItem: FC<{
     </Stack>
   )
 }
+
+export { SettingItem }
 
 const ConnectSettingItem: FC = () => {
   const mqttServerState = useStorage(mqttStateManager)
@@ -276,6 +279,7 @@ const SettingTabs: FC = () => {
         <TabsTrigger value="wallpaper-settings">{t('wallpaperTab')}</TabsTrigger>
         <TabsTrigger value="command-settings">{t('commandTab')}</TabsTrigger>
         <TabsTrigger value="mqtt-settings">{t('serverTab')}</TabsTrigger>
+        <TabsTrigger value="about-settings">{t('aboutTab')}</TabsTrigger>
       </TabsList>
       <TabsContent value="common-settings">
         <CommonSettings />
@@ -288,6 +292,9 @@ const SettingTabs: FC = () => {
       </TabsContent>
       <TabsContent value="mqtt-settings">
         <MqttSettings />
+      </TabsContent>
+      <TabsContent value="about-settings">
+        <AboutSettings />
       </TabsContent>
     </Tabs>
   )
