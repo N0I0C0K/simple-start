@@ -46,15 +46,10 @@ export const onlineUsersStorage: OnlineUsersStorage = {
     return Object.values(state.users).filter(user => now - user.lastHeartbeat < timeoutMs)
   },
   cleanupOfflineUsers: async (timeoutMs = ONLINE_USER_TIMEOUT_MS) => {
-    await storage.set(prev => {
-      const now = Date.now()
-      const activeUsers: Record<string, OnlineUser> = {}
-      Object.entries(prev.users).forEach(([username, user]) => {
-        if (now - user.lastHeartbeat < timeoutMs) {
-          activeUsers[username] = user
-        }
-      })
-      return { users: activeUsers }
-    })
+    await storage.set(prev => ({
+      users: Object.fromEntries(
+        Object.entries(prev.users).filter(([, user]) => Date.now() - user.lastHeartbeat < timeoutMs),
+      ),
+    }))
   },
 }

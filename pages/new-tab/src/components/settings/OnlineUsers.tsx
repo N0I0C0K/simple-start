@@ -26,7 +26,7 @@ const OnlineUsersDisplay: FC = () => {
     // For Chinese characters or single words, take first character
     if (username.length <= MAX_SHORT_USERNAME_LENGTH) return username.substring(0, 1).toUpperCase()
     // For multiple words, take first letter of first two words
-    const words = username.split(/\s+/)
+    const words = username.split(/\s+/).filter(word => word.length > 0)
     if (words.length >= MAX_INITIALS_LENGTH) {
       return (words[0][0] + words[1][0]).toUpperCase()
     }
