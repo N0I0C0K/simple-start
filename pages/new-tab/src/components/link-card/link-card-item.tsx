@@ -22,50 +22,7 @@ import { useRef, useState, forwardRef, useEffect } from 'react'
 import { t } from '@extension/i18n'
 
 import { MakeSortableItem } from '@/src/components/sortable-area'
-
-/**
- * Extract domain from URL
- */
-function getDomainFromUrl(url: string): string | null {
-  try {
-    const urlObj = new URL(url)
-    return urlObj.hostname
-  } catch {
-    return null
-  }
-}
-
-/**
- * Flatten bookmarks tree into a list
- */
-function flattenBookmarks(
-  nodes: chrome.bookmarks.BookmarkTreeNode[],
-  results: chrome.bookmarks.BookmarkTreeNode[] = [],
-): chrome.bookmarks.BookmarkTreeNode[] {
-  for (const node of nodes) {
-    if (node.url) {
-      results.push(node)
-    }
-    if (node.children) {
-      flattenBookmarks(node.children, results)
-    }
-  }
-  return results
-}
-
-/**
- * Find bookmarks matching a domain
- */
-async function findBookmarksByDomain(domain: string): Promise<chrome.bookmarks.BookmarkTreeNode[]> {
-  const tree = await chrome.bookmarks.getTree()
-  const allBookmarks = flattenBookmarks(tree)
-  
-  return allBookmarks.filter(bookmark => {
-    if (!bookmark.url) return false
-    const bookmarkDomain = getDomainFromUrl(bookmark.url)
-    return bookmarkDomain === domain
-  })
-}
+import { getDomainFromUrl, findBookmarksByDomain } from '@/lib/bookmarks'
 
 interface LinkCardProps extends QuickUrlItem {
   ref?: Ref<HTMLDivElement>
@@ -102,6 +59,9 @@ export const LinkCardItem = forwardRef<HTMLDivElement, LinkCardProps & CustomGri
               console.error('Failed to fetch bookmarks:', error)
               setRelatedBookmarks([])
             })
+        } else {
+          // Clear bookmarks if domain extraction fails
+          setRelatedBookmarks([])
         }
       } else {
         setRelatedBookmarks([])

@@ -1,4 +1,5 @@
 import { getDefaultIconUrl } from '@/lib/url'
+import { flattenBookmarks } from '@/lib/bookmarks'
 import type { ICommandResolver, ICommandResult } from '../protocol'
 import { Star } from 'lucide-react'
 import { t } from '@extension/i18n'
@@ -16,22 +17,6 @@ function convertBookmarkToCommandResult(item: chrome.bookmarks.BookmarkTreeNode)
       }
     },
   }
-}
-
-function flattenBookmarks(
-  nodes: chrome.bookmarks.BookmarkTreeNode[],
-  results: chrome.bookmarks.BookmarkTreeNode[] = [],
-): chrome.bookmarks.BookmarkTreeNode[] {
-  for (const node of nodes) {
-    // Only include bookmarks with URLs (not folders)
-    if (node.url) {
-      results.push(node)
-    }
-    if (node.children) {
-      flattenBookmarks(node.children, results)
-    }
-  }
-  return results
 }
 
 function searchBookmarks(
