@@ -50,8 +50,6 @@ class MqttSecretPrefixTopicRegisterService {
   private _secretPrefix: string | null = null
   private _client: mqtt.MqttClient | null = null
 
-  constructor() {
-  }
 
   get secretPrefix(): string {
     if (!this._secretPrefix) {
@@ -66,7 +64,7 @@ class MqttSecretPrefixTopicRegisterService {
   }
 
   joinSecretPrefix(rawTopic: string): string {
-    return `${this._secretPrefix}/${rawTopic}`
+    return `${this.secretPrefix}/${rawTopic}`
   }
 
   removeSecretPrefix(secretTopic: string): string {
@@ -166,8 +164,13 @@ export class MqttProvider extends EventEmitter<MqttProviderEventMap> {
     this.topicRegisterService = new MqttSecretPrefixTopicRegisterService()
 
     this.on('client-loaded', async client => {
-      await this.topicRegisterService.setSecretPrefix(this.secretPrefix)
-      await this.topicRegisterService.setMqttClient(client)
+      try {
+        await this.topicRegisterService.setSecretPrefix(this.secretPrefix)
+        await this.topicRegisterService.setMqttClient(client)
+      } catch (error) {
+        // Ensure initialization failures in the client-loaded handler are visible
+        console.error('Failed to initialize MQTT topicRegisterService on client-loaded event', error)
+      }
     })
   }
 
