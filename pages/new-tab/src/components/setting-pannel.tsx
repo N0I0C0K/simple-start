@@ -1,5 +1,10 @@
 import { cn } from '@/lib/utils'
-import { closeMqttClientMessage, openMqttClientMessage, useStorage } from '@extension/shared'
+import {
+  closeMqttClientMessage,
+  openMqttClientMessage,
+  useStorage,
+  sendDrinkWaterReminderMessage,
+} from '@extension/shared'
 import { mqttStateManager, settingStorage, exportAllData, importAllData } from '@extension/storage'
 import {
   Button,
@@ -360,7 +365,9 @@ const DrinkWaterButton: FC<{ className?: string }> = ({ className }) => {
       variant={'ghost'}
       className={cn('rounded-full', className)}
       side="left"
-      onClick={async () => {}}>
+      onClick={async () => {
+        await sendDrinkWaterReminderMessage.emit()
+      }}>
       <CupSoda />
     </TooltipButton>
   )

@@ -1,7 +1,13 @@
 import type { ILoadable } from './type'
 
 import { mqttStateManager, settingStorage } from '@extension/storage'
-import { MqttPayloadBuilder, MqttProvider, closeMqttClientMessage, openMqttClientMessage } from '@extension/shared'
+import {
+  MqttPayloadBuilder,
+  MqttProvider,
+  closeMqttClientMessage,
+  openMqttClientMessage,
+  sendDrinkWaterReminderMessage,
+} from '@extension/shared'
 import type { MqttBasePayload } from '@extension/shared'
 import type { MqttClient } from 'mqtt'
 
@@ -53,6 +59,35 @@ openMqttClientMessage.registerListener(async () => {
 })
 
 const heartBeatEvent = mqttProvider.getOrCreateTopicEvent<MqttBasePayload>('heart-beat')
+
+// Drink water event handler - defined before usage
+const drinkWaterEvent = mqttProvider.getOrCreateTopicEvent<MqttBasePayload>('drink-water')
+drinkWaterEvent.subscribe(async payload => {
+  console.log('Received drink water reminder from:', payload.senderUserName)
+
+  // Validate sender username to prevent malicious content
+  const senderUserName = typeof payload.senderUserName === 'string' && payload.senderUserName.trim()
+    ? payload.senderUserName.trim().substring(0, 50) // Limit length for safety
+    : 'Someone'
+
+  // Create Chrome notification with safe ID generation
+  const notificationId = `drink-water-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
+  await chrome.notifications.create(notificationId, {
+    type: 'basic',
+    iconUrl: chrome.runtime.getURL('icon-128.png'),
+    title: chrome.i18n.getMessage('drinkWaterNotificationTitle'),
+    message: chrome.i18n.getMessage('drinkWaterNotificationMessage', [senderUserName]),
+    priority: 2,
+    requireInteraction: false,
+  })
+})
+
+sendDrinkWaterReminderMessage.registerListener(async () => {
+  console.log('Received request to send drink water reminder')
+
+  await drinkWaterEvent.emit(payloadBuilder.buildPayload({}))
+  console.log('Drink water reminder sent successfully')
+})
 
 chrome.alarms.create('mqtt-heart-beat', { periodInMinutes: 0.5 })
 chrome.alarms.onAlarm.addListener(async alarm => {
