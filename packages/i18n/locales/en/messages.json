@@ -51,6 +51,20 @@
     "description": "Drink water button tooltip",
     "message": "Drink Water"
   },
+  "drinkWaterNotificationTitle": {
+    "description": "Drink water notification title",
+    "message": "💧 Time to Drink Water"
+  },
+  "drinkWaterNotificationMessage": {
+    "description": "Drink water notification message",
+    "message": "$USERNAME$ reminds you to stay hydrated!",
+    "placeholders": {
+      "username": {
+        "content": "$1",
+        "example": "John"
+      }
+    }
+  },
   "commonTab": {
     "description": "Common settings tab",
     "message": "Common"

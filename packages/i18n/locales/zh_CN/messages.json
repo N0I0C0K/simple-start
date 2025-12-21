@@ -51,6 +51,20 @@
     "description": "Drink water button tooltip",
     "message": "喝水"
   },
+  "drinkWaterNotificationTitle": {
+    "description": "Drink water notification title",
+    "message": "💧 该喝水啦"
+  },
+  "drinkWaterNotificationMessage": {
+    "description": "Drink water notification message",
+    "message": "$USERNAME$ 提醒你要多喝水哦！",
+    "placeholders": {
+      "username": {
+        "content": "$1",
+        "example": "张三"
+      }
+    }
+  },
   "commonTab": {
     "description": "Common settings tab",
     "message": "通用"

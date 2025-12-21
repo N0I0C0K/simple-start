@@ -1,7 +1,13 @@
 import type { ILoadable } from './type'
 
 import { mqttStateManager, settingStorage } from '@extension/storage'
-import { MqttPayloadBuilder, MqttProvider, closeMqttClientMessage, openMqttClientMessage } from '@extension/shared'
+import {
+  MqttPayloadBuilder,
+  MqttProvider,
+  closeMqttClientMessage,
+  openMqttClientMessage,
+  sendDrinkWaterReminderMessage,
+} from '@extension/shared'
 import type { MqttBasePayload } from '@extension/shared'
 import type { MqttClient } from 'mqtt'
 
@@ -52,7 +58,41 @@ openMqttClientMessage.registerListener(async () => {
   await mqttProvider.connect()
 })
 
+sendDrinkWaterReminderMessage.registerListener(async () => {
+  console.log('Received request to send drink water reminder')
+  if (!mqttProvider.connected) {
+    console.error('Cannot send drink water reminder: MQTT client is not connected')
+    return
+  }
+  
+  const settings = await settingStorage.get()
+  if (!settings.mqttSettings?.username) {
+    console.error('Cannot send drink water reminder: username not set')
+    return
+  }
+  
+  payloadBuilder.username = settings.mqttSettings.username
+  await drinkWaterEvent.emit(payloadBuilder.buildPayload({}))
+  console.log('Drink water reminder sent successfully')
+})
+
 const heartBeatEvent = mqttProvider.getOrCreateTopicEvent<MqttBasePayload>('heart-beat')
+
+// Drink water event handler
+const drinkWaterEvent = mqttProvider.getOrCreateTopicEvent<MqttBasePayload>('drink-water')
+drinkWaterEvent.subscribe(async payload => {
+  console.log('Received drink water reminder from:', payload.senderUserName)
+  
+  // Create Chrome notification
+  await chrome.notifications.create(`drink-water-${payload.timestamp}`, {
+    type: 'basic',
+    iconUrl: chrome.runtime.getURL('icon-128.png'),
+    title: chrome.i18n.getMessage('drinkWaterNotificationTitle'),
+    message: chrome.i18n.getMessage('drinkWaterNotificationMessage', [payload.senderUserName]),
+    priority: 2,
+    requireInteraction: false,
+  })
+})
 
 chrome.alarms.create('mqtt-heart-beat', { periodInMinutes: 0.5 })
 chrome.alarms.onAlarm.addListener(async alarm => {

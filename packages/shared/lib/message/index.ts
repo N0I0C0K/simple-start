@@ -62,9 +62,11 @@ export let messageCenter: MessageCenter
 
 export let closeMqttClientMessage: MessageHandler<void>
 export let openMqttClientMessage: MessageHandler<void>
+export let sendDrinkWaterReminderMessage: MessageHandler<void>
 
 if (globalThis.chrome) {
   messageCenter = new MessageCenter()
   closeMqttClientMessage = messageCenter.registerMessageHandler<void>('close-mqtt-client')
   openMqttClientMessage = messageCenter.registerMessageHandler<void>('open-mqtt-client')
+  sendDrinkWaterReminderMessage = messageCenter.registerMessageHandler<void>('send-drink-water-reminder')
 }
