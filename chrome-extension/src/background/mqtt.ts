@@ -90,8 +90,8 @@ sendDrinkWaterReminderMessage.registerListener(async () => {
     await chrome.notifications.create('drink-water-connection-error', {
       type: 'basic',
       iconUrl: chrome.runtime.getURL('icon-128.png'),
-      title: 'Connection Error',
-      message: 'Cannot send reminder: MQTT not connected. Please check your connection settings.',
+      title: chrome.i18n.getMessage('drinkWaterConnectionErrorTitle'),
+      message: chrome.i18n.getMessage('drinkWaterConnectionErrorMessage'),
       priority: 1,
     })
     return
@@ -104,8 +104,8 @@ sendDrinkWaterReminderMessage.registerListener(async () => {
     await chrome.notifications.create('drink-water-config-error', {
       type: 'basic',
       iconUrl: chrome.runtime.getURL('icon-128.png'),
-      title: 'Configuration Error',
-      message: 'Cannot send reminder: Please set your username in MQTT settings.',
+      title: chrome.i18n.getMessage('drinkWaterConfigErrorTitle'),
+      message: chrome.i18n.getMessage('drinkWaterConfigErrorMessage'),
       priority: 1,
     })
     return

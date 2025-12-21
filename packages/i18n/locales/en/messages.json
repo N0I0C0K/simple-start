@@ -65,6 +65,22 @@
       }
     }
   },
+  "drinkWaterConnectionErrorTitle": {
+    "description": "Drink water connection error notification title",
+    "message": "Connection Error"
+  },
+  "drinkWaterConnectionErrorMessage": {
+    "description": "Drink water connection error notification message",
+    "message": "Cannot send reminder: MQTT not connected. Please check your connection settings."
+  },
+  "drinkWaterConfigErrorTitle": {
+    "description": "Drink water configuration error notification title",
+    "message": "Configuration Error"
+  },
+  "drinkWaterConfigErrorMessage": {
+    "description": "Drink water configuration error notification message",
+    "message": "Cannot send reminder: Please set your username in MQTT settings."
+  },
   "commonTab": {
     "description": "Common settings tab",
     "message": "Common"
