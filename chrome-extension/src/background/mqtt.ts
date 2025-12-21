@@ -58,40 +58,63 @@ openMqttClientMessage.registerListener(async () => {
   await mqttProvider.connect()
 })
 
-sendDrinkWaterReminderMessage.registerListener(async () => {
-  console.log('Received request to send drink water reminder')
-  if (!mqttProvider.connected) {
-    console.error('Cannot send drink water reminder: MQTT client is not connected')
-    return
-  }
-  
-  const settings = await settingStorage.get()
-  if (!settings.mqttSettings?.username) {
-    console.error('Cannot send drink water reminder: username not set')
-    return
-  }
-  
-  payloadBuilder.username = settings.mqttSettings.username
-  await drinkWaterEvent.emit(payloadBuilder.buildPayload({}))
-  console.log('Drink water reminder sent successfully')
-})
-
 const heartBeatEvent = mqttProvider.getOrCreateTopicEvent<MqttBasePayload>('heart-beat')
 
-// Drink water event handler
+// Drink water event handler - defined before usage
 const drinkWaterEvent = mqttProvider.getOrCreateTopicEvent<MqttBasePayload>('drink-water')
 drinkWaterEvent.subscribe(async payload => {
   console.log('Received drink water reminder from:', payload.senderUserName)
+  
+  // Validate sender username to prevent malicious content
+  const senderUserName = typeof payload.senderUserName === 'string' && payload.senderUserName.trim()
+    ? payload.senderUserName.trim().substring(0, 50) // Limit length for safety
+    : 'Someone'
   
   // Create Chrome notification
   await chrome.notifications.create(`drink-water-${payload.timestamp}`, {
     type: 'basic',
     iconUrl: chrome.runtime.getURL('icon-128.png'),
     title: chrome.i18n.getMessage('drinkWaterNotificationTitle'),
-    message: chrome.i18n.getMessage('drinkWaterNotificationMessage', [payload.senderUserName]),
+    message: chrome.i18n.getMessage('drinkWaterNotificationMessage', [senderUserName]),
     priority: 2,
     requireInteraction: false,
   })
+})
+
+sendDrinkWaterReminderMessage.registerListener(async () => {
+  console.log('Received request to send drink water reminder')
+  
+  if (!mqttProvider.connected) {
+    console.error('Cannot send drink water reminder: MQTT client is not connected')
+    // Notify user of connection failure
+    await chrome.notifications.create('drink-water-connection-error', {
+      type: 'basic',
+      iconUrl: chrome.runtime.getURL('icon-128.png'),
+      title: 'Connection Error',
+      message: 'Cannot send reminder: MQTT not connected. Please check your connection settings.',
+      priority: 1,
+    })
+    return
+  }
+  
+  const settings = await settingStorage.get()
+  if (!settings.mqttSettings?.username) {
+    console.error('Cannot send drink water reminder: username not set')
+    // Notify user of missing username
+    await chrome.notifications.create('drink-water-config-error', {
+      type: 'basic',
+      iconUrl: chrome.runtime.getURL('icon-128.png'),
+      title: 'Configuration Error',
+      message: 'Cannot send reminder: Please set your username in MQTT settings.',
+      priority: 1,
+    })
+    return
+  }
+  
+  // Use local payload to avoid race conditions with shared payloadBuilder
+  const localPayloadBuilder = new MqttPayloadBuilder(settings.mqttSettings.username)
+  await drinkWaterEvent.emit(localPayloadBuilder.buildPayload({}))
+  console.log('Drink water reminder sent successfully')
 })
 
 chrome.alarms.create('mqtt-heart-beat', { periodInMinutes: 0.5 })
