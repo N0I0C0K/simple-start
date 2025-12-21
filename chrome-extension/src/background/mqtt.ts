@@ -64,12 +64,12 @@ const heartBeatEvent = mqttProvider.getOrCreateTopicEvent<MqttBasePayload>('hear
 const drinkWaterEvent = mqttProvider.getOrCreateTopicEvent<MqttBasePayload>('drink-water')
 drinkWaterEvent.subscribe(async payload => {
   console.log('Received drink water reminder from:', payload.senderUserName)
-  
+
   // Validate sender username to prevent malicious content
   const senderUserName = typeof payload.senderUserName === 'string' && payload.senderUserName.trim()
     ? payload.senderUserName.trim().substring(0, 50) // Limit length for safety
     : 'Someone'
-  
+
   // Create Chrome notification with safe ID generation
   const notificationId = `drink-water-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
   await chrome.notifications.create(notificationId, {
@@ -84,41 +84,8 @@ drinkWaterEvent.subscribe(async payload => {
 
 sendDrinkWaterReminderMessage.registerListener(async () => {
   console.log('Received request to send drink water reminder')
-  
-  if (!mqttProvider.connected) {
-    console.error('Cannot send drink water reminder: MQTT client is not connected')
-    // Notify user of connection failure with unique ID
-    const errorId = `drink-water-connection-error-${Date.now()}`
-    await chrome.notifications.create(errorId, {
-      type: 'basic',
-      iconUrl: chrome.runtime.getURL('icon-128.png'),
-      title: chrome.i18n.getMessage('drinkWaterConnectionErrorTitle'),
-      message: chrome.i18n.getMessage('drinkWaterConnectionErrorMessage'),
-      priority: 1,
-    })
-    return
-  }
-  
-  const settings = await settingStorage.get()
-  if (!settings.mqttSettings?.username) {
-    console.error('Cannot send drink water reminder: username not set')
-    // Notify user of missing username with unique ID
-    const errorId = `drink-water-config-error-${Date.now()}`
-    await chrome.notifications.create(errorId, {
-      type: 'basic',
-      iconUrl: chrome.runtime.getURL('icon-128.png'),
-      title: chrome.i18n.getMessage('drinkWaterConfigErrorTitle'),
-      message: chrome.i18n.getMessage('drinkWaterConfigErrorMessage'),
-      priority: 1,
-    })
-    return
-  }
-  
-  // Use local payload builder to avoid race conditions with shared payloadBuilder
-  // This ensures the username in the drink water event is not affected by
-  // concurrent updates to the global payloadBuilder (e.g., from heartbeat events)
-  const localPayloadBuilder = new MqttPayloadBuilder(settings.mqttSettings.username)
-  await drinkWaterEvent.emit(localPayloadBuilder.buildPayload({}))
+
+  await drinkWaterEvent.emit(payloadBuilder.buildPayload({}))
   console.log('Drink water reminder sent successfully')
 })
 
