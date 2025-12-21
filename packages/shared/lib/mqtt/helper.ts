@@ -1,5 +1,6 @@
 import type { MqttBasePayload } from "./payload"
 import type { MqttClient } from "mqtt"
+import { nanoid } from "nanoid"
 
 export class MqttPayloadBuilder {
   private _username?: string
@@ -18,6 +19,7 @@ export class MqttPayloadBuilder {
   buildPayload<T>(data: T): T & MqttBasePayload {
     return {
       ...data,
+      id: nanoid(),
       senderUserName: this.username,
       timestamp: Date.now(),
     }
