@@ -70,8 +70,9 @@ drinkWaterEvent.subscribe(async payload => {
     ? payload.senderUserName.trim().substring(0, 50) // Limit length for safety
     : 'Someone'
   
-  // Create Chrome notification
-  await chrome.notifications.create(`drink-water-${payload.timestamp}`, {
+  // Create Chrome notification with safe ID generation
+  const notificationId = `drink-water-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
+  await chrome.notifications.create(notificationId, {
     type: 'basic',
     iconUrl: chrome.runtime.getURL('icon-128.png'),
     title: chrome.i18n.getMessage('drinkWaterNotificationTitle'),
