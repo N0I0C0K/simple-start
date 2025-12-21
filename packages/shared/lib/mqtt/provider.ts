@@ -1,5 +1,6 @@
 import mqtt from 'mqtt'
 import { EventEmitter } from 'events'
+import { MqttSecretPrefixTopicRegisterService } from './helper'
 
 export interface MqttConnectionOptions {
   brokerUrl?: string
@@ -14,6 +15,10 @@ class TopicEventHandler<T> {
   constructor(rawTopic: string, provider: MqttProvider) {
     this.rawTopic = rawTopic
     this.provider = provider
+  }
+
+  public get topic(): string {
+    return this.rawTopic
   }
 
   public subscribe(callback: (payload: T) => void) {
@@ -44,7 +49,6 @@ type MqttProviderEventMap = {
   'client-loaded': [mqtt.MqttClient]
 }
 
-
 /**
  * MQTT Provider class for managing MQTT connections and message handling.
  * Provides topic subscription, publishing, and event handling capabilities.
@@ -53,13 +57,19 @@ export class MqttProvider extends EventEmitter<MqttProviderEventMap> {
   private _clientInner: mqtt.MqttClient | null = null
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private registeredTopics: Map<string, TopicEventHandler<any>> = new Map()
-  private registeredTopicsSet: Set<string> = new Set()
   private brokerUrl: string
   private _secretPrefix?: string
+  private topicRegisterService: MqttSecretPrefixTopicRegisterService
 
   constructor(brokerUrl: string) {
     super()
     this.brokerUrl = brokerUrl
+    this.topicRegisterService = new MqttSecretPrefixTopicRegisterService()
+
+    this.on('client-loaded', async client => {
+      await this.topicRegisterService.setSecretPrefix(this.secretPrefix)
+      await this.topicRegisterService.setMqttClient(client)
+    })
   }
 
   get connected(): boolean {
@@ -84,26 +94,13 @@ export class MqttProvider extends EventEmitter<MqttProviderEventMap> {
     return this._clientInner
   }
 
-  createSecretTopic(rawTopic: string): string {
-    return `${this.secretPrefix}/${rawTopic}`
-  }
-
-  removeSecretTopic(secretTopic: string): string {
-    const prefixWithSlash = this.secretPrefix + '/'
-    if (secretTopic.startsWith(prefixWithSlash)) {
-      return secretTopic.slice(prefixWithSlash.length)
-    }
-    return secretTopic
-  }
-
   /**
    * Changes the secret prefix and resubscribes to all topics with the new prefix.
    * @param newPrefix - The new secret prefix to use
    */
   async changeSecretPrefix(newPrefix: string) {
-    await this.unSubscribeAll()
+    await this.topicRegisterService.setSecretPrefix(newPrefix)
     this._secretPrefix = newPrefix
-    await this.reSubscribeAll()
   }
 
   async connect(options?: MqttConnectionOptions) {
@@ -132,20 +129,18 @@ export class MqttProvider extends EventEmitter<MqttProviderEventMap> {
       throw error
     }
     this.emit('client-loaded', this._clientInner)
-
     this._clientInner.on('message', (topic: string, message: Buffer) => {
-      const rawTopic = this.removeSecretTopic(topic)
+      const rawTopic = this.topicRegisterService.removeSecretPrefix(topic)
       const topicEvent = this.registeredTopics.get(rawTopic)
       if (!topicEvent) return
       try {
         const payload = JSON.parse(message.toString())
         topicEvent.onReceive(rawTopic, payload)
+        console.log('Received message on topic', rawTopic, 'with payload', payload)
       } catch (error) {
         console.error('Error emitting topic event:', error)
       }
     })
-
-    await this.reSubscribeAll()
   }
 
   async disconnect() {
@@ -153,70 +148,29 @@ export class MqttProvider extends EventEmitter<MqttProviderEventMap> {
     await this._clientInner.endAsync()
   }
 
-  async reSubscribeAll() {
-    if (!this._clientInner) return
-    const topics = Array.from(this.registeredTopicsSet).map(topic => this.createSecretTopic(topic))
-    if (topics.length === 0) return
-    console.log('Re-subscribing to topics:', topics)
-    await this.client.subscribeAsync(topics)
-  }
-
-  async unSubscribeAll() {
-    if (!this._clientInner) return
-    const topics = Array.from(this.registeredTopicsSet).map(topic => this.createSecretTopic(topic))
-    if (topics.length === 0) return
-    console.log('Unsubscribing from topics:', topics)
-    await this.client.unsubscribeAsync(topics)
-  }
-
-  subscribe(topic: string) {
-    this.registeredTopicsSet.add(topic)
-    if (!this._clientInner) {
+  deleteTopicEvent<T>(event: TopicEventHandler<T>) {
+    if (!this.registeredTopics.has(event.topic)) {
       return
     }
-    const secretTopic = this.createSecretTopic(topic)
-    console.log('Subscribing to topic:', secretTopic)
-    this.client.subscribe(secretTopic)
-  }
-
-  unregisterTopic(topic: string) {
-    this.registeredTopicsSet.delete(topic)
-    if (!this._clientInner) {
-      return
-    }
-    const secretTopic = this.createSecretTopic(topic)
-    console.log('Unsubscribing from topic:', secretTopic)
-    this.client.unsubscribe(secretTopic)
-  }
-
-  registerTopicCallback<T>(topic: string, callback: (payload: T) => void) {
-    const topicEvent = this.getOrCreateTopicEvent<T>(topic)
-    topicEvent.subscribe(callback)
-    console.log('Registered MQTT topic callback:', topic)
-  }
-
-  unregisterTopicCallback<T>(topic: string, callback: (payload: T) => void) {
-    const topicEvent = this.registeredTopics.get(topic)
-    if (!topicEvent) return
-    topicEvent.unsubscribe(callback)
-    if (topicEvent.isEmpty()) {
-      // No more callbacks, remove the topic
-      // Ensure delete first to avoid race conditions
-      this.registeredTopics.delete(topic)
-      this.unregisterTopic(topic)
-    }
+    this.topicRegisterService.unregisterTopic(event.topic)
+    this.registeredTopics.delete(event.topic)
   }
 
   getOrCreateTopicEvent<T>(topic: string): TopicEventHandler<T> {
     if (!this.registeredTopics.has(topic)) {
-      this.subscribe(topic)
+      this.topicRegisterService.registerTopic(topic)
       this.registeredTopics.set(topic, new TopicEventHandler<T>(topic, this))
     }
     return this.registeredTopics.get(topic)!
   }
 
   async publish<T>(topic: string, payload: T): Promise<void> {
-    const secretTopic = this.createSecretTopic(topic)
+    if (!this.connected) {
+      console.error('Cannot publish message: MQTT client is not connected')
+      return
+    }
+    const secretTopic = this.topicRegisterService.joinSecretPrefix(topic)
     await this.client.publishAsync(secretTopic, JSON.stringify(payload))
+    console.log(`Published to topic: ${secretTopic}`, payload)
   }
 }
