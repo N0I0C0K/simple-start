@@ -35,10 +35,10 @@ const comparePrerelease = (currentPre: SemverPart[], latestPre: SemverPart[]): n
     const latId = latestPre[i]
 
     if (curId === undefined && latId !== undefined) {
-      return -1 // current has lower precedence
+      return 1 // current has lower precedence (latest is newer)
     }
     if (curId !== undefined && latId === undefined) {
-      return 1 // latest has lower precedence
+      return -1 // latest has lower precedence (current is newer)
     }
     if (curId === latId) {
       continue
