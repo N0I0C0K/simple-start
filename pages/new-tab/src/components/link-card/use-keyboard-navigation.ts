@@ -60,12 +60,64 @@ export const useKeyboardNavigation = ({ items, enabled, cols = 6 }: UseKeyboardN
     chrome.tabs.update({ url: item.url })
   }, [enabled, selectedIndex, items])
 
-  // Bind arrow keys
-  useHotkeys('ArrowLeft', () => handleNavigation('left'), { enabled }, [handleNavigation])
-  useHotkeys('ArrowRight', () => handleNavigation('right'), { enabled }, [handleNavigation])
-  useHotkeys('ArrowUp', () => handleNavigation('up'), { enabled }, [handleNavigation])
-  useHotkeys('ArrowDown', () => handleNavigation('down'), { enabled }, [handleNavigation])
-  useHotkeys('Enter', handleEnter, { enabled }, [handleEnter])
+  // Bind arrow keys - prevent conflicts with command input
+  useHotkeys(
+    'ArrowLeft',
+    e => {
+      e.preventDefault()
+      handleNavigation('left')
+    },
+    { enabled, enableOnFormTags: false },
+    [handleNavigation],
+  )
+  useHotkeys(
+    'ArrowRight',
+    e => {
+      e.preventDefault()
+      handleNavigation('right')
+    },
+    { enabled, enableOnFormTags: false },
+    [handleNavigation],
+  )
+  useHotkeys(
+    'ArrowUp',
+    e => {
+      e.preventDefault()
+      handleNavigation('up')
+    },
+    { enabled, enableOnFormTags: false },
+    [handleNavigation],
+  )
+  useHotkeys(
+    'ArrowDown',
+    e => {
+      e.preventDefault()
+      handleNavigation('down')
+    },
+    { enabled, enableOnFormTags: false },
+    [handleNavigation],
+  )
+  useHotkeys(
+    'Enter',
+    e => {
+      if (selectedIndex !== -1) {
+        e.preventDefault()
+        handleEnter()
+      }
+    },
+    { enabled, enableOnFormTags: false },
+    [handleEnter, selectedIndex],
+  )
+
+  // ESC to clear selection
+  useHotkeys(
+    'Escape',
+    () => {
+      setSelectedIndex(-1)
+    },
+    { enabled },
+    [],
+  )
 
   return {
     selectedIndex,
