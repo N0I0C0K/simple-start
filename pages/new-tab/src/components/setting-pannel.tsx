@@ -44,6 +44,7 @@ import {
   Upload,
   MousePointerClick,
   Bookmark,
+  Keyboard,
 } from 'lucide-react'
 import React, { type ElementType, type FC, type ReactElement, type ReactNode } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@extension/ui/lib/components/ui/tabs'
@@ -295,6 +296,17 @@ const CommonSettings: FC = () => {
           <Switch
             checked={settings.showBookmarksInQuickUrlMenu}
             onCheckedChange={val => settingStorage.update({ showBookmarksInQuickUrlMenu: val })}
+          />
+        }
+      />
+      <SettingItem
+        IconClass={Keyboard}
+        title={t('enableQuickUrlKeyboardNav')}
+        description={t('enableQuickUrlKeyboardNavDescription')}
+        control={
+          <Switch
+            checked={settings.enableQuickUrlKeyboardNav}
+            onCheckedChange={val => settingStorage.update({ enableQuickUrlKeyboardNav: val })}
           />
         }
       />

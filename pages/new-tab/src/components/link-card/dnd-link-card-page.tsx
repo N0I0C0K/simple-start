@@ -2,16 +2,24 @@ import { DragDropProvider, PointerSensor } from '@dnd-kit/react'
 import { isSortable } from '@dnd-kit/react/sortable'
 import { arrayMove } from '@dnd-kit/helpers'
 import { useStorage } from '@extension/shared'
-import { quickUrlItemsStorage } from '@extension/storage'
+import { quickUrlItemsStorage, settingStorage } from '@extension/storage'
 import { type FC } from 'react'
 
 import { SortableLinkCardItem } from '@/src/components/link-card/link-card-item'
 import { cn } from '@/lib/utils'
+import { useKeyboardNavigation, DEFAULT_GRID_COLS } from './use-keyboard-navigation'
 
 export const DndLinkCardPage: FC<{
   className?: string
 }> = ({ className }) => {
   const userStorageItems = useStorage(quickUrlItemsStorage)
+  const settings = useStorage(settingStorage)
+
+  const { selectedIndex } = useKeyboardNavigation({
+    items: userStorageItems,
+    enabled: settings.enableQuickUrlKeyboardNav,
+    cols: DEFAULT_GRID_COLS,
+  })
 
   return (
     <DragDropProvider
@@ -38,7 +46,7 @@ export const DndLinkCardPage: FC<{
       }}>
       <div className={cn('grid', className)} style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(6.5rem, 1fr))' }}>
         {userStorageItems.map((val, index) => (
-          <SortableLinkCardItem {...val} key={val.id} index={index} />
+          <SortableLinkCardItem {...val} key={val.id} index={index} selected={selectedIndex === index} />
         ))}
       </div>
     </DragDropProvider>
