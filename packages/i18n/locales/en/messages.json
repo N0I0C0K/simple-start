@@ -217,6 +217,10 @@
     "description": "Disconnect button",
     "message": "Disconnect"
   },
+  "disconnectToModify": {
+    "description": "Warning message when trying to modify MQTT settings while connected",
+    "message": "Please disconnect first to modify"
+  },
   "noResultsFound": {
     "description": "No results found message",
     "message": "No results found."

@@ -217,6 +217,10 @@
     "description": "Disconnect button",
     "message": "断开"
   },
+  "disconnectToModify": {
+    "description": "Warning message when trying to modify MQTT settings while connected",
+    "message": "请先断开连接再修改"
+  },
   "noResultsFound": {
     "description": "No results found message",
     "message": "未找到结果。"
