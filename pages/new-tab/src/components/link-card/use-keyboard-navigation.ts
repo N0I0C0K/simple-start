@@ -81,7 +81,7 @@ export const useKeyboardNavigation = ({ items, enabled, cols = DEFAULT_GRID_COLS
   }, [enabled, selectedIndex, items])
 
   // Bind arrow keys - prevent conflicts with command input
-  // Using a combined handler to avoid duplication
+  // Using a combined handler to reduce duplication
   const handleArrowKey = useCallback(
     (e: KeyboardEvent, direction: 'up' | 'down' | 'left' | 'right') => {
       e.preventDefault()
@@ -90,6 +90,7 @@ export const useKeyboardNavigation = ({ items, enabled, cols = DEFAULT_GRID_COLS
     [handleNavigation],
   )
 
+  // Note: We must call useHotkeys separately for each key (hooks can't be in loops)
   useHotkeys('ArrowLeft', e => handleArrowKey(e, 'left'), { enabled, enableOnFormTags: false }, [handleArrowKey])
   useHotkeys('ArrowRight', e => handleArrowKey(e, 'right'), { enabled, enableOnFormTags: false }, [handleArrowKey])
   useHotkeys('ArrowUp', e => handleArrowKey(e, 'up'), { enabled, enableOnFormTags: false }, [handleArrowKey])
