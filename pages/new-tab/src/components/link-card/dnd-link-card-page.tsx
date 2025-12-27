@@ -7,12 +7,7 @@ import { type FC } from 'react'
 
 import { SortableLinkCardItem } from '@/src/components/link-card/link-card-item'
 import { cn } from '@/lib/utils'
-import { useKeyboardNavigation } from './use-keyboard-navigation'
-
-// Default column count for keyboard navigation
-// Note: The actual grid uses auto-fit, so this is an approximation.
-// In a production scenario, this could be calculated dynamically using ResizeObserver.
-const DEFAULT_GRID_COLS = 6
+import { useKeyboardNavigation, DEFAULT_GRID_COLS } from './use-keyboard-navigation'
 
 export const DndLinkCardPage: FC<{
   className?: string

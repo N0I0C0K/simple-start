@@ -2,13 +2,27 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import { useState, useCallback, useEffect } from 'react'
 import type { QuickUrlItem } from '@extension/storage'
 
+/**
+ * Default column count for keyboard navigation grid.
+ * This value of 6 works well for most screen sizes (1920px and above).
+ * Note: The actual grid layout uses CSS auto-fit, so this is an approximation.
+ * For perfect accuracy, this could be calculated dynamically using ResizeObserver.
+ */
+export const DEFAULT_GRID_COLS = 6
+
 interface UseKeyboardNavigationOptions {
   items: QuickUrlItem[]
   enabled: boolean
+  /**
+   * Number of columns in the grid layout for keyboard navigation.
+   * Defaults to 6, which works well for most screen sizes.
+   * Note: This is an approximation since the actual grid uses auto-fit.
+   * For perfect accuracy, this should be calculated dynamically using ResizeObserver.
+   */
   cols?: number
 }
 
-export const useKeyboardNavigation = ({ items, enabled, cols = 6 }: UseKeyboardNavigationOptions) => {
+export const useKeyboardNavigation = ({ items, enabled, cols = DEFAULT_GRID_COLS }: UseKeyboardNavigationOptions) => {
   const [selectedIndex, setSelectedIndex] = useState<number>(-1)
 
   // Reset selection when items change or disabled
@@ -58,7 +72,11 @@ export const useKeyboardNavigation = ({ items, enabled, cols = 6 }: UseKeyboardN
     const item = items[selectedIndex]
     // Open URL in current tab with error handling
     chrome.tabs.update({ url: item.url }).catch(error => {
-      console.error(`Failed to open quick URL "${item.title}" (${item.url}):`, error)
+      console.error(
+        `Failed to open quick URL "${item.title}" (${item.url}). ` +
+          `This may be due to Chrome API permissions or an invalid URL format.`,
+        error,
+      )
     })
   }, [enabled, selectedIndex, items])
 
