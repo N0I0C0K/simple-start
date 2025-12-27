@@ -1,4 +1,5 @@
 import { Stack, Text, toast } from '@extension/ui'
+import { Copy } from 'lucide-react'
 
 interface LinkCardTooltipContentProps {
   title: string
@@ -23,12 +24,12 @@ export const LinkCardTooltipContent = ({ title, url, id }: LinkCardTooltipConten
   return (
     <Stack direction={'column'}>
       <Text>{title}</Text>
-      <Text level="s" gray className="cursor-pointer" onClick={handleCopyClick}>
-        {url}
-      </Text>
-      <Text level="xs" gray>
-        {id}
-      </Text>
+      <Stack className="gap-1" center>
+        <Text level="s" gray className="">
+          {url}
+        </Text>
+        <Copy className="size-4 cursor-pointer" onClick={handleCopyClick} />
+      </Stack>
     </Stack>
   )
 }

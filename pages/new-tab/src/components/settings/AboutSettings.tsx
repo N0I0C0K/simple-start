@@ -1,6 +1,6 @@
 import { Button, Stack, Text } from '@extension/ui'
 import { Info, ExternalLink, MessageSquareWarning, RefreshCw } from 'lucide-react'
-import type { FC } from 'react'
+import { useMemo, type FC } from 'react'
 import { t } from '@extension/i18n'
 import { SettingItem } from '../setting-pannel'
 import packageJson from '../../../../../package.json'
@@ -12,12 +12,26 @@ const useAboutUrls = () => {
   return {
     repositoryUrl,
     issuesUrl: `${repositoryUrl}/issues/new`,
-    releasesUrl: `${repositoryUrl}/releases`
+    releasesUrl: `${repositoryUrl}/releases`,
   }
 }
 
-const useVersionStatus = (currentVersion: string, latestVersion: string, isChecking: boolean, checkError: boolean) => {
-  const hasUpdate = latestVersion && !checkError && isUpdateAvailable(currentVersion, latestVersion)
+const useVersionStatus = ({
+  currentVersion,
+  latestVersion,
+  isChecking,
+  checkError,
+  releasesUrl,
+}: {
+  currentVersion: string
+  latestVersion: string
+  isChecking: boolean
+  checkError: boolean
+  releasesUrl: string
+}) => {
+  const hasUpdate = useMemo(() => {
+    return !checkError && isUpdateAvailable(currentVersion, latestVersion)
+  }, [checkError, currentVersion, latestVersion])
 
   const getLatestVersionDisplay = () => {
     if (isChecking) return t('checkingForUpdates')
@@ -26,24 +40,36 @@ const useVersionStatus = (currentVersion: string, latestVersion: string, isCheck
     return latestVersion
   }
 
-  const getUpdateStatus = () => {
+  const getUpdateStatusDisplay = () => {
     if (isChecking || checkError || !latestVersion) return null
-    return hasUpdate ? t('updateAvailable') : t('upToDate')
+    return hasUpdate ? (
+      <Text level="xs" className={'text-yellow-500'}>
+        ·{' '}
+        <a href={releasesUrl} target="_blank" rel="noopener noreferrer">
+          {t('updateAvailable')}
+        </a>
+      </Text>
+    ) : (
+      <Text level="xs" className={'text-green-500'}>
+        · {t('upToDate')}
+      </Text>
+    )
   }
 
-  return { hasUpdate, getLatestVersionDisplay, getUpdateStatus }
+  return { hasUpdate, getLatestVersionDisplay, getUpdateStatusDisplay }
 }
 
 export const AboutSettings: FC = () => {
   const version = chrome.runtime.getManifest().version
   const { repositoryUrl, issuesUrl, releasesUrl } = useAboutUrls()
   const { latestVersion, isChecking, checkError } = useLatestVersion(repositoryUrl)
-  const { hasUpdate, getLatestVersionDisplay, getUpdateStatus } = useVersionStatus(
-    version,
+  const { hasUpdate, getLatestVersionDisplay, getUpdateStatusDisplay } = useVersionStatus({
+    currentVersion: version,
     latestVersion,
     isChecking,
-    checkError
-  )
+    checkError,
+    releasesUrl,
+  })
 
   const openUrl = (url: string) => chrome.tabs.create({ url })
 
@@ -55,11 +81,7 @@ export const AboutSettings: FC = () => {
       <Text level="xs" className="font-mono">
         {getLatestVersionDisplay()}
       </Text>
-      {getUpdateStatus() && (
-        <Text level="xs" className={hasUpdate ? 'text-yellow-500' : 'text-green-500'}>
-          · {getUpdateStatus()}
-        </Text>
-      )}
+      {getUpdateStatusDisplay()}
     </Stack>
   )
 
