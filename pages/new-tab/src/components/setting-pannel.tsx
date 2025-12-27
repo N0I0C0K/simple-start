@@ -86,6 +86,28 @@ const SettingItem: FC<{
 
 export { SettingItem }
 
+const DisableWhenConnectedWrapper: FC<{ isConnected: boolean; children: ReactElement }> = ({
+  isConnected,
+  children,
+}) => {
+  if (!isConnected) {
+    return children
+  }
+
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div>{children}</div>
+        </TooltipTrigger>
+        <TooltipContent>
+          <Text>{t('disconnectToModify')}</Text>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  )
+}
+
 const ConnectSettingItem: FC = () => {
   const mqttServerState = useStorage(mqttStateManager)
   return (
@@ -146,58 +168,36 @@ const MqttSettings: FC = () => {
         }
       />
       <ConnectSettingItem />
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div>
-              <SettingItem
-                IconClass={KeyRound}
-                title={t('secretKey')}
-                description={t('secretKeyDescription')}
-                control={
-                  <Input
-                    placeholder={t('enterSecretKey')}
-                    value={settings.mqttSettings?.secretKey || ''}
-                    onChange={e => settingStorage.update({ mqttSettings: { secretKey: e.target.value } })}
-                    disabled={isConnected}
-                  />
-                }
-              />
-            </div>
-          </TooltipTrigger>
-          {isConnected && (
-            <TooltipContent>
-              <Text>{t('disconnectToModify')}</Text>
-            </TooltipContent>
-          )}
-        </Tooltip>
-      </TooltipProvider>
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div>
-              <SettingItem
-                IconClass={User}
-                title={t('username')}
-                description={t('usernameDescription')}
-                control={
-                  <Input
-                    placeholder={t('enterUsername')}
-                    value={settings.mqttSettings?.username || ''}
-                    onChange={e => settingStorage.update({ mqttSettings: { username: e.target.value } })}
-                    disabled={isConnected}
-                  />
-                }
-              />
-            </div>
-          </TooltipTrigger>
-          {isConnected && (
-            <TooltipContent>
-              <Text>{t('disconnectToModify')}</Text>
-            </TooltipContent>
-          )}
-        </Tooltip>
-      </TooltipProvider>
+      <DisableWhenConnectedWrapper isConnected={isConnected}>
+        <SettingItem
+          IconClass={KeyRound}
+          title={t('secretKey')}
+          description={t('secretKeyDescription')}
+          control={
+            <Input
+              placeholder={t('enterSecretKey')}
+              value={settings.mqttSettings?.secretKey || ''}
+              onChange={e => settingStorage.update({ mqttSettings: { secretKey: e.target.value } })}
+              disabled={isConnected}
+            />
+          }
+        />
+      </DisableWhenConnectedWrapper>
+      <DisableWhenConnectedWrapper isConnected={isConnected}>
+        <SettingItem
+          IconClass={User}
+          title={t('username')}
+          description={t('usernameDescription')}
+          control={
+            <Input
+              placeholder={t('enterUsername')}
+              value={settings.mqttSettings?.username || ''}
+              onChange={e => settingStorage.update({ mqttSettings: { username: e.target.value } })}
+              disabled={isConnected}
+            />
+          }
+        />
+      </DisableWhenConnectedWrapper>
     </Stack>
   )
 }
