@@ -3,11 +3,16 @@ import { isSortable } from '@dnd-kit/react/sortable'
 import { arrayMove } from '@dnd-kit/helpers'
 import { useStorage } from '@extension/shared'
 import { quickUrlItemsStorage, settingStorage } from '@extension/storage'
-import { type FC, useMemo } from 'react'
+import { type FC } from 'react'
 
 import { SortableLinkCardItem } from '@/src/components/link-card/link-card-item'
 import { cn } from '@/lib/utils'
 import { useKeyboardNavigation } from './use-keyboard-navigation'
+
+// Default column count for keyboard navigation
+// Note: The actual grid uses auto-fit, so this is an approximation.
+// In a production scenario, this could be calculated dynamically using ResizeObserver.
+const DEFAULT_GRID_COLS = 6
 
 export const DndLinkCardPage: FC<{
   className?: string
@@ -15,17 +20,10 @@ export const DndLinkCardPage: FC<{
   const userStorageItems = useStorage(quickUrlItemsStorage)
   const settings = useStorage(settingStorage)
 
-  // Calculate grid columns based on the container
-  const cols = useMemo(() => {
-    // This is a rough estimate. In a real scenario, you might want to calculate this dynamically
-    // based on container width. For now, we'll use a reasonable default of 6 columns.
-    return 6
-  }, [])
-
   const { selectedIndex } = useKeyboardNavigation({
     items: userStorageItems,
     enabled: settings.enableQuickUrlKeyboardNav,
-    cols,
+    cols: DEFAULT_GRID_COLS,
   })
 
   return (

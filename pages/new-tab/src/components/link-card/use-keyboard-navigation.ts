@@ -56,47 +56,28 @@ export const useKeyboardNavigation = ({ items, enabled, cols = 6 }: UseKeyboardN
     if (!enabled || selectedIndex === -1 || !items[selectedIndex]) return
 
     const item = items[selectedIndex]
-    // Open URL in current tab
-    chrome.tabs.update({ url: item.url })
+    // Open URL in current tab with error handling
+    chrome.tabs.update({ url: item.url }).catch(error => {
+      console.error(`Failed to open quick URL "${item.title}" (${item.url}):`, error)
+    })
   }, [enabled, selectedIndex, items])
 
   // Bind arrow keys - prevent conflicts with command input
-  useHotkeys(
-    'ArrowLeft',
-    e => {
+  // Using a combined handler to avoid duplication
+  const handleArrowKey = useCallback(
+    (e: KeyboardEvent, direction: 'up' | 'down' | 'left' | 'right') => {
       e.preventDefault()
-      handleNavigation('left')
+      handleNavigation(direction)
     },
-    { enabled, enableOnFormTags: false },
     [handleNavigation],
   )
-  useHotkeys(
-    'ArrowRight',
-    e => {
-      e.preventDefault()
-      handleNavigation('right')
-    },
-    { enabled, enableOnFormTags: false },
-    [handleNavigation],
-  )
-  useHotkeys(
-    'ArrowUp',
-    e => {
-      e.preventDefault()
-      handleNavigation('up')
-    },
-    { enabled, enableOnFormTags: false },
-    [handleNavigation],
-  )
-  useHotkeys(
-    'ArrowDown',
-    e => {
-      e.preventDefault()
-      handleNavigation('down')
-    },
-    { enabled, enableOnFormTags: false },
-    [handleNavigation],
-  )
+
+  useHotkeys('ArrowLeft', e => handleArrowKey(e, 'left'), { enabled, enableOnFormTags: false }, [handleArrowKey])
+  useHotkeys('ArrowRight', e => handleArrowKey(e, 'right'), { enabled, enableOnFormTags: false }, [handleArrowKey])
+  useHotkeys('ArrowUp', e => handleArrowKey(e, 'up'), { enabled, enableOnFormTags: false }, [handleArrowKey])
+  useHotkeys('ArrowDown', e => handleArrowKey(e, 'down'), { enabled, enableOnFormTags: false }, [handleArrowKey])
+
+  // Enter to open selected item
   useHotkeys(
     'Enter',
     e => {
