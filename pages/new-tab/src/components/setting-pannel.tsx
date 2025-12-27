@@ -86,6 +86,13 @@ const SettingItem: FC<{
 
 export { SettingItem }
 
+/**
+ * Wrapper component that disables input fields and shows a tooltip when MQTT is connected.
+ * 
+ * @param isConnected - Whether the MQTT connection is active
+ * @param children - The SettingItem component to wrap
+ * @returns The wrapped component with tooltip when connected, or the original component when disconnected
+ */
 const DisableWhenConnectedWrapper: FC<{ isConnected: boolean; children: ReactElement }> = ({
   isConnected,
   children,
