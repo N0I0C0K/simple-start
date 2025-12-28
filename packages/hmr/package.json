@@ -1,37 +1,36 @@
 {
   "name": "@extension/hmr",
-  "version": "0.3.3",
+  "version": "0.5.0",
   "description": "chrome extension - hot module reload/refresh",
+  "type": "module",
   "private": true,
   "sideEffects": true,
   "files": [
     "dist/**"
   ],
-  "main": "dist/index.js",
-  "module": "dist/index.js",
-  "types": "index.ts",
+  "types": "index.mts",
+  "main": "dist/index.mjs",
   "scripts": {
-    "clean:bundle": "rimraf dist build",
+    "clean:bundle": "rimraf dist && pnpx rimraf build",
     "clean:node_modules": "pnpx rimraf node_modules",
     "clean:turbo": "rimraf .turbo",
     "clean": "pnpm clean:bundle && pnpm clean:node_modules && pnpm clean:turbo",
-    "build:tsc": "tsc -b tsconfig.build.json",
-    "build:rollup": "rollup --config rollup.config.mjs",
-    "ready": "pnpm run build:tsc && pnpm run build:rollup",
-    "dev": "node dist/lib/initializers/initReloadServer.js",
-    "lint": "eslint . --ext .ts,.tsx",
+    "ready": "tsc -b && rollup --config dist/rollup.config.js",
+    "dev": "tsx lib/initializers/init-reload-server.ts",
+    "lint": "eslint .",
     "lint:fix": "pnpm lint --fix",
-    "prettier": "prettier . --write --ignore-path ../../.prettierignore",
+    "format": "prettier . --write --ignore-path ../../.prettierignore",
     "type-check": "tsc --noEmit"
   },
   "devDependencies": {
+    "@extension/env": "workspace:*",
     "@extension/tsconfig": "workspace:*",
     "@rollup/plugin-sucrase": "^5.0.2",
-    "@types/ws": "^8.5.12",
+    "@types/ws": "^8.18.1",
+    "esbuild": "^0.25.4",
     "esm": "^3.2.25",
-    "fast-glob": "^3.3.2",
-    "rollup": "^4.24.0",
+    "rollup": "^4.41.0",
     "ts-node": "^10.9.2",
-    "ws": "8.18.0"
+    "ws": "^8.18.2"
   }
 }
