@@ -1,20 +1,14 @@
 {
-  "extends": "@extension/tsconfig/utils",
+  "extends": "@extension/tsconfig/base",
   "compilerOptions": {
     "outDir": "dist",
     "baseUrl": ".",
-    "types": [
-      "chrome"
-    ],
     "paths": {
-      "@/*": [
-        "./*"
-      ]
-    }
+      "@/*": ["./*"]
+    },
+    "noEmit": false,
+    "declaration": false,
+    "skipLibCheck": true
   },
-  "include": [
-    "index.ts",
-    "lib",
-    "components"
-  ]
+  "include": ["index.ts", "lib", "components", "tailwind.config.ts"]
 }

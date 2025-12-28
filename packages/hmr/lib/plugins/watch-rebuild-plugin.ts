@@ -1,26 +1,26 @@
-import fs from 'node:fs';
-import path from 'node:path';
-import type { PluginOption } from 'vite';
+import { BUILD_COMPLETE, LOCAL_RELOAD_SOCKET_URL } from '../consts.js';
+import MessageInterpreter from '../interpreter/index.js';
 import { WebSocket } from 'ws';
-import MessageInterpreter from '../interpreter';
-import { BUILD_COMPLETE, LOCAL_RELOAD_SOCKET_URL } from '../constant';
-import type { PluginConfig } from '../types';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import type { PluginConfigType } from '../types.js';
+import type { PluginOption } from 'vite';
 
-const injectionsPath = path.resolve(__dirname, '..', '..', '..', 'build', 'injections');
+const injectionsPath = resolve(import.meta.dirname, '..', 'injections');
 
-const refreshCode = fs.readFileSync(path.resolve(injectionsPath, 'refresh.js'), 'utf-8');
-const reloadCode = fs.readFileSync(path.resolve(injectionsPath, 'reload.js'), 'utf-8');
+const refreshCode = readFileSync(resolve(injectionsPath, 'refresh.js'), 'utf-8');
+const reloadCode = readFileSync(resolve(injectionsPath, 'reload.js'), 'utf-8');
 
-export function watchRebuildPlugin(config: PluginConfig): PluginOption {
-  let ws: WebSocket | null = null;
-
-  const id = Math.random().toString(36);
-  let reconnectTries = 0;
-
-  const { refresh, reload } = config;
+export const watchRebuildPlugin = (config: PluginConfigType): PluginOption => {
+  const { refresh, reload, id: _id, onStart } = config;
   const hmrCode = (refresh ? refreshCode : '') + (reload ? reloadCode : '');
 
-  function initializeWebSocket() {
+  let ws: WebSocket | null = null;
+
+  const id = _id ?? Math.random().toString(36);
+  let reconnectTries = 0;
+
+  const initializeWebSocket = () => {
     ws = new WebSocket(LOCAL_RELOAD_SOCKET_URL);
 
     ws.onopen = () => {
@@ -41,12 +41,12 @@ export function watchRebuildPlugin(config: PluginConfig): PluginOption {
         console.error(`[HMR] Cannot establish connection to server at ${LOCAL_RELOAD_SOCKET_URL}`);
       }
     };
-  }
+  };
 
   return {
     name: 'watch-rebuild',
-    writeBundle() {
-      config.onStart?.();
+    closeBundle() {
+      onStart?.();
       if (!ws) {
         initializeWebSocket();
         return;
@@ -65,4 +65,4 @@ export function watchRebuildPlugin(config: PluginConfig): PluginOption {
       }
     },
   };
-}
+};

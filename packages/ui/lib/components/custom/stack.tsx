@@ -1,4 +1,4 @@
-import { styled } from '@stitches/react'
+import { styled } from '@stitches/react';
 
 export const Stack = styled('div', {
   display: 'flex',
@@ -31,7 +31,7 @@ export const Stack = styled('div', {
     direction: 'row',
     center: false,
   },
-})
+});
 
 export const AnimateStack = styled('div', {
   display: 'flex',
@@ -64,4 +64,4 @@ export const AnimateStack = styled('div', {
     direction: 'row',
     center: false,
   },
-})
+});

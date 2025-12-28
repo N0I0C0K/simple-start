@@ -1,8 +1,8 @@
-import { StorageEnum } from '../base/enums'
-import { createStorage } from '../base/base'
-import type { BaseStorage, QuickUrlItem } from '../base/types'
-import type { QuickUrlItemsStorage, BasicUrlItemsStorageFunc } from './quickUrlStorage'
-import { generateBasicUrlItemStorage, quickUrlItemsStorage } from './quickUrlStorage'
+import { StorageEnum } from '../base/enums.js'
+import { createStorage } from '../base/base.js'
+import type { BaseStorage, QuickUrlItem } from '../base/types.js'
+import type { QuickUrlItemsStorage, BasicUrlItemsStorageFunc } from './quickUrlStorage.js'
+import { generateBasicUrlItemStorage, quickUrlItemsStorage } from './quickUrlStorage.js'
 import moment from 'moment'
 
 type HistoryItem = QuickUrlItem & {

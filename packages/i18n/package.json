@@ -1,29 +1,30 @@
 {
   "name": "@extension/i18n",
-  "version": "0.3.3",
+  "version": "0.5.0",
   "description": "chrome extension - internationalization",
+  "type": "module",
   "private": true,
   "sideEffects": false,
   "files": [
     "dist/**"
   ],
-  "types": "index.ts",
-  "main": "./dist/index.js",
+  "main": "dist/index.mjs",
+  "types": "index.mts",
   "scripts": {
     "clean:bundle": "rimraf dist",
     "clean:node_modules": "pnpx rimraf node_modules",
     "clean:turbo": "rimraf .turbo",
     "clean": "pnpm clean:bundle && pnpm clean:node_modules && pnpm clean:turbo",
-    "genenrate-i8n": "node genenrate-i18n.mjs",
-    "ready": "pnpm genenrate-i8n && node build.dev.mjs",
-    "build": "pnpm genenrate-i8n && node build.prod.mjs",
-    "lint": "eslint . --ext .ts,.tsx",
+    "ready": "tsc -b prepare-build.tsconfig.json && node --env-file=../../.env dist/lib/prepare-build.js && tsc -b",
+    "lint": "eslint .",
     "lint:fix": "pnpm lint --fix",
-    "prettier": "prettier . --write --ignore-path ../../.prettierignore",
+    "format": "prettier . --write --ignore-path ../../.prettierignore",
     "type-check": "tsc --noEmit"
   },
+  "dependencies": {
+    "@extension/env": "workspace:*"
+  },
   "devDependencies": {
-    "@extension/tsconfig": "workspace:*",
-    "@extension/hmr": "workspace:*"
+    "@extension/tsconfig": "workspace:*"
   }
 }
