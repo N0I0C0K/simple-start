@@ -45,7 +45,7 @@ const useVersionStatus = ({
     return hasUpdate ? (
       <Text level="xs" className={'text-yellow-500'}>
         ·{' '}
-        <a href={releasesUrl} target="_blank" rel="noopener noreferrer">
+        <a href={releasesUrl} target="_blank" rel="noopener noreferrer" className="hover:underline">
           {t('updateAvailable')}
         </a>
       </Text>
