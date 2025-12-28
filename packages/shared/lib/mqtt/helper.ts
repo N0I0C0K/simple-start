@@ -1,4 +1,4 @@
-import type { MqttBasePayload } from "./payload"
+import type { MqttBasePayload } from "./payload.js"
 import type { MqttClient } from "mqtt"
 import { nanoid } from "nanoid"
 

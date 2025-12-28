@@ -1,6 +1,6 @@
 import mqtt from 'mqtt'
 import { EventEmitter } from 'events'
-import { MqttSecretPrefixTopicRegisterService } from './helper'
+import { MqttSecretPrefixTopicRegisterService } from './helper.js'
 
 export interface MqttConnectionOptions {
   brokerUrl?: string

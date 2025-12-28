@@ -1,4 +1,4 @@
-import setRelatedLocaleImports from './set-related-locale-import.js';
+import setRelatedLocaleImports from './set-related-locale-import.js.js';
 import { IS_DEV } from '@extension/env';
 import { cpSync, existsSync, mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';

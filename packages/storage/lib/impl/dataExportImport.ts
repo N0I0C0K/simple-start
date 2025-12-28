@@ -2,13 +2,13 @@
  * Data export/import functionality for user settings and data
  */
 
-import type { QuickUrlItem } from '../base/types'
-import type { SettingProps } from './settingsStorage'
-import type { CommandSettingsData } from './commandSettingsStorage'
-import { settingStorage } from './settingsStorage'
-import { quickUrlItemsStorage } from './quickUrlStorage'
-import { exampleThemeStorage } from './exampleThemeStorage'
-import { commandSettingsStorage } from './commandSettingsStorage'
+import type { QuickUrlItem } from '../base/types.js'
+import type { SettingProps } from './settingsStorage.js'
+import type { CommandSettingsData } from './commandSettingsStorage.js'
+import { settingStorage } from './settingsStorage.js'
+import { quickUrlItemsStorage } from './quickUrlStorage.js'
+import { exampleThemeStorage } from './exampleThemeStorage.js'
+import { commandSettingsStorage } from './commandSettingsStorage.js'
 
 // Import types from existing implementations
 type Theme = 'light' | 'dark' | 'system'

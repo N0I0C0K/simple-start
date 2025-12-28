@@ -1,6 +1,6 @@
-import { StorageEnum } from '../base/enums'
-import { createStorage } from '../base/base'
-import type { BaseStorage, QuickUrlItem } from '../base/types'
+import { StorageEnum } from '../base/enums.js'
+import { createStorage } from '../base/base.js'
+import type { BaseStorage, QuickUrlItem } from '../base/types.js'
 
 export type QuickUrlItemsStorage = BaseStorage<QuickUrlItem[]>
 
