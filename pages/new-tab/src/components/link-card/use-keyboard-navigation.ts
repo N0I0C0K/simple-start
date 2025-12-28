@@ -1,6 +1,10 @@
 import { useHotkeys } from 'react-hotkeys-hook'
 import { useState, useCallback, useEffect } from 'react'
+import type { RefObject } from 'react'
 import type { QuickUrlItem } from '@extension/storage'
+
+// Vertical alignment tolerance in pixels for detecting items on the same row
+const ROW_DETECTION_THRESHOLD = 5
 
 interface UseKeyboardNavigationOptions {
   items: QuickUrlItem[]
@@ -9,7 +13,7 @@ interface UseKeyboardNavigationOptions {
    * Container ref to calculate actual grid columns dynamically.
    * If provided, the hook will calculate the real column count based on the grid layout.
    */
-  containerRef?: React.RefObject<HTMLElement>
+  containerRef?: RefObject<HTMLElement>
 }
 
 export const useKeyboardNavigation = ({ items, enabled, containerRef }: UseKeyboardNavigationOptions) => {
@@ -24,6 +28,8 @@ export const useKeyboardNavigation = ({ items, enabled, containerRef }: UseKeybo
   }, [enabled, items.length])
 
   // Scroll selected item into view
+  // Note: containerRef is stable and doesn't trigger re-renders, but we include it
+  // in dependencies for clarity and to ensure the effect runs when ref is initially set
   useEffect(() => {
     if (!containerRef?.current || selectedIndex === -1) return
 
@@ -42,6 +48,8 @@ export const useKeyboardNavigation = ({ items, enabled, containerRef }: UseKeybo
   // Calculate actual column count from grid layout
   useEffect(() => {
     if (!containerRef?.current) return
+
+    let debounceTimer: ReturnType<typeof setTimeout> | null = null
 
     const calculateColumns = () => {
       const container = containerRef.current
@@ -63,12 +71,12 @@ export const useKeyboardNavigation = ({ items, enabled, containerRef }: UseKeybo
       const secondRect = secondChild.getBoundingClientRect()
 
       // If second item is on the same row (same top position), they're in different columns
-      if (Math.abs(firstRect.top - secondRect.top) < 5) {
+      if (Math.abs(firstRect.top - secondRect.top) < ROW_DETECTION_THRESHOLD) {
         // Count how many items are on the first row
         let cols = 1
         for (let i = 1; i < children.length; i++) {
           const rect = (children[i] as HTMLElement).getBoundingClientRect()
-          if (Math.abs(rect.top - firstRect.top) < 5) {
+          if (Math.abs(rect.top - firstRect.top) < ROW_DETECTION_THRESHOLD) {
             cols++
           } else {
             break
@@ -81,20 +89,36 @@ export const useKeyboardNavigation = ({ items, enabled, containerRef }: UseKeybo
       }
     }
 
-    // Initial calculation
+    // Debounced version for resize observer
+    const debouncedCalculateColumns = () => {
+      if (debounceTimer) {
+        clearTimeout(debounceTimer)
+      }
+      debounceTimer = setTimeout(() => {
+        calculateColumns()
+      }, 100) // 100ms debounce delay
+    }
+
+    // Initial calculation (not debounced)
     calculateColumns()
 
-    // Recalculate on window resize
+    // Recalculate on window resize with debouncing
     const resizeObserver = new ResizeObserver(() => {
-      calculateColumns()
+      debouncedCalculateColumns()
     })
 
     resizeObserver.observe(containerRef.current)
 
     return () => {
       resizeObserver.disconnect()
+      if (debounceTimer) {
+        clearTimeout(debounceTimer)
+      }
     }
-  }, [containerRef, items.length])
+    // Note: containerRef is stable and doesn't change, but we include items.length
+    // to recalculate when items are added/removed
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [items.length])
 
   const handleNavigation = useCallback(
     (direction: 'up' | 'down' | 'left' | 'right') => {
