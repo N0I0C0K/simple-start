@@ -15,6 +15,7 @@ import { useRelatedBookmarks } from './use-related-bookmarks'
 
 interface LinkCardProps extends QuickUrlItem {
   ref?: Ref<HTMLDivElement>
+  selected?: boolean
 }
 
 interface CustomGridItemProps {
@@ -26,7 +27,7 @@ interface CustomGridItemProps {
 }
 
 export const LinkCardItem = forwardRef<HTMLDivElement, LinkCardProps & CustomGridItemProps>(
-  ({ url, title, id, className, onMouseDown, onMouseUp, onTouchEnd, style }, ref) => {
+  ({ url, title, id, className, onMouseDown, onMouseUp, onTouchEnd, style, selected = false }, ref) => {
     const [contextMenuOpen, setContextMenuOpen] = useState(false)
     const globalDialog = useGlobalDialog()
     const innerRef = useRef<HTMLDivElement>(null)
@@ -51,6 +52,7 @@ export const LinkCardItem = forwardRef<HTMLDivElement, LinkCardProps & CustomGri
               className={cn(
                 `relative min-w-[4.5rem] group flex flex-col items-center justify-center overflow-hidden p-2 gap-1
                 rounded-md duration-200 cursor-default`,
+                selected && 'bg-primary/10',
                 className,
               )}
               key={id}
