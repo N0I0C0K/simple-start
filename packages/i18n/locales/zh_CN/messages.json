@@ -491,7 +491,7 @@
   },
   "checkForUpdates": {
     "description": "Check for updates button",
-    "message": "检查更新"
+    "message": "获取更新"
   },
   "checkForUpdatesDescription": {
     "description": "Check for updates description",
@@ -504,5 +504,29 @@
   "repositoryDescription": {
     "description": "Repository description",
     "message": "NextTab 的 GitHub 代码仓库"
+  },
+  "latestVersion": {
+    "description": "Latest version label",
+    "message": "最新版本"
+  },
+  "latestVersionDescription": {
+    "description": "Latest version description",
+    "message": "GitHub 上的最新可用版本"
+  },
+  "checkingForUpdates": {
+    "description": "Checking for updates message",
+    "message": "检查中..."
+  },
+  "updateAvailable": {
+    "description": "Update available message",
+    "message": "有新版本"
+  },
+  "upToDate": {
+    "description": "Up to date message",
+    "message": "已是最新"
+  },
+  "failedToCheckUpdates": {
+    "description": "Failed to check for updates message",
+    "message": "检查失败"
   }
 }
