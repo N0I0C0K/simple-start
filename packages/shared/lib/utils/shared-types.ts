@@ -1,1 +1,2 @@
-export type ValueOf<T> = T[keyof T];
+// ValueOf is now provided by type-fest via lib/utils/types.ts
+export {};

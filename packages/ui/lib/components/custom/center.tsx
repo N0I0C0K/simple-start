@@ -1,4 +1,4 @@
-import { styled } from '@stitches/react'
+import { styled } from '@stitches/react';
 
 export const Center = styled('div', {
   display: 'flex',
@@ -11,4 +11,4 @@ export const Center = styled('div', {
       },
     },
   },
-})
+});
