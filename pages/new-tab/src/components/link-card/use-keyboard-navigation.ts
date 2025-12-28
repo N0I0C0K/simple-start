@@ -23,6 +23,22 @@ export const useKeyboardNavigation = ({ items, enabled, containerRef }: UseKeybo
     }
   }, [enabled, items.length])
 
+  // Scroll selected item into view
+  useEffect(() => {
+    if (!containerRef?.current || selectedIndex === -1) return
+
+    const container = containerRef.current
+    const selectedElement = container.children[selectedIndex] as HTMLElement
+
+    if (selectedElement) {
+      selectedElement.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+        inline: 'nearest',
+      })
+    }
+  }, [selectedIndex, containerRef])
+
   // Calculate actual column count from grid layout
   useEffect(() => {
     if (!containerRef?.current) return
