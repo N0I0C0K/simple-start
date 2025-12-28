@@ -64,7 +64,7 @@ export const useKeyboardNavigation = ({ items, enabled, containerRef }: UseKeybo
       // Get the position of first two items to calculate columns
       const firstChild = children[0] as HTMLElement
       const secondChild = children[1] as HTMLElement
-      
+
       if (!firstChild || !secondChild) return
 
       const firstRect = firstChild.getBoundingClientRect()
@@ -141,10 +141,10 @@ export const useKeyboardNavigation = ({ items, enabled, containerRef }: UseKeybo
             newIndex = prev < maxIndex ? prev + 1 : prev
             break
           case 'up':
-            newIndex = prev - actualCols >= 0 ? prev - actualCols : prev
+            newIndex = Math.max(prev - actualCols, 0)
             break
           case 'down':
-            newIndex = prev + actualCols <= maxIndex ? prev + actualCols : prev
+            newIndex = Math.min(prev + actualCols, maxIndex)
             break
         }
 
@@ -162,7 +162,7 @@ export const useKeyboardNavigation = ({ items, enabled, containerRef }: UseKeybo
     chrome.tabs.update({ url: item.url }).catch(error => {
       console.error(
         `Failed to open quick URL "${item.title}" (${item.url}). ` +
-          `This may be due to Chrome API permissions or an invalid URL format.`,
+        `This may be due to Chrome API permissions or an invalid URL format.`,
         error,
       )
     })
