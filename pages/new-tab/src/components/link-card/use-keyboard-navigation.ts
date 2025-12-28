@@ -2,28 +2,19 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import { useState, useCallback, useEffect } from 'react'
 import type { QuickUrlItem } from '@extension/storage'
 
-/**
- * Default column count for keyboard navigation grid.
- * This value of 6 works well for most screen sizes (1920px and above).
- * Note: The actual grid layout uses CSS auto-fit, so this is an approximation.
- * For perfect accuracy, this could be calculated dynamically using ResizeObserver.
- */
-export const DEFAULT_GRID_COLS = 6
-
 interface UseKeyboardNavigationOptions {
   items: QuickUrlItem[]
   enabled: boolean
   /**
-   * Number of columns in the grid layout for keyboard navigation.
-   * Defaults to 6, which works well for most screen sizes.
-   * Note: This is an approximation since the actual grid uses auto-fit.
-   * For perfect accuracy, this should be calculated dynamically using ResizeObserver.
+   * Container ref to calculate actual grid columns dynamically.
+   * If provided, the hook will calculate the real column count based on the grid layout.
    */
-  cols?: number
+  containerRef?: React.RefObject<HTMLElement>
 }
 
-export const useKeyboardNavigation = ({ items, enabled, cols = DEFAULT_GRID_COLS }: UseKeyboardNavigationOptions) => {
+export const useKeyboardNavigation = ({ items, enabled, containerRef }: UseKeyboardNavigationOptions) => {
   const [selectedIndex, setSelectedIndex] = useState<number>(-1)
+  const [actualCols, setActualCols] = useState<number>(6) // Default fallback
 
   // Reset selection when items change or disabled
   useEffect(() => {
@@ -31,6 +22,63 @@ export const useKeyboardNavigation = ({ items, enabled, cols = DEFAULT_GRID_COLS
       setSelectedIndex(-1)
     }
   }, [enabled, items.length])
+
+  // Calculate actual column count from grid layout
+  useEffect(() => {
+    if (!containerRef?.current) return
+
+    const calculateColumns = () => {
+      const container = containerRef.current
+      if (!container) return
+
+      const children = container.children
+      if (children.length < 2) {
+        setActualCols(1)
+        return
+      }
+
+      // Get the position of first two items to calculate columns
+      const firstChild = children[0] as HTMLElement
+      const secondChild = children[1] as HTMLElement
+      
+      if (!firstChild || !secondChild) return
+
+      const firstRect = firstChild.getBoundingClientRect()
+      const secondRect = secondChild.getBoundingClientRect()
+
+      // If second item is on the same row (same top position), they're in different columns
+      if (Math.abs(firstRect.top - secondRect.top) < 5) {
+        // Count how many items are on the first row
+        let cols = 1
+        for (let i = 1; i < children.length; i++) {
+          const rect = (children[i] as HTMLElement).getBoundingClientRect()
+          if (Math.abs(rect.top - firstRect.top) < 5) {
+            cols++
+          } else {
+            break
+          }
+        }
+        setActualCols(cols)
+      } else {
+        // Items are stacked vertically, only 1 column
+        setActualCols(1)
+      }
+    }
+
+    // Initial calculation
+    calculateColumns()
+
+    // Recalculate on window resize
+    const resizeObserver = new ResizeObserver(() => {
+      calculateColumns()
+    })
+
+    resizeObserver.observe(containerRef.current)
+
+    return () => {
+      resizeObserver.disconnect()
+    }
+  }, [containerRef, items.length])
 
   const handleNavigation = useCallback(
     (direction: 'up' | 'down' | 'left' | 'right') => {
@@ -53,17 +101,17 @@ export const useKeyboardNavigation = ({ items, enabled, cols = DEFAULT_GRID_COLS
             newIndex = prev < maxIndex ? prev + 1 : prev
             break
           case 'up':
-            newIndex = prev - cols >= 0 ? prev - cols : prev
+            newIndex = prev - actualCols >= 0 ? prev - actualCols : prev
             break
           case 'down':
-            newIndex = prev + cols <= maxIndex ? prev + cols : prev
+            newIndex = prev + actualCols <= maxIndex ? prev + actualCols : prev
             break
         }
 
         return newIndex
       })
     },
-    [enabled, items.length, cols],
+    [enabled, items.length, actualCols],
   )
 
   const handleEnter = useCallback(() => {
