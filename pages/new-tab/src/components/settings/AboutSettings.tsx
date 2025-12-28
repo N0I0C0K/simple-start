@@ -63,7 +63,7 @@ export const AboutSettings: FC = () => {
   const version = chrome.runtime.getManifest().version
   const { repositoryUrl, issuesUrl, releasesUrl } = useAboutUrls()
   const { latestVersion, isChecking, checkError } = useLatestVersion(repositoryUrl)
-  const { hasUpdate, getLatestVersionDisplay, getUpdateStatusDisplay } = useVersionStatus({
+  const { getLatestVersionDisplay, getUpdateStatusDisplay } = useVersionStatus({
     currentVersion: version,
     latestVersion,
     isChecking,

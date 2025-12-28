@@ -10,7 +10,7 @@ interface LinkCardTooltipContentProps {
 /**
  * LinkCardTooltipContent - The tooltip content showing title and URL
  */
-export const LinkCardTooltipContent = ({ title, url, id }: LinkCardTooltipContentProps) => {
+export const LinkCardTooltipContent = ({ title, url }: LinkCardTooltipContentProps) => {
   const handleCopyClick = async () => {
     try {
       await navigator.clipboard.writeText(url)
