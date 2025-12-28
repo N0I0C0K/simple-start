@@ -52,7 +52,7 @@ export const LinkCardItem = forwardRef<HTMLDivElement, LinkCardProps & CustomGri
               className={cn(
                 `relative min-w-[4.5rem] group flex flex-col items-center justify-center overflow-hidden p-2 gap-1
                 rounded-md duration-200 cursor-default`,
-                selected && 'ring-2 ring-primary ring-offset-2 bg-primary/10',
+                selected && 'bg-primary/10',
                 className,
               )}
               key={id}
