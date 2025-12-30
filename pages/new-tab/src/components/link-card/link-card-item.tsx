@@ -5,7 +5,7 @@ import { Text, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '
 import { ContextMenu, ContextMenuContent, ContextMenuTrigger } from '@extension/ui/lib/components/ui/context-menu'
 import { useGlobalDialog } from '@src/provider'
 import type { CSSProperties, MouseEventHandler, Ref, TouchEventHandler } from 'react'
-import { useRef, useState, forwardRef } from 'react'
+import { useRef, useState, forwardRef, useEffect } from 'react'
 
 import { MakeSortableItem } from '@/src/components/sortable-area'
 import { LinkCardIcon } from './link-card-icon'
@@ -29,11 +29,35 @@ interface CustomGridItemProps {
 export const LinkCardItem = forwardRef<HTMLDivElement, LinkCardProps & CustomGridItemProps>(
   ({ url, title, id, className, onMouseDown, onMouseUp, onTouchEnd, style, selected = false }, ref) => {
     const [contextMenuOpen, setContextMenuOpen] = useState(false)
+    const [tooltipDisabled, setTooltipDisabled] = useState(false)
     const globalDialog = useGlobalDialog()
     const innerRef = useRef<HTMLDivElement>(null)
+    const prevContextMenuOpenRef = useRef(false)
 
     // Fetch related bookmarks when context menu opens
     const { relatedBookmarks, showBookmarks } = useRelatedBookmarks(url, contextMenuOpen)
+
+    // Disable tooltip temporarily when context menu closes
+    useEffect(() => {
+      // Update the ref for next render
+      const wasOpen = prevContextMenuOpenRef.current
+      prevContextMenuOpenRef.current = contextMenuOpen
+      
+      // Check if context menu just closed (was open, now closed)
+      if (wasOpen && !contextMenuOpen) {
+        // Context menu just closed, disable tooltip briefly
+        setTooltipDisabled(true)
+        const timer = setTimeout(() => {
+          setTooltipDisabled(false)
+        }, 100)
+        
+        return () => {
+          clearTimeout(timer)
+        }
+      }
+      
+      return undefined
+    }, [contextMenuOpen])
 
     const handleIconClick = (ev: React.MouseEvent<HTMLDivElement>) => {
       if (ev.ctrlKey) {
@@ -45,7 +69,7 @@ export const LinkCardItem = forwardRef<HTMLDivElement, LinkCardProps & CustomGri
 
     return (
       <TooltipProvider>
-        <Tooltip>
+        <Tooltip open={tooltipDisabled ? false : undefined}>
           <ContextMenu onOpenChange={setContextMenuOpen}>
             <div
               style={style}
