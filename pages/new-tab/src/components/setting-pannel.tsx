@@ -45,6 +45,7 @@ import {
   MousePointerClick,
   Bookmark,
   Keyboard,
+  NotebookTabs,
 } from 'lucide-react'
 import React, { type ElementType, type FC, type ReactElement, type ReactNode } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@extension/ui/lib/components/ui/tabs'
@@ -296,6 +297,17 @@ const CommonSettings: FC = () => {
           <Switch
             checked={settings.showBookmarksInQuickUrlMenu}
             onCheckedChange={val => settingStorage.update({ showBookmarksInQuickUrlMenu: val })}
+          />
+        }
+      />
+      <SettingItem
+        IconClass={NotebookTabs}
+        title={t('showOpenTabsInQuickUrlMenu')}
+        description={t('showOpenTabsInQuickUrlMenuDescription')}
+        control={
+          <Switch
+            checked={settings.showOpenTabsInQuickUrlMenu}
+            onCheckedChange={val => settingStorage.update({ showOpenTabsInQuickUrlMenu: val })}
           />
         }
       />

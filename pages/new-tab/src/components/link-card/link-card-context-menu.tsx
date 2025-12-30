@@ -7,7 +7,7 @@ import {
   ContextMenuSeparator,
   ContextMenuLabel,
 } from '@extension/ui/lib/components/ui/context-menu'
-import type { GlobalDialogContextType } from '@src/provider'
+import type { GlobalDialogProps } from '@src/provider'
 import { Pencil, Trash } from 'lucide-react'
 import { t } from '@extension/i18n'
 import type { ReactNode } from 'react'
@@ -18,11 +18,13 @@ interface LinkCardContextMenuContentProps {
   url: string
   relatedBookmarks: chrome.bookmarks.BookmarkTreeNode[]
   showBookmarks: boolean
-  globalDialog: GlobalDialogContextType
+  relatedTabs: chrome.tabs.Tab[]
+  showOpenTabs: boolean
+  globalDialog: GlobalDialogProps
 }
 
 /**
- * LinkCardContextMenuContent - The context menu items (edit, delete, and bookmarks)
+ * LinkCardContextMenuContent - The context menu items (edit, delete, bookmarks, and open tabs)
  * Returns an array of menu items to be placed inside ContextMenuContent
  */
 export const LinkCardContextMenuContent = ({
@@ -31,6 +33,8 @@ export const LinkCardContextMenuContent = ({
   url,
   relatedBookmarks,
   showBookmarks,
+  relatedTabs,
+  showOpenTabs,
   globalDialog,
 }: LinkCardContextMenuContentProps): ReactNode => {
   return (
@@ -94,6 +98,38 @@ export const LinkCardContextMenuContent = ({
                 }}
               />
               <span className="truncate flex-1">{bookmark.title || bookmark.url}</span>
+            </ContextMenuItem>
+          ))}
+        </>
+      )}
+
+      {/* Related Open Tabs Section */}
+      {showOpenTabs && relatedTabs.length > 0 && (
+        <>
+          <ContextMenuSeparator />
+          <ContextMenuLabel>{t('relatedOpenTabs')}</ContextMenuLabel>
+          {relatedTabs.slice(0, 10).map(tab => (
+            <ContextMenuItem
+              key={tab.id}
+              onClick={() => {
+                if (tab.id !== undefined) {
+                  chrome.tabs.update(tab.id, { active: true })
+                  if (tab.windowId !== undefined) {
+                    chrome.windows.update(tab.windowId, { focused: true })
+                  }
+                }
+              }}
+              className="flex items-center gap-2">
+              <img
+                src={tab.favIconUrl || getDefaultIconUrl(tab.url || '')}
+                alt={tab.title || tab.url || 'Tab icon'}
+                className="size-4 rounded-sm flex-shrink-0"
+                onError={e => {
+                  // Fallback to hide broken images
+                  e.currentTarget.style.display = 'none'
+                }}
+              />
+              <span className="truncate flex-1">{tab.title || tab.url}</span>
             </ContextMenuItem>
           ))}
         </>
