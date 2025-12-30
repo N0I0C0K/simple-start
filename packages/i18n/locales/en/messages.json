@@ -135,7 +135,7 @@
   },
   "relatedBookmarks": {
     "description": "Related bookmarks section label in context menu",
-    "message": "Related Bookmarks"
+    "message": "Bookmarks"
   },
   "showOpenTabsInQuickUrlMenu": {
     "description": "Show open tabs in quick URL context menu setting title",
@@ -147,7 +147,7 @@
   },
   "relatedOpenTabs": {
     "description": "Related open tabs section label in context menu",
-    "message": "Related Open Tabs"
+    "message": "Tabs"
   },
   "wallpaperUrl": {
     "description": "Wallpaper URL setting title",

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getDomainFromUrl } from '@/lib/bookmarks'
+import { getDomainFromUrl } from '@/lib/url'
 import { useStorage } from '@extension/shared'
 import { settingStorage } from '@extension/storage'
 
@@ -14,21 +14,11 @@ export const useRelatedTabs = (url: string, contextMenuOpen: boolean) => {
     if (contextMenuOpen && settings.showOpenTabsInQuickUrlMenu) {
       const domain = getDomainFromUrl(url)
       if (domain) {
-        chrome.tabs
-          .query({})
-          .then(tabs => {
-            // Filter tabs by matching domain
-            const matchingTabs = tabs.filter(tab => {
-              if (!tab.url) return false
-              const tabDomain = getDomainFromUrl(tab.url)
-              return tabDomain === domain && tab.url !== url // Exclude the current URL itself
-            })
-            setRelatedTabs(matchingTabs)
-          })
-          .catch(error => {
-            console.error('Failed to fetch tabs:', error)
-            setRelatedTabs([])
-          })
+        chrome.tabs.query({
+          url: `*://${domain}/*`,
+        }).then(tabs => {
+          setRelatedTabs(tabs)
+        })
       } else {
         // Clear tabs if domain extraction fails
         setRelatedTabs([])

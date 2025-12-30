@@ -135,7 +135,7 @@
   },
   "relatedBookmarks": {
     "description": "Related bookmarks section label in context menu",
-    "message": "相关收藏"
+    "message": "收藏"
   },
   "showOpenTabsInQuickUrlMenu": {
     "description": "Show open tabs in quick URL context menu setting title",
@@ -147,7 +147,7 @@
   },
   "relatedOpenTabs": {
     "description": "Related open tabs section label in context menu",
-    "message": "相关打开的页面"
+    "message": "标签页"
   },
   "wallpaperUrl": {
     "description": "Wallpaper URL setting title",
