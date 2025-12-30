@@ -26,6 +26,9 @@ interface CustomGridItemProps {
   style?: CSSProperties
 }
 
+// Delay in milliseconds before re-enabling tooltip after context menu closes
+const TOOLTIP_REENABLE_DELAY = 100
+
 export const LinkCardItem = forwardRef<HTMLDivElement, LinkCardProps & CustomGridItemProps>(
   ({ url, title, id, className, onMouseDown, onMouseUp, onTouchEnd, style, selected = false }, ref) => {
     const [contextMenuOpen, setContextMenuOpen] = useState(false)
@@ -44,19 +47,19 @@ export const LinkCardItem = forwardRef<HTMLDivElement, LinkCardProps & CustomGri
       prevContextMenuOpenRef.current = contextMenuOpen
       
       // Check if context menu just closed (was open, now closed)
-      if (wasOpen && !contextMenuOpen) {
-        // Context menu just closed, disable tooltip briefly
-        setTooltipDisabled(true)
-        const timer = setTimeout(() => {
-          setTooltipDisabled(false)
-        }, 100)
-        
-        return () => {
-          clearTimeout(timer)
-        }
+      if (!wasOpen || contextMenuOpen) {
+        return
       }
       
-      return undefined
+      // Context menu just closed, disable tooltip briefly
+      setTooltipDisabled(true)
+      const timer = setTimeout(() => {
+        setTooltipDisabled(false)
+      }, TOOLTIP_REENABLE_DELAY)
+      
+      return () => {
+        clearTimeout(timer)
+      }
     }, [contextMenuOpen])
 
     const handleIconClick = (ev: React.MouseEvent<HTMLDivElement>) => {
