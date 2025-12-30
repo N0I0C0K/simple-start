@@ -46,8 +46,8 @@ export const LinkCardItem = forwardRef<HTMLDivElement, LinkCardProps & CustomGri
       const wasOpen = prevContextMenuOpenRef.current
       prevContextMenuOpenRef.current = contextMenuOpen
       
-      // Check if context menu just closed (was open, now closed)
-      if (!wasOpen || contextMenuOpen) {
+      // Only act if context menu just closed (transition from open to closed)
+      if (!(wasOpen && !contextMenuOpen)) {
         return
       }
       
