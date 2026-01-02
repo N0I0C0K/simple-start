@@ -26,39 +26,29 @@ interface CustomGridItemProps {
   style?: CSSProperties
 }
 
-// Delay in milliseconds before re-enabling tooltip after context menu closes
-const TOOLTIP_REENABLE_DELAY = 100
-
 export const LinkCardItem = forwardRef<HTMLDivElement, LinkCardProps & CustomGridItemProps>(
   ({ url, title, id, className, onMouseDown, onMouseUp, onTouchEnd, style, selected = false }, ref) => {
     const [contextMenuOpen, setContextMenuOpen] = useState(false)
-    const [tooltipDisabled, setTooltipDisabled] = useState(false)
+    const [tooltipOpen, setTooltipOpen] = useState(false)
     const globalDialog = useGlobalDialog()
     const innerRef = useRef<HTMLDivElement>(null)
-    const prevContextMenuOpenRef = useRef(false)
 
     // Fetch related bookmarks when context menu opens
     const { relatedBookmarks, showBookmarks } = useRelatedBookmarks(url, contextMenuOpen)
 
-    // Disable tooltip temporarily when context menu closes
-    useEffect(() => {
-      // Update the ref for next render
-      const wasOpen = prevContextMenuOpenRef.current
-      prevContextMenuOpenRef.current = contextMenuOpen
-      
-      // Only act if context menu just closed (transition from open to closed)
-      if (!(wasOpen && !contextMenuOpen)) {
+    // Handle tooltip open state - prevent opening when context menu is open or just closed
+    const handleTooltipOpenChange = (open: boolean) => {
+      if (open && contextMenuOpen) {
+        // Prevent tooltip from opening when context menu is open
         return
       }
-      
-      // Context menu just closed, disable tooltip briefly
-      setTooltipDisabled(true)
-      const timer = setTimeout(() => {
-        setTooltipDisabled(false)
-      }, TOOLTIP_REENABLE_DELAY)
-      
-      return () => {
-        clearTimeout(timer)
+      setTooltipOpen(open)
+    }
+
+    // Close tooltip when context menu opens
+    useEffect(() => {
+      if (contextMenuOpen) {
+        setTooltipOpen(false)
       }
     }, [contextMenuOpen])
 
@@ -72,7 +62,7 @@ export const LinkCardItem = forwardRef<HTMLDivElement, LinkCardProps & CustomGri
 
     return (
       <TooltipProvider>
-        <Tooltip open={tooltipDisabled ? false : undefined}>
+        <Tooltip open={tooltipOpen} onOpenChange={handleTooltipOpenChange}>
           <ContextMenu onOpenChange={setContextMenuOpen}>
             <div
               style={style}
