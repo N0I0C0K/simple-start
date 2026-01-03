@@ -11,20 +11,24 @@ export const useRelatedTabs = (url: string, contextMenuOpen: boolean) => {
   const settings = useStorage(settingStorage)
 
   useEffect(() => {
-    if (contextMenuOpen && settings.showOpenTabsInQuickUrlMenu) {
+    if (!settings.showOpenTabsInQuickUrlMenu) {
+      setRelatedTabs([])
+      return
+    }
+    if (contextMenuOpen) {
       const domain = getDomainFromUrl(url)
       if (domain) {
-        chrome.tabs.query({
-          url: `*://${domain}/*`,
-        }).then(tabs => {
-          setRelatedTabs(tabs)
-        })
+        chrome.tabs
+          .query({
+            url: `*://${domain}/*`,
+          })
+          .then(tabs => {
+            setRelatedTabs(tabs)
+          })
       } else {
         // Clear tabs if domain extraction fails
         setRelatedTabs([])
       }
-    } else {
-      setRelatedTabs([])
     }
   }, [contextMenuOpen, url, settings.showOpenTabsInQuickUrlMenu])
 
