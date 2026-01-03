@@ -1,20 +1,7 @@
 /**
  * Shared bookmark utilities
  */
-
-/**
- * Extract domain from URL
- */
-export function getDomainFromUrl(url: string): string | null {
-  try {
-    const urlObj = new URL(url)
-    return urlObj.hostname
-  } catch {
-    return null
-  }
-}
-
-
+import { getDomainFromUrl } from '@/lib/url'
 /**
  * Find bookmarks matching a domain using chrome.bookmarks.search API
  * This is more efficient than fetching the entire tree and filtering

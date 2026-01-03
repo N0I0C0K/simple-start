@@ -8,3 +8,17 @@ export function getDefaultIconUrl(u: string): string {
   url.searchParams.set('size', '128')
   return url.toString()
 }
+
+
+
+/**
+ * Extract domain from URL
+ */
+export function getDomainFromUrl(url: string): string | null {
+  try {
+    const urlObj = new URL(url)
+    return urlObj.hostname
+  } catch {
+    return null
+  }
+}

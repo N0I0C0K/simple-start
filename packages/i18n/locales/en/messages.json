@@ -135,7 +135,19 @@
   },
   "relatedBookmarks": {
     "description": "Related bookmarks section label in context menu",
-    "message": "Related Bookmarks"
+    "message": "Bookmarks"
+  },
+  "showOpenTabsInQuickUrlMenu": {
+    "description": "Show open tabs in quick URL context menu setting title",
+    "message": "Show Open Tabs in Quick URL Menu"
+  },
+  "showOpenTabsInQuickUrlMenuDescription": {
+    "description": "Show open tabs in quick URL context menu setting description",
+    "message": "Display related open tabs when right-clicking quick URL items."
+  },
+  "relatedOpenTabs": {
+    "description": "Related open tabs section label in context menu",
+    "message": "Tabs"
   },
   "wallpaperUrl": {
     "description": "Wallpaper URL setting title",
