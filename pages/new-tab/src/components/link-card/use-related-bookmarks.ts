@@ -12,7 +12,11 @@ export const useRelatedBookmarks = (url: string, contextMenuOpen: boolean) => {
   const settings = useStorage(settingStorage)
 
   useEffect(() => {
-    if (contextMenuOpen && settings.showBookmarksInQuickUrlMenu) {
+    if (!settings.showBookmarksInQuickUrlMenu) {
+      setRelatedBookmarks([])
+      return
+    }
+    if (contextMenuOpen) {
       const domain = getDomainFromUrl(url)
       if (domain) {
         findBookmarksByDomain(domain)
@@ -28,8 +32,6 @@ export const useRelatedBookmarks = (url: string, contextMenuOpen: boolean) => {
         // Clear bookmarks if domain extraction fails
         setRelatedBookmarks([])
       }
-    } else {
-      setRelatedBookmarks([])
     }
   }, [contextMenuOpen, url, settings.showBookmarksInQuickUrlMenu])
 

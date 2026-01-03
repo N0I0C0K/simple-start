@@ -90,7 +90,7 @@ export { SettingItem }
 
 /**
  * Wrapper component that disables input fields and shows a tooltip when MQTT is connected.
- * 
+ *
  * @param isConnected - Whether the MQTT connection is active
  * @param children - The SettingItem component to wrap
  * @returns The wrapped component with tooltip when connected, or the original component when disconnected
@@ -155,7 +155,7 @@ const MqttSettings: FC = () => {
   const settings = useStorage(settingStorage)
   const mqttServerState = useStorage(mqttStateManager)
   const isConnected = mqttServerState.connected
-  
+
   return (
     <Stack direction={'column'} className={'gap-2 w-full'}>
       <Stack direction={'column'}>
@@ -389,13 +389,15 @@ const SidebarButton: FC<{
   return (
     <Tooltip>
       <Dialog>
-        <DialogTrigger asChild>
-          <TooltipTrigger asChild>
-            <Button size={'icon'} variant={'ghost'} className={cn('rounded-full')}>
-              <IconClass />
+        <TooltipTrigger asChild>
+          <DialogTrigger asChild>
+            <Button size={'icon'} variant={'ghost'} className={cn('rounded-full')} asChild>
+              <div>
+                <IconClass />
+              </div>
             </Button>
-          </TooltipTrigger>
-        </DialogTrigger>
+          </DialogTrigger>
+        </TooltipTrigger>
         <DialogContent className={cn('', className)}>
           <DialogHeader>
             <DialogTitle>{label}</DialogTitle>

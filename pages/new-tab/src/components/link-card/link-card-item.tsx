@@ -5,7 +5,7 @@ import { Text, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '
 import { ContextMenu, ContextMenuContent, ContextMenuTrigger } from '@extension/ui/lib/components/ui/context-menu'
 import { useGlobalDialog } from '@src/provider'
 import type { CSSProperties, MouseEventHandler, Ref, TouchEventHandler } from 'react'
-import { useRef, useState, forwardRef } from 'react'
+import { useRef, useState, forwardRef, useCallback } from 'react'
 
 import { MakeSortableItem } from '@/src/components/sortable-area'
 import { LinkCardIcon } from './link-card-icon'
@@ -35,17 +35,18 @@ export const LinkCardItem = forwardRef<HTMLDivElement, LinkCardProps & CustomGri
 
     // Fetch related bookmarks when context menu opens
     const { relatedBookmarks, showBookmarks } = useRelatedBookmarks(url, contextMenuOpen)
-
     // Fetch related open tabs when context menu opens
     const { relatedTabs, showOpenTabs } = useRelatedTabs(url, contextMenuOpen)
-
-    const handleIconClick = (ev: React.MouseEvent<HTMLDivElement>) => {
-      if (ev.ctrlKey) {
-        chrome.tabs.create({ url: url, active: true })
-      } else {
-        chrome.tabs.update({ url: url })
-      }
-    }
+    const handleIconClick = useCallback(
+      (ev: React.MouseEvent<HTMLDivElement>) => {
+        if (ev.ctrlKey) {
+          chrome.tabs.create({ url: url, active: true })
+        } else {
+          chrome.tabs.update({ url: url })
+        }
+      },
+      [url],
+    )
 
     return (
       <TooltipProvider>
@@ -64,7 +65,7 @@ export const LinkCardItem = forwardRef<HTMLDivElement, LinkCardProps & CustomGri
               onMouseDown={onMouseDown}
               onMouseUp={onMouseUp}
               onTouchEnd={onTouchEnd}>
-              <TooltipTrigger>
+              <TooltipTrigger asChild>
                 <ContextMenuTrigger>
                   <LinkCardIcon url={url} onClick={handleIconClick} ref={innerRef} />
                 </ContextMenuTrigger>
