@@ -23,11 +23,24 @@ const Popup = () => {
     const [tab] = await chrome.tabs.query({ currentWindow: true, active: true });
 
     if (!tab.url || !tab.title) {
+      chrome.notifications.create('page-add-error', {
+        type: 'basic',
+        iconUrl: chrome.runtime.getURL('icon-34.png'),
+        title: 'Cannot add page',
+        message: 'The current page cannot be added to quick links.',
+      });
       return;
     }
 
-    // Don't add chrome:// or about: pages
-    if (tab.url.startsWith('about:') || tab.url.startsWith('chrome:')) {
+    // Don't add restricted protocol pages
+    const restrictedProtocols = ['chrome:', 'about:', 'chrome-extension:', 'moz-extension:', 'edge:', 'file:'];
+    if (restrictedProtocols.some(protocol => tab.url!.startsWith(protocol))) {
+      chrome.notifications.create('page-add-error', {
+        type: 'basic',
+        iconUrl: chrome.runtime.getURL('icon-34.png'),
+        title: 'Cannot add page',
+        message: 'This type of page cannot be added to quick links.',
+      });
       return;
     }
 
