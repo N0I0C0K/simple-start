@@ -12,6 +12,8 @@ const notificationOptions = {
   message: 'You cannot inject script here!',
 } as const;
 
+const RESTRICTED_PROTOCOLS = ['chrome:', 'about:', 'chrome-extension:', 'moz-extension:', 'edge:', 'file:'];
+
 const Popup = () => {
   const theme = useStorage(exampleThemeStorage);
   const isLight = theme === 'light';
@@ -23,23 +25,22 @@ const Popup = () => {
     const [tab] = await chrome.tabs.query({ currentWindow: true, active: true });
 
     if (!tab.url || !tab.title) {
-      chrome.notifications.create('page-add-error', {
+      chrome.notifications.create('page-add-error-missing-info', {
         type: 'basic',
         iconUrl: chrome.runtime.getURL('icon-34.png'),
-        title: 'Cannot add page',
-        message: 'The current page cannot be added to quick links.',
+        title: t('cannotAddPageTitle'),
+        message: t('cannotAddPageMissingInfo'),
       });
       return;
     }
 
     // Don't add restricted protocol pages
-    const restrictedProtocols = ['chrome:', 'about:', 'chrome-extension:', 'moz-extension:', 'edge:', 'file:'];
-    if (restrictedProtocols.some(protocol => tab.url!.startsWith(protocol))) {
-      chrome.notifications.create('page-add-error', {
+    if (RESTRICTED_PROTOCOLS.some(protocol => tab.url!.startsWith(protocol))) {
+      chrome.notifications.create('page-add-error-restricted', {
         type: 'basic',
         iconUrl: chrome.runtime.getURL('icon-34.png'),
-        title: 'Cannot add page',
-        message: 'This type of page cannot be added to quick links.',
+        title: t('cannotAddPageTitle'),
+        message: t('cannotAddPageRestricted'),
       });
       return;
     }
