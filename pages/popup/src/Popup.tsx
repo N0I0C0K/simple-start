@@ -1,6 +1,8 @@
 import '@src/Popup.css';
 import { useStorage, withErrorBoundary, withSuspense } from '@extension/shared';
-import { exampleThemeStorage } from '@extension/storage';
+import { exampleThemeStorage, quickUrlItemsStorage } from '@extension/storage';
+import { nanoid } from 'nanoid';
+import { t } from '@extension/i18n';
 import type { ComponentPropsWithoutRef } from 'react';
 
 const notificationOptions = {
@@ -10,12 +12,53 @@ const notificationOptions = {
   message: 'You cannot inject script here!',
 } as const;
 
+const RESTRICTED_PROTOCOLS = ['chrome:', 'about:', 'chrome-extension:', 'moz-extension:', 'edge:', 'file:'];
+
 const Popup = () => {
   const theme = useStorage(exampleThemeStorage);
   const isLight = theme === 'light';
   const logo = isLight ? 'popup/logo_vertical.svg' : 'popup/logo_vertical_dark.svg';
   const goGithubSite = () =>
     chrome.tabs.create({ url: 'https://github.com/Jonghakseo/chrome-extension-boilerplate-react-vite' });
+
+  const addCurrentPageToQuickLinks = async () => {
+    const [tab] = await chrome.tabs.query({ currentWindow: true, active: true });
+
+    if (!tab.url || !tab.title) {
+      chrome.notifications.create('page-add-error-missing-info', {
+        type: 'basic',
+        iconUrl: chrome.runtime.getURL('icon-34.png'),
+        title: t('cannotAddPageTitle'),
+        message: t('cannotAddPageMissingInfo'),
+      });
+      return;
+    }
+
+    // Don't add restricted protocol pages
+    if (RESTRICTED_PROTOCOLS.some(protocol => tab.url!.startsWith(protocol))) {
+      chrome.notifications.create('page-add-error-restricted', {
+        type: 'basic',
+        iconUrl: chrome.runtime.getURL('icon-34.png'),
+        title: t('cannotAddPageTitle'),
+        message: t('cannotAddPageRestricted'),
+      });
+      return;
+    }
+
+    await quickUrlItemsStorage.add({
+      id: nanoid(),
+      title: tab.title,
+      url: tab.url,
+    });
+
+    // Show a notification to confirm the action
+    chrome.notifications.create('page-added', {
+      type: 'basic',
+      iconUrl: chrome.runtime.getURL('icon-34.png'),
+      title: t('pageAddedToQuickLinks'),
+      message: tab.title,
+    });
+  };
 
   const injectContentScript = async () => {
     const [tab] = await chrome.tabs.query({ currentWindow: true, active: true });
@@ -46,6 +89,14 @@ const Popup = () => {
         <p>
           Edit <code>pages/popup/src/Popup.tsx</code>
         </p>
+        <button
+          className={
+            'font-bold mt-4 py-1 px-4 rounded shadow hover:scale-105 ' +
+            (isLight ? 'bg-blue-200 text-black' : 'bg-gray-700 text-white')
+          }
+          onClick={addCurrentPageToQuickLinks}>
+          {t('addCurrentPageToQuickLinks')}
+        </button>
         <button
           className={
             'font-bold mt-4 py-1 px-4 rounded shadow hover:scale-105 ' +
