@@ -536,5 +536,13 @@
   "failedToCheckUpdates": {
     "description": "Failed to check for updates message",
     "message": "Failed to check"
+  },
+  "addCurrentPageToQuickLinks": {
+    "description": "Add current page to quick links button",
+    "message": "Add Current Page to Quick Links"
+  },
+  "pageAddedToQuickLinks": {
+    "description": "Success notification when page is added to quick links",
+    "message": "Page added to quick links"
   }
 }
