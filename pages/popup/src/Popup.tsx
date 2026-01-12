@@ -47,8 +47,8 @@ const Popup = () => {
   };
 
   return (
-    <div className="App bg-slate-50 dark:bg-gray-800">
-      <header className="App-header text-gray-900 dark:text-gray-100">
+    <div className="App bg-slate-50">
+      <header className="App-header text-gray-900">
         <button
           className="font-bold mt-4 py-2 px-6 rounded shadow hover:scale-105 bg-blue-500 text-white hover:bg-blue-600"
           onClick={addCurrentPageToQuickLinks}>
