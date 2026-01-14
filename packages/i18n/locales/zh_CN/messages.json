@@ -161,6 +161,18 @@
     "description": "No history found message",
     "message": "未找到历史记录"
   },
+  "historyItem": {
+    "description": "Singular history item",
+    "message": "条记录"
+  },
+  "historyItems": {
+    "description": "Plural history items",
+    "message": "条记录"
+  },
+  "visits": {
+    "description": "Visit count suffix",
+    "message": "次访问"
+  },
   "wallpaperUrl": {
     "description": "Wallpaper URL setting title",
     "message": "壁纸 URL"

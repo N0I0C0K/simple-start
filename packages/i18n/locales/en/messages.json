@@ -161,6 +161,18 @@
     "description": "No history found message",
     "message": "No history found"
   },
+  "historyItem": {
+    "description": "Singular history item",
+    "message": "item"
+  },
+  "historyItems": {
+    "description": "Plural history items",
+    "message": "items"
+  },
+  "visits": {
+    "description": "Visit count suffix",
+    "message": "visits"
+  },
   "wallpaperUrl": {
     "description": "Wallpaper URL setting title",
     "message": "Wallpaper URL"

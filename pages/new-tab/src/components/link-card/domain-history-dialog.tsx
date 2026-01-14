@@ -18,6 +18,14 @@ interface DomainHistoryDialogProps {
 }
 
 /**
+ * Check if an item's domain matches the target domain
+ * Handles www subdomain variations
+ */
+const matchesDomain = (itemDomain: string, targetDomain: string): boolean => {
+  return itemDomain === targetDomain || itemDomain === `www.${targetDomain}` || `www.${itemDomain}` === targetDomain
+}
+
+/**
  * DomainHistoryDialog - Displays recent history for a specific domain
  */
 export const DomainHistoryDialog: FC<DomainHistoryDialogProps> = ({ domain }) => {
@@ -40,7 +48,7 @@ export const DomainHistoryDialog: FC<DomainHistoryDialogProps> = ({ domain }) =>
             if (!item.url) return false
             try {
               const itemDomain = new URL(item.url).hostname
-              return itemDomain === domain || itemDomain === `www.${domain}` || `www.${itemDomain}` === domain
+              return matchesDomain(itemDomain, domain)
             } catch {
               return false
             }
@@ -73,7 +81,7 @@ export const DomainHistoryDialog: FC<DomainHistoryDialogProps> = ({ domain }) =>
           {domain}
         </Text>
         <Text level="s" className="text-muted-foreground">
-          ({historyItems.length} {historyItems.length === 1 ? 'item' : 'items'})
+          ({historyItems.length} {historyItems.length === 1 ? t('historyItem') : t('historyItems')})
         </Text>
       </div>
 
@@ -153,7 +161,7 @@ const DomainHistoryItem: FC<DomainHistoryItemProps> = ({ title, url, lastVisitTi
         </Text>
         {visitCount && visitCount > 1 && (
           <Text level="xs" className="text-muted-foreground/70 whitespace-nowrap">
-            {visitCount} visits
+            {visitCount} {t('visits')}
           </Text>
         )}
       </div>
