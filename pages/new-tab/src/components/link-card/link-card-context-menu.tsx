@@ -10,7 +10,7 @@ import {
 import type { GlobalDialogProps } from '@src/provider'
 import { Pencil, Trash, History } from 'lucide-react'
 import { t } from '@extension/i18n'
-import { useState, type ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import { DomainHistoryDialog } from './domain-history-dialog'
 
 interface LinkCardContextMenuContentProps {
@@ -22,6 +22,8 @@ interface LinkCardContextMenuContentProps {
   relatedTabs: chrome.tabs.Tab[]
   showOpenTabs: boolean
   globalDialog: GlobalDialogProps
+  historyDialogOpen: boolean
+  setHistoryDialogOpen: (open: boolean) => void
 }
 
 /**
@@ -37,9 +39,9 @@ export const LinkCardContextMenuContent = ({
   relatedTabs,
   showOpenTabs,
   globalDialog,
+  historyDialogOpen,
+  setHistoryDialogOpen,
 }: LinkCardContextMenuContentProps): ReactNode => {
-  const [historyDialogOpen, setHistoryDialogOpen] = useState(false)
-
   const getDomainFromUrl = (urlString: string): string => {
     try {
       return new URL(urlString).hostname
