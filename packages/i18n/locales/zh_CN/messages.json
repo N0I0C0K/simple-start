@@ -149,6 +149,10 @@
     "description": "Related open tabs section label in context menu",
     "message": "标签页"
   },
+  "more": {
+    "description": "More items submenu label",
+    "message": "更多"
+  },
   "wallpaperUrl": {
     "description": "Wallpaper URL setting title",
     "message": "壁纸 URL"

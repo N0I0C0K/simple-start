@@ -6,11 +6,67 @@ import {
   ContextMenuItemWitchIcon,
   ContextMenuSeparator,
   ContextMenuLabel,
+  ContextMenuSub,
+  ContextMenuSubTrigger,
+  ContextMenuSubContent,
 } from '@extension/ui/lib/components/ui/context-menu'
 import type { GlobalDialogProps } from '@src/provider'
 import { Pencil, Trash } from 'lucide-react'
 import { t } from '@extension/i18n'
 import type { ReactNode } from 'react'
+
+/**
+ * Helper function to render a bookmark menu item
+ */
+const renderBookmarkItem = (bookmark: chrome.bookmarks.BookmarkTreeNode) => (
+  <ContextMenuItem
+    key={bookmark.id}
+    onClick={() => {
+      if (bookmark.url) {
+        chrome.tabs.update({ url: bookmark.url })
+      }
+    }}
+    className="flex items-center gap-2">
+    <img
+      src={getDefaultIconUrl(bookmark.url || '')}
+      alt={bookmark.title || bookmark.url || 'Bookmark icon'}
+      className="size-4 rounded-sm flex-shrink-0"
+      onError={e => {
+        // Fallback to hide broken images
+        e.currentTarget.style.display = 'none'
+      }}
+    />
+    <span className="truncate flex-1">{bookmark.title || bookmark.url}</span>
+  </ContextMenuItem>
+)
+
+/**
+ * Helper function to render a tab menu item
+ */
+const renderTabItem = (tab: chrome.tabs.Tab) => (
+  <ContextMenuItem
+    key={tab.id}
+    onClick={() => {
+      if (tab.id !== undefined) {
+        chrome.tabs.update(tab.id, { active: true })
+        if (tab.windowId !== undefined) {
+          chrome.windows.update(tab.windowId, { focused: true })
+        }
+      }
+    }}
+    className="flex items-center gap-2">
+    <img
+      src={tab.favIconUrl || getDefaultIconUrl(tab.url || '')}
+      alt={tab.title || tab.url || 'Tab icon'}
+      className="size-4 rounded-sm flex-shrink-0"
+      onError={e => {
+        // Fallback to hide broken images
+        e.currentTarget.style.display = 'none'
+      }}
+    />
+    <span className="truncate flex-1">{tab.title || tab.url}</span>
+  </ContextMenuItem>
+)
 
 interface LinkCardContextMenuContentProps {
   id: string
@@ -79,27 +135,13 @@ export const LinkCardContextMenuContent = ({
         <>
           <ContextMenuSeparator />
           <ContextMenuLabel>{t('relatedBookmarks')}</ContextMenuLabel>
-          {relatedBookmarks.slice(0, 10).map(bookmark => (
-            <ContextMenuItem
-              key={bookmark.id}
-              onClick={() => {
-                if (bookmark.url) {
-                  chrome.tabs.update({ url: bookmark.url })
-                }
-              }}
-              className="flex items-center gap-2">
-              <img
-                src={getDefaultIconUrl(bookmark.url || '')}
-                alt={bookmark.title || bookmark.url || 'Bookmark icon'}
-                className="size-4 rounded-sm flex-shrink-0"
-                onError={e => {
-                  // Fallback to hide broken images
-                  e.currentTarget.style.display = 'none'
-                }}
-              />
-              <span className="truncate flex-1">{bookmark.title || bookmark.url}</span>
-            </ContextMenuItem>
-          ))}
+          {relatedBookmarks.slice(0, 5).map(renderBookmarkItem)}
+          {relatedBookmarks.length > 5 && (
+            <ContextMenuSub>
+              <ContextMenuSubTrigger>{t('more')}</ContextMenuSubTrigger>
+              <ContextMenuSubContent>{relatedBookmarks.slice(5).map(renderBookmarkItem)}</ContextMenuSubContent>
+            </ContextMenuSub>
+          )}
         </>
       )}
 
@@ -108,30 +150,13 @@ export const LinkCardContextMenuContent = ({
         <>
           <ContextMenuSeparator />
           <ContextMenuLabel>{t('relatedOpenTabs')}</ContextMenuLabel>
-          {relatedTabs.slice(0, 10).map(tab => (
-            <ContextMenuItem
-              key={tab.id}
-              onClick={() => {
-                if (tab.id !== undefined) {
-                  chrome.tabs.update(tab.id, { active: true })
-                  if (tab.windowId !== undefined) {
-                    chrome.windows.update(tab.windowId, { focused: true })
-                  }
-                }
-              }}
-              className="flex items-center gap-2">
-              <img
-                src={tab.favIconUrl || getDefaultIconUrl(tab.url || '')}
-                alt={tab.title || tab.url || 'Tab icon'}
-                className="size-4 rounded-sm flex-shrink-0"
-                onError={e => {
-                  // Fallback to hide broken images
-                  e.currentTarget.style.display = 'none'
-                }}
-              />
-              <span className="truncate flex-1">{tab.title || tab.url}</span>
-            </ContextMenuItem>
-          ))}
+          {relatedTabs.slice(0, 5).map(renderTabItem)}
+          {relatedTabs.length > 5 && (
+            <ContextMenuSub>
+              <ContextMenuSubTrigger>{t('more')}</ContextMenuSubTrigger>
+              <ContextMenuSubContent>{relatedTabs.slice(5).map(renderTabItem)}</ContextMenuSubContent>
+            </ContextMenuSub>
+          )}
         </>
       )}
     </>

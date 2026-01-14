@@ -149,6 +149,10 @@
     "description": "Related open tabs section label in context menu",
     "message": "Tabs"
   },
+  "more": {
+    "description": "More items submenu label",
+    "message": "More"
+  },
   "wallpaperUrl": {
     "description": "Wallpaper URL setting title",
     "message": "Wallpaper URL"
