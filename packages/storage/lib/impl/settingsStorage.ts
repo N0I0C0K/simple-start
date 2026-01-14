@@ -32,6 +32,7 @@ export type SettingProps = {
   autoFocusCommandInput: boolean
   doubleClickBackgroundFocusCommand: boolean
   showBookmarksInQuickUrlMenu: boolean
+  showOpenTabsInQuickUrlMenu: boolean
   enableQuickUrlKeyboardNav: boolean
   wallpaperUrl: string | null
   /** The source type for the wallpaper (remote URL or local file) */
@@ -63,6 +64,7 @@ const defaultSetting: SettingProps = {
   autoFocusCommandInput: true,
   doubleClickBackgroundFocusCommand: true,
   showBookmarksInQuickUrlMenu: true,
+  showOpenTabsInQuickUrlMenu: true,
   enableQuickUrlKeyboardNav: true,
   wallpaperUrl: null,
   wallpaperType: 'url',

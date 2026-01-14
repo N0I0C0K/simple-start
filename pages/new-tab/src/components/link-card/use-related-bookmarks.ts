@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { getDomainFromUrl, findBookmarksByDomain } from '@/lib/bookmarks'
+import { findBookmarksByDomain } from '@/lib/bookmarks'
+import { getDomainFromUrl } from '@/lib/url'
 import { useStorage } from '@extension/shared'
 import { settingStorage } from '@extension/storage'
 

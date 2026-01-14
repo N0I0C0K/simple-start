@@ -12,6 +12,7 @@ import { LinkCardIcon } from './link-card-icon'
 import { LinkCardTooltipContent } from './link-card-tooltip'
 import { LinkCardContextMenuContent } from './link-card-context-menu'
 import { useRelatedBookmarks } from './use-related-bookmarks'
+import { useRelatedTabs } from './use-related-tabs'
 
 interface LinkCardProps extends QuickUrlItem {
   ref?: Ref<HTMLDivElement>
@@ -34,7 +35,8 @@ export const LinkCardItem = forwardRef<HTMLDivElement, LinkCardProps & CustomGri
 
     // Fetch related bookmarks when context menu opens
     const { relatedBookmarks, showBookmarks } = useRelatedBookmarks(url, contextMenuOpen)
-
+    // Fetch related open tabs when context menu opens
+    const { relatedTabs, showOpenTabs } = useRelatedTabs(url, contextMenuOpen)
     const handleIconClick = useCallback(
       (ev: React.MouseEvent<HTMLDivElement>) => {
         if (ev.ctrlKey) {
@@ -82,6 +84,8 @@ export const LinkCardItem = forwardRef<HTMLDivElement, LinkCardProps & CustomGri
                 url={url}
                 relatedBookmarks={relatedBookmarks}
                 showBookmarks={showBookmarks}
+                relatedTabs={relatedTabs}
+                showOpenTabs={showOpenTabs}
                 globalDialog={globalDialog}
               />
             </ContextMenuContent>
