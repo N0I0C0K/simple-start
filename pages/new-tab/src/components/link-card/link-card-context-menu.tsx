@@ -10,7 +10,7 @@ import {
 import type { GlobalDialogProps } from '@src/provider'
 import { Pencil, Trash, History } from 'lucide-react'
 import { t } from '@extension/i18n'
-import type { ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import { DomainHistoryDialog } from './domain-history-dialog'
 
 interface LinkCardContextMenuContentProps {
@@ -38,6 +38,8 @@ export const LinkCardContextMenuContent = ({
   showOpenTabs,
   globalDialog,
 }: LinkCardContextMenuContentProps): ReactNode => {
+  const [historyDialogOpen, setHistoryDialogOpen] = useState(false)
+
   const getDomainFromUrl = (urlString: string): string => {
     try {
       return new URL(urlString).hostname
@@ -73,8 +75,7 @@ export const LinkCardContextMenuContent = ({
       <ContextMenuItemWitchIcon
         IconType={History}
         onClick={() => {
-          const domain = getDomainFromUrl(url)
-          globalDialog.show(<DomainHistoryDialog domain={domain} />, t('domainHistory'))
+          setHistoryDialogOpen(true)
         }}>
         {t('viewRecentHistory')}
       </ContextMenuItemWitchIcon>
@@ -151,6 +152,13 @@ export const LinkCardContextMenuContent = ({
           ))}
         </>
       )}
+
+      {/* Domain History Dialog */}
+      <DomainHistoryDialog 
+        domain={getDomainFromUrl(url)} 
+        open={historyDialogOpen} 
+        onOpenChange={setHistoryDialogOpen} 
+      />
     </>
   )
 }
