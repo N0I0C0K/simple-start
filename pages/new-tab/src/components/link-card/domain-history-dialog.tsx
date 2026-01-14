@@ -101,29 +101,36 @@ export const DomainHistoryDialog: FC<DomainHistoryDialogProps> = ({ domain }) =>
 interface DomainHistoryItemProps extends DomainHistoryItem {}
 
 const DomainHistoryItem: FC<DomainHistoryItemProps> = ({ title, url, lastVisitTime, visitCount }) => {
-  const formattedDate = useMemo(() => {
-    if (!lastVisitTime) return ''
-    return moment(lastVisitTime).format('YYYY-MM-DD HH:mm')
-  }, [lastVisitTime])
-
   const relativeTime = useMemo(() => {
     if (!lastVisitTime) return ''
     return moment(lastVisitTime).fromNow()
   }, [lastVisitTime])
 
+  const handleClick = (ev: React.MouseEvent<HTMLDivElement>) => {
+    if (ev.ctrlKey) {
+      chrome.tabs.create({ url: url, active: true })
+    } else {
+      chrome.tabs.update({ url: url })
+    }
+  }
+
+  const handleKeyDown = (ev: React.KeyboardEvent<HTMLDivElement>) => {
+    if (ev.key === 'Enter' || ev.key === ' ') {
+      ev.preventDefault()
+      chrome.tabs.update({ url: url })
+    }
+  }
+
   return (
     <div
+      role="button"
+      tabIndex={0}
       className={cn(
         'flex items-center gap-3 py-2.5 px-3 cursor-pointer group',
         'hover:bg-accent/50 rounded-md transition-colors duration-200',
       )}
-      onClick={ev => {
-        if (ev.ctrlKey) {
-          chrome.tabs.create({ url: url, active: true })
-        } else {
-          chrome.tabs.update({ url: url })
-        }
-      }}>
+      onClick={handleClick}
+      onKeyDown={handleKeyDown}>
       <img
         src={getDefaultIconUrl(url)}
         alt="favicon"
