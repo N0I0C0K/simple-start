@@ -15,7 +15,7 @@ export const GlobalDialog: FC<{
         onOpenChange={open => {
           setDialogState({ open })
         }}>
-        <DialogContent>
+        <DialogContent className={dialogState.className}>
           <DialogHeader>
             {dialogState.title && <DialogTitle>{dialogState.title}</DialogTitle>}
             {dialogState.description && <DialogDescription>{dialogState.description}</DialogDescription>}

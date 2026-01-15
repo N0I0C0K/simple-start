@@ -30,7 +30,6 @@ interface CustomGridItemProps {
 export const LinkCardItem = forwardRef<HTMLDivElement, LinkCardProps & CustomGridItemProps>(
   ({ url, title, id, className, onMouseDown, onMouseUp, onTouchEnd, style, selected = false }, ref) => {
     const [contextMenuOpen, setContextMenuOpen] = useState(false)
-    const [historyDialogOpen, setHistoryDialogOpen] = useState(false)
     const globalDialog = useGlobalDialog()
     const innerRef = useRef<HTMLDivElement>(null)
 
@@ -88,8 +87,6 @@ export const LinkCardItem = forwardRef<HTMLDivElement, LinkCardProps & CustomGri
                 relatedTabs={relatedTabs}
                 showOpenTabs={showOpenTabs}
                 globalDialog={globalDialog}
-                historyDialogOpen={historyDialogOpen}
-                setHistoryDialogOpen={setHistoryDialogOpen}
               />
             </ContextMenuContent>
           </ContextMenu>

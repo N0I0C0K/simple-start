@@ -1,11 +1,5 @@
 import { getDefaultIconUrl } from '@/lib/url'
 import { ScrollArea, Text } from '@extension/ui'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@extension/ui/lib/components/ui/dialog'
 import { t } from '@extension/i18n'
 import { useMemo, useState, useEffect, type FC } from 'react'
 import { cn } from '@/lib/utils'
@@ -21,8 +15,6 @@ interface DomainHistoryItem {
 
 interface DomainHistoryDialogProps {
   domain: string
-  open: boolean
-  onOpenChange: (open: boolean) => void
 }
 
 /**
@@ -34,9 +26,9 @@ const matchesDomain = (itemDomain: string, targetDomain: string): boolean => {
 }
 
 /**
- * DomainHistoryDialog - Displays recent history for a specific domain in a dedicated dialog
+ * DomainHistoryDialog - Displays recent history for a specific domain
  */
-export const DomainHistoryDialog: FC<DomainHistoryDialogProps> = ({ domain, open, onOpenChange }) => {
+export const DomainHistoryDialog: FC<DomainHistoryDialogProps> = ({ domain }) => {
   const [historyItems, setHistoryItems] = useState<DomainHistoryItem[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -80,44 +72,37 @@ export const DomainHistoryDialog: FC<DomainHistoryDialogProps> = ({ domain, open
     }
 
     fetchDomainHistory()
-  }, [domain, open])
+  }, [domain])
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>{t('domainHistory')}</DialogTitle>
-        </DialogHeader>
-        <div className="flex flex-col gap-3 w-full">
-          <div className="flex items-center gap-2">
-            <Text level="m" className="font-semibold">
-              {domain}
-            </Text>
-            <Text level="s" className="text-muted-foreground">
-              ({historyItems.length} {historyItems.length === 1 ? t('historyItem') : t('historyItems')})
-            </Text>
-          </div>
+    <div className="flex flex-col gap-3 w-full max-w-3xl">
+      <div className="flex items-center gap-2 min-w-0">
+        <Text level="m" className="font-semibold truncate">
+          {domain}
+        </Text>
+        <Text level="s" className="text-muted-foreground flex-shrink-0">
+          ({historyItems.length} {historyItems.length === 1 ? t('historyItem') : t('historyItems')})
+        </Text>
+      </div>
 
-          {loading ? (
-            <div className="flex items-center justify-center py-8">
-              <Text className="text-muted-foreground">{t('loading')}</Text>
-            </div>
-          ) : historyItems.length === 0 ? (
-            <div className="flex items-center justify-center py-8">
-              <Text className="text-muted-foreground">{t('noHistoryFound')}</Text>
-            </div>
-          ) : (
-            <ScrollArea className="h-[400px] w-full">
-              <div className="flex flex-col">
-                {historyItems.map(item => (
-                  <DomainHistoryItem key={item.id} {...item} />
-                ))}
-              </div>
-            </ScrollArea>
-          )}
+      {loading ? (
+        <div className="flex items-center justify-center py-8">
+          <Text className="text-muted-foreground">{t('loading')}</Text>
         </div>
-      </DialogContent>
-    </Dialog>
+      ) : historyItems.length === 0 ? (
+        <div className="flex items-center justify-center py-8">
+          <Text className="text-muted-foreground">{t('noHistoryFound')}</Text>
+        </div>
+      ) : (
+        <ScrollArea className="h-[400px] w-full">
+          <div className="flex flex-col">
+            {historyItems.map(item => (
+              <DomainHistoryItem key={item.id} {...item} />
+            ))}
+          </div>
+        </ScrollArea>
+      )}
+    </div>
   )
 }
 

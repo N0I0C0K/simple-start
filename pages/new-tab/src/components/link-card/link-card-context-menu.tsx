@@ -22,8 +22,6 @@ interface LinkCardContextMenuContentProps {
   relatedTabs: chrome.tabs.Tab[]
   showOpenTabs: boolean
   globalDialog: GlobalDialogProps
-  historyDialogOpen: boolean
-  setHistoryDialogOpen: (open: boolean) => void
 }
 
 /**
@@ -39,8 +37,6 @@ export const LinkCardContextMenuContent = ({
   relatedTabs,
   showOpenTabs,
   globalDialog,
-  historyDialogOpen,
-  setHistoryDialogOpen,
 }: LinkCardContextMenuContentProps): ReactNode => {
   const getDomainFromUrl = (urlString: string): string => {
     try {
@@ -77,7 +73,8 @@ export const LinkCardContextMenuContent = ({
       <ContextMenuItemWitchIcon
         IconType={History}
         onClick={() => {
-          setHistoryDialogOpen(true)
+          const domain = getDomainFromUrl(url)
+          globalDialog.show(<DomainHistoryDialog domain={domain} />, t('domainHistory'), undefined, 'max-w-3xl')
         }}>
         {t('viewRecentHistory')}
       </ContextMenuItemWitchIcon>
@@ -154,13 +151,6 @@ export const LinkCardContextMenuContent = ({
           ))}
         </>
       )}
-
-      {/* Domain History Dialog */}
-      <DomainHistoryDialog 
-        domain={getDomainFromUrl(url)} 
-        open={historyDialogOpen} 
-        onOpenChange={setHistoryDialogOpen} 
-      />
     </>
   )
 }
